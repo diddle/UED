@@ -1,0 +1,110 @@
+\documentclass{acm}
+\usepackage[dutch]{babel}
+
+\begin{document}
+
+\title{User Experience Design}
+\subtitle{Muziektafel}
+
+\numberofauthors{5}
+\author{
+\alignauthor Robert Dahmen\\
+       \affaddr{Universiteit Twente}\\
+       \email{r.dahmen@me.com}
+\alignauthor Alexander Drechsel
+       \affaddr{Universiteit Twente}\\
+       \email{alexander\_drechsel3@hotmail.com}
+\and
+\alignauthor Niels Kamp\\
+       \affaddr{Universiteit Twente}\\
+       \email{niels.kamp@xs4all.nl}
+\alignauthor Kasper Vaessen\\
+       \affaddr{Universiteit Twente}\\
+       \email{kaspermv@gmail.com}
+\alignauthor Niels Visser\\
+       \affaddr{Universiteit Twente}\\
+       \email{nsvisser@gmail.com}
+}
+\maketitle
+
+\begin{abstract}
+Samenvatting.
+\end{abstract}
+
+\keywords{multi-touch, table, inexperienced user}
+
+\section{Introduction}
+Multi-touch interfaces zijn de laatste jaren steeds meer invoering in het dagelijks leven doorgemaakt; smartphones, tablets hebben hier allemaal ondersteuning voor en maken levendig gebruik van de mogelijkheden die multi-touch biedt. Maar naast deze apparaten die steeds meer mensen bij zich hebben, zijn er ook ontwikkelingen op multi-touch gebied voor apparaten met grotere schermen. Denk hierbij aan computermonitoren, televisies en zogenaamde video walls: de technologische ontwikkeling richt zich op multi-touch.
+
+Zo ook bij opdrachtgever KITT Engineering, waar men tracht een brug te slaan tussen creatieve idee\"en en de uiteindelijke toepassing daarvan. KITT heeft in-house een multi-touch tafel ontwikkeld, waarmee het de mogelijke toepassingen van grote multi-touch oppervlakken wil onderzoeken. Ook wil men bekijken hoe de bedachte technologie in de echte wereld gebruikt kan worden en hoe mensen reageren op dergelijke technologie wanneer ze ermee in aanraking komen.
+
+\subsection{Problem Statement}
+De opdracht bestaat dan ook uit het ontwikkelen van een applicatie dat de mogelijkheden van multi-touch ten volle benut en mensen op een intu\"itieve manier kennis laat maken met het fenomeen van een multi-touch interface ter grootte van een tafel. Het betreft een redelijk open opdracht, waarbij niet gespecificeerd is wat voor soort applicatie er ontwikkeld moet worden, maar dit is opengelaten om door ons ingevuld te worden.
+
+\subsection{Inhoud}
+In dit paper wordt in hoofdstuk~\ref{sec_domein} ingegaan op het domein van de te realiseren applicatie: door wie zal het eindresultaat gebruikt worden en met welk doel. Ook wordt beschreven aan welke functionele eisen de gerealiseerde applicatie moet voldoen om de doelgroep succesvol dit doel te laten bereiken. In hoofdstuk~\ref{sec_concept} staat beschreven hoe deze functionele eisen verwerkt zijn in meerdere conceptuele ontwerpen en welk van deze ontwerpen vervolgens in samenspraak met de opdrachtgever is uitgekozen om verder uit te werken. Dit verder uitwerken wordt gedaan in hoofdstuk~\ref{sec_detail}. In dit hoofdstuk staat een functionele specificatie van het gekozen ontwerp en een beschrijving van de technische realisatie: een technisch ontwerp.
+
+Na het ontwerpen en realiseren van de applicatie, zal de usability getest moeten worden. De opzet van deze tests en de resultaten ervan staan beschreven in hoofdstuk~\ref{sec_evaluatie}. Naar aanleiding van deze resultaten zal in hoofdstuk~\ref{sec_discussie} behandeld worden in hoeverre de gerealiseerde applicatie voldoet aan de eerder gestelde eisen.
+
+Tot slot volgt in hoofdstuk~\ref{sec_conclusie} een reflectie van het doorlopen ontwerpproces, het eindresultaat en eventuele verbeterpunten.
+
+\section{Domein}
+\label{sec_domein}
+Een multi-touch tafel is een experimentele techniek die nog niet breed toegepast wordt in de wereld. Het wordt meestal voor specialistische toepassingen gebruikt, zoals het bedrijfsleven, en in state-of-the-art producten, die bedoeld zijn om de mogelijke toepassingen te onderzoeken -- zoals het gebruik in musea om te kijken of kinderen met een interactief systeem meer opsteken van hun bezoek of hun bezoek positiever beoordelen.
+
+Het concept multi-touch is met de sterke opkomst van multi-touch capable smartphones en tablets echter niet meer uit de hedendaagse wereld weg te denken. Wel is het zo dat de adoptie van deze apparaten voornamelijk in de jongere demografen een groeispurt doormaakt, terwijl de ouderen van dagen hier minder in meegaan. Aangezien het doel van de tafel is om iedereen, jong en oud, kennis te laten maken met het concept van een multi-touch tafel, is het van belang om bij het ontwerp rekening te houden met de intu\"itiviteit van het gebruik ervan: iedereen moet ermee kunnen werken. Eventueel na een korte instructie, maar bij voorkeur zonder.
+
+Vanwege het open karakter van de opdracht -- het mensen laten kennismaken met het concept multi-touch tafel door middel van een applicatie die uitnodigt tot gebruik -- zijn de functionele eisen in deze fase beperkt. Vanwege de brede doelgroep en de ongelijke ervaring van deze doelgroep met multi-touch, worden er vooral eisen gesteld aan de usability van de applicatie. Hieronder volgt een opsomming van deze eisen met een beredenering waarom deze van belang is.
+
+\begin{itemize}
+	\item \textbf{Het doel en de wijze van gebruik van de muziektafel moet voor gebruikers op het eerste oog duidelijk zijn.} \\ Om mensen uit te nodigen de applicatie te gebruiken moet deze simpel in gebruik zijn en een lage leercurve hebben.
+	\item \textbf{De muziektafel moet voor een tot vier ($1{\le}x{\le}4$) te gebruiken zijn.} \\ Om mensen aan te moedigen gebruik te maken van de tafel, helpt het om te zien dat andere mensen reeds bezig zijn met de tafel en dat zij zich er bij kunnen staan en in hun eigen tempo de applicatie kunnen leren besturen, zonder dat zij andere spelers ophouden.
+	\item \textbf{Het getoonde speelveld moet opgedeeld zijn in vier (4) gedeelten.} \\ Om mensen uit te nodigen mee te doen, zijn er te allen tijde vier speelvelden zichtbaar. Deze worden niet gebruikt indien er minder dan vier spelers zijn (tenzij \'e\'en speler meerdere speelvelden bedient), waardoor mensen zich eenvoudig in de spelbeleving kunnen mengen, zonder verdere stappen te moeten nemen.
+	\item \textbf{Iedere speler heeft een eigen gedeelte van het speelveld tot zijn beschikking.} \\ Om ervoor te zorgen dat spelers elkaar niet in de weg zitten en iedereen op zijn eigen tempo kan werken met de applicatie, heeft iedere speler een eigen speelveld.
+\end{itemize}
+
+\section{Conceptueel Ontwerp}
+\label{sec_concept}
+In aanloop naat het ontwerp heeft de opdrachtgever vier voorstellen gekregen, verdeeld over twee categorie\"en: \'e\'en co\"operatief en drie competitief. Uit deze voorstellen is uiteindelijk een concept gekozen dat het beste aansloot bij het gedachtegoed van de opdrachtgever en het doel dat de opdrachtgever met de applicatie voor ogen had.
+
+Het co\"operatieve voorstel bestond uit een muziektafel waar meerdere mensen aan mee konden werken om gezamenlijk tot een harmonieuze symphonie te komen. De drie competitieve voorstellen waren spellen. De eerste was een boogschietspel, waarbij iedere speler moest voorkomen dat zijn doelwit geraakt werd door de pijlen van andere spelers af te weren, terwijl hij probeerde de doelwitten van de andere spelers te raken. Een ander voorstel was een multiplayer snake waarbij spelers elkaars slang moesten ontwijken, terwijl ze streefden naar het opeten van punten en bonussen. Ten slotte was er nog een voetbaltafel waarbij twee teams proberen de bal in het doel van het andere team te krijgen door middel van knoppen langs de zijkant die de poppetjes van hun team op het speelveld aansturen.
+
+Vanwege het korte tijdsschema van dit project zijn deze voorstellen alleen kort, tekstueel uitgewerkt en zijn hiervoor geen functionele requirements uitgewerkt. De voorstellen zijn met een mondelinge toelichting overgedragen aan de opdrachtgever en uiteindelijk is in overleg besloten te kiezen voor de muziektafel. Dit concept had voor nieuwe gebruikers de laagste instapdrempel, liet het best de mogelijkheden van de multi-touch tafel zien en bevat een creatieve draai, waar de opdrachtgever in zijn missie naar streeft.
+
+\subsection{Uitwerking Muziektafel}
+Voordat begonnen kon worden aan het functionele ontwerp van de muziektafel, moet eerst uitgezocht worden aan welke functionele eisen dit ontwerp zal moeten voldoen. Hieronder volgende de functionele eisen, waaraan het ontwerp, in combinatie met de geformuleerde eisen uit hoofdstuk~\ref{sec_domein}, moet voldoen. Indien een eis toelichting vereist, is deze gegeven, alsmede van wie de eis afkomstig is.
+
+\begin{itemize}
+	\item \textbf{Met ieder speelveld wordt een (1) muziekinstrument bespeeld.} \\ Dankzij deze eis kan iedere speler zijn hart leggen in de besturing van zijn eigen muziekinstrument, wat mensen uitnodigt gebruik te maken van de multi-touch tafel.
+	\item \textbf{Een speler kan zelf kiezen welk instrument hij bedient met zijn speelveld.} \\ Verschillende mensen hebben affiniteit met verschillende instrumenten en zullen meer plezier uit de multi-touch tafel-ervaring halen als zij hun 'eigen' instrument kunnen bespelen.
+	\item \textbf{Een speler kan zelf bepalen met welk volume zijn instrument afgespeeld wordt.} \\ Om te voorkomen dat een speler de afbraak doet aan de gecreëerde melodie, kan hij besluiten het volume van zijn instrument te verlagen. Op deze wijze kan hij nog steeds spelen met de multi-touch tafel, zonder het idee te hebben andere spelers lastig te vallen. Deze eis volgt uit de wens om de tafel voor veel mensen, van iedere leeftijd, toegankelijk te maken.
+	\item \textbf{De af te spelen noten van een muziekinstrument worden op het gedeelte van het speelveld behorende bij dat muziekinstrument geselecteerd met behulp van een aanraak-interface.} \\ Deze eis volgt uit de wens van de opdrachtgever: spelers moet kennis maken met de multi-touch tafel.
+	\item \textbf{De spelers moeten tegelijkertijd met minstens een (1) aanraking per speler tegelijk input kunnen geven aan de af te spelen noten.} \\ Ook deze eis volgt uit de wens van de opdrachtgever om de eigenschappen van de multi-touch tafel te etaleren: spelers moeten hun eigen speelveld kunnen bedienen, zonder dat de limieten van de tafel ze daarbij hindert.
+	\item \textbf{De noten van de vier muziekinstrumenten worden gecombineerd tot een harmonieuze melodie.} \\ Deze eis volgt uit de wens van de opdrachtgever om mensen aan te zetten tot het gebruik: des te meer mensen meehelpen aan het componeren van een melodie, des te beter deze wordt.
+	\item \textbf{Het mag niet mogelijk zijn dat er een valse melodie gecreëerd wordt.} \\ Als de gecomineerde melodie prettig in het gehoor ligt, zijn gebruikers sneller geneigd om door te gaan met het componeren ervan. [citation needed]
+	\item \textbf{De af te spelen noten zijn per 16e maat in te stellen.}
+	\item \textbf{Per 16e maat zijn een of meerdere noten te selecteren die afgespeeld moeten worden.} \\ Dankzij deze eis blijft de applicatie ook voor meer ervaren gebruikers leuk om te gebruiken, aangezien zij ingewikkelder melodi\"en kunnen componeren.
+	\item \textbf{Per muziekinstrument kunnen tien (10) noten en 16 16e maten geselecteerd worden.} \\ Deze eis volgt uit het niet mogen componeren van een valse melodie. Door per octaaf de noten \textit{A, B, D, E en F\#} te gebruiken, kan geen valse melodie gecreëerd worden. [citation needed] Om ervaren gebruikers de mogelijkheid te geven om complexere melodie\"en te componeren, hebben ze de beschikking over twee octaven.
+	\item \textbf{Als er langer dan een minuut geen gebruik wordt gemaakt van het programma, wordt een demomodus afgespeeld, waarbij een voorgeprogrammeerde melodie wordt opgebouwd en afgespeeld. Zodra een speler het scherm aanraakt, wordt de eerdere zelf gebouwde melodie op ieder speelveld teruggezet.} \\ Deze eis volgt uit de wens om de applicatie uitnodigend te maken. Door deze demo-modus wordt voor de gebruiker gedemonstreerd wat er met de applicatie kan en hoe deze met behulp van de multi-touch tafel bediend kan worden.
+	\item \textbf{De muziek wordt afgespeeld met een snelheid van 120 beats per minuut (BPM), wanneer dit niet instelbaar is.} \\ Deze eis zorgt ervoor dat er een redelijke tempo in de muziek zit, zodat een simpele gecre\"eerde melodie al spannend genoeg is om aan verder te werken. [citation needed]
+	\item \textbf{Tijdens het afspelen wordt de gecreëerde muziek gevisualiseerd.} \\ Dit is wederom voor het uitnodigende karakter van de applicatie gedaan, om naast de ge\"interesseerden in audio ook de visueel ingestelde mensen aan te trekken.
+	\item \textbf{Nadat de laatste kwartmaat afgespeeld is, wordt opnieuw begonnen bij de eerste kwartmaat.} \\ Om te voorkomen dat spelers steeds de melodie opnieuw moeten starten en om de bediening zo eenvoudig mogelijk te houden, is het afspelen van de melodie een doorlopend proces: men kan zo aanschuiven, de noten van zijn instrument instellen en meteen het resultaat horen.
+	\item \textbf{De door de spelers geselecteerde noten blijven geselecteerd wanneer opnieuw bij de eerste kwartmaat begonnen wordt.} \\ Ook dit is onderdeel van de tafel uitnodigend maken en spelers het idee te geven dat ze iets aan het bouwen zijn: hun melodie blijft bestaan en verbeterd worden.
+	\item \textbf{Het speelveld van een speler moet door de speler in \'e\'en handeling ontdaan kunnen worden van alle geselecteerde noten.}
+\end{itemize}
+
+
+\section{Gedetailleerd Ontwerp}
+\label{sec_detail}
+
+\section{Evaluatie}
+\label{sec_evaluatie}
+
+\section{Conclusie}
+\label{sec_conclusie}
+
+\section{Acknowledgments}
+%Bedankt Andries, Matthijs en Thomas van KITT
+
+
+\end{document}
