@@ -52,7 +52,7 @@ public class Main {
         gf.display();
         
         try {
-            Thread.sleep(10000);
+            Thread.sleep(30000);
         } catch (InterruptedException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

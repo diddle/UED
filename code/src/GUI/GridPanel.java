@@ -21,8 +21,6 @@ import playback.ToneGrid;
 public class GridPanel extends JPanel{
     
     private MouseHandler mouseHandler = new MouseHandler();
-//    private Point p1 = new Point(100, 100);
-//    private Point p2 = new Point(540, 380);
     private Point click = new Point(10,10);
     private boolean drawing;
     
@@ -55,24 +53,10 @@ public class GridPanel extends JPanel{
         @Override
         public void mousePressed(MouseEvent e) {
             drawing = true;
-            click = e.getPoint();
+            processClick(e.getPoint());
             repaint();
         }
 
-        @Override
-        public void mouseReleased(MouseEvent e) {
-//            drawing = false;
-//            click = e.getPoint();
-//            repaint();
-        }
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-//            if (drawing) {
-//                click = e.getPoint();
-//                repaint();
-//            }
-        }
     }
     
     private void drawCircles(Graphics g) {
@@ -130,6 +114,10 @@ public class GridPanel extends JPanel{
             for(List<Boolean> col : tones) {
                 for(int ty=0; ty<col.size(); ty++) {
                     if(col.get(ty)) {
+                        
+                        // NB: gebruik curveTo voor mooie lijnen, maar dan moet
+                        // je wel bezierpunten aanmaken
+                        
                         int tr = r - ty * step;
                         double trad = (double)(i * this.p.getWidth()) * radPerLine + (double)tx * radPerLine;
                         int px = (int)(tr * Math.cos(trad)) + x;
@@ -151,11 +139,11 @@ public class GridPanel extends JPanel{
                         Point p4 = new Point(px, py);
                         
                         GeneralPath gp = new GeneralPath();
-                        gp.moveTo(p1.x, p1.y);
-                        gp.lineTo(p2.x, p2.y);
-                        gp.lineTo(p3.x, p3.y);
-                        gp.lineTo(p4.x, p4.y);
-                        gp.lineTo(p1.x, p1.y);
+                        gp.moveTo(p1.x, this.translateY(p1.y));
+                        gp.lineTo(p2.x, this.translateY(p2.y));
+                        gp.lineTo(p3.x, this.translateY(p3.y));
+                        gp.lineTo(p4.x, this.translateY(p4.y));
+                        gp.lineTo(p1.x, this.translateY(p1.y));
                         gp.closePath();
                         g.setPaint(this.getColorFor(i));
                         g.fill(gp);
@@ -176,6 +164,42 @@ public class GridPanel extends JPanel{
             case 3: return Color.YELLOW;
             default: return Color.BLACK;
         }
+    }
+    
+    private void processClick(Point click) {
+        click.y = this.translateY(click.y);
+        int x = 512;
+        int y = 384;
+        int step = 18;
+        int r = 375;
+        int numLines = this.p.getWidth() * this.p.getActiveGrids().size();
+        double radPerLine = (Math.PI * 2d) / ((double)numLines);
+        // centreer de punten
+        int rx = click.x - x;
+        int ry = click.y - y;
+        int rr = (int)Math.sqrt(rx*rx+ry*ry);
+        double radr = Math.atan(((double)ry)/((double)rx));
+        if(rx < 0 && ry > 0) {
+            radr += Math.PI;
+        }
+        if(rx < 0 && ry < 0) {
+            radr += Math.PI;
+        }
+        if(rx > 0 && ry < 0) {
+            radr += Math.PI * 2d;
+        }
+        // nu weten we de hoek (radr) en de straal (rr)
+        double sizePerPerson = (Math.PI * 2d) / (double)(this.p.getActiveGrids().size());
+        int personIndex = (int)Math.floor(radr / sizePerPerson);
+        ToneGrid tg = this.p.getActiveGrids().get(personIndex);
+        int colIndex = (int)Math.floor((radr - (double)personIndex * sizePerPerson) / radPerLine);
+        int noteIndex = this.p.getHeight() - (int)Math.floor(((double)(rr - (r - step * this.p.getHeight())) / (double)step)) - 1;
+        tg.toggleTone(colIndex, noteIndex);
+        
+    }
+    
+    private int translateY(int y) {
+        return 768 - y;
     }
     
 //
@@ -234,13 +258,4 @@ public class GridPanel extends JPanel{
         f.setVisible(true);
     }
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                //new GridPanel().display();
-            }
-        });
-    }
 }
