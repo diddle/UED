@@ -36,6 +36,16 @@ public class Main {
         piano.toggleTone(8, 0);
         piano.toggleTone(12, 0);
         
+        ToneGrid guitar = new InstrumentToneGrid(60, 16, il[10]);
+        p.registerToneGrid(guitar);
+        guitar.setIsActive(true);
+        guitar.toggleTone(0, 0);
+        guitar.toggleTone(0, 4);
+        guitar.toggleTone(0, 7);
+        guitar.toggleTone(4, 0);
+        guitar.toggleTone(8, 0);
+        guitar.toggleTone(12, 0);
+        
         p.start();
         GridPanel gf = new GridPanel(p);
         //gf.setVisible(true);

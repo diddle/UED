@@ -4,11 +4,15 @@
  */
 package GUI;
 
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.GeneralPath;
+import java.util.List;
 import javax.swing.*;
 import playback.Player;
+import playback.ToneGrid;
 
 /**
  *
@@ -41,8 +45,9 @@ public class GridPanel extends JPanel{
             RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(1,
             BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-        //g.drawLine(p1.x, p1.y, p2.x, p2.y);
+        drawActiveTones((Graphics2D)g);
         drawCircles(g);
+        drawLines(g);
     }
 
     private class MouseHandler extends MouseAdapter {
@@ -56,17 +61,17 @@ public class GridPanel extends JPanel{
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            drawing = false;
-            click = e.getPoint();
-            repaint();
+//            drawing = false;
+//            click = e.getPoint();
+//            repaint();
         }
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (drawing) {
-                click = e.getPoint();
-                repaint();
-            }
+//            if (drawing) {
+//                click = e.getPoint();
+//                repaint();
+//            }
         }
     }
     
@@ -96,10 +101,80 @@ public class GridPanel extends JPanel{
         int y = 384;
         int step = 18;
         int r = 375;
-        int numLines = this.p.getWidth() * 4;
-        double radPerLine = Math.PI / (2d * (double)numLines);
+        int numLines = this.p.getWidth() * this.p.getActiveGrids().size();
+        double radPerLine = (Math.PI * 2d) / ((double)numLines);
         for(int i=0; i<numLines; i++) {
-            
+            int startR = r;
+            int endR = r - step * this.p.getHeight();
+            int startX = (int)(startR * Math.cos(i * radPerLine)) + x;
+            int startY = (int)(startR * Math.sin(i * radPerLine)) + y;
+            int endX = (int)(endR * Math.cos(i * radPerLine)) + x;
+            int endY = (int)(endR * Math.sin(i * radPerLine)) + y;
+            g.drawLine(startX, startY, endX, endY);
+        }
+    }
+    
+    private void drawActiveTones(Graphics2D g) {
+        int x = 512;
+        int y = 384;
+        int step = 18;
+        int r = 375;
+        int numLines = this.p.getWidth() * this.p.getActiveGrids().size();
+        double radPerLine = (Math.PI * 2d) / ((double)numLines);
+        int i = 0;
+        int w = this.p.getWidth();
+        for(ToneGrid tg : this.p.getActiveGrids()) {
+            int start = i * w;
+            List<List<Boolean>> tones = tg.getAllTones();
+            int tx = 0;
+            for(List<Boolean> col : tones) {
+                for(int ty=0; ty<col.size(); ty++) {
+                    if(col.get(ty)) {
+                        int tr = r - ty * step;
+                        double trad = (double)(i * this.p.getWidth()) * radPerLine + (double)tx * radPerLine;
+                        int px = (int)(tr * Math.cos(trad)) + x;
+                        int py = (int)(tr * Math.sin(trad)) + y;
+                        Point p1 = new Point(px, py);
+                        
+                        double trad2 = (double)(i * this.p.getWidth()) * radPerLine + (double)(tx+1) * radPerLine;
+                        px = (int)(tr * Math.cos(trad2)) + x;
+                        py = (int)(tr * Math.sin(trad2)) + y;
+                        Point p2 = new Point(px, py);
+                        
+                        int tr2 = r - (ty+1) * step;
+                        px = (int)(tr2 * Math.cos(trad2)) + x;
+                        py = (int)(tr2 * Math.sin(trad2)) + y;
+                        Point p3 = new Point(px, py);
+                        
+                        px = (int)(tr2 * Math.cos(trad)) + x;
+                        py = (int)(tr2 * Math.sin(trad)) + y;
+                        Point p4 = new Point(px, py);
+                        
+                        GeneralPath gp = new GeneralPath();
+                        gp.moveTo(p1.x, p1.y);
+                        gp.lineTo(p2.x, p2.y);
+                        gp.lineTo(p3.x, p3.y);
+                        gp.lineTo(p4.x, p4.y);
+                        gp.lineTo(p1.x, p1.y);
+                        gp.closePath();
+                        g.setPaint(this.getColorFor(i));
+                        g.fill(gp);
+                        
+                    }
+                }
+                tx++;
+            }
+            i++;
+        }
+    }
+    
+    private Color getColorFor(int person) {
+        switch(person) {
+            case 0: return Color.RED;
+            case 1: return Color.BLUE;
+            case 2: return Color.GREEN;
+            case 3: return Color.YELLOW;
+            default: return Color.BLACK;
         }
     }
     
