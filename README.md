@@ -1,4 +1,0 @@
-UED
-===
-
-User Experience Design
