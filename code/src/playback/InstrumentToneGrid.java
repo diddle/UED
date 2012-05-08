@@ -16,8 +16,8 @@ public class InstrumentToneGrid extends ToneGrid{
     
     private int baseNote;
     
-    public InstrumentToneGrid(int w, int baseNote, int numNotes, Instrument instrument) {
-        super(w, numNotes);
+    public InstrumentToneGrid(int baseNote, int numNotes, Instrument instrument) {
+        super(numNotes);
         this.instrument = instrument;
         this.baseNote = baseNote;
     }

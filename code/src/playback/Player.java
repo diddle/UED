@@ -75,6 +75,7 @@ public class Player implements Runnable {
     }
     
     public void registerToneGrid(ToneGrid grid) {
+        grid.registerCallBack(this.w);
         synchronized (this.grids) {
             if (!this.grids.contains(grid)) {
                 this.grids.add(grid);
@@ -98,5 +99,31 @@ public class Player implements Runnable {
     
     public void stop() {
         this.stopped = true;
+    }
+    
+    public int getPosition() {
+        return this.pos;
+    }
+    
+    public List<ToneGrid> getActiveGrids() {
+        List<ToneGrid> result = new ArrayList<ToneGrid>();
+        for(ToneGrid tg : this.grids) {
+            if(tg.isIsActive()) {
+                result.add(tg);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * MOET OPGESLAGEN WORDEN IN DE PLAYER!
+     * @return 
+     */
+    public int getHeight() {
+        return 10;
+    }
+    
+    public int getWidth() {
+        return this.w;
     }
 }

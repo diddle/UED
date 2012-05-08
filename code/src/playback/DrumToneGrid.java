@@ -16,8 +16,8 @@ public class DrumToneGrid extends ToneGrid {
     
     private List<Integer> tracks;
     
-    public DrumToneGrid(int w, List<Integer> tracks, Instrument instrument) {
-        super(w, tracks.size());
+    public DrumToneGrid(List<Integer> tracks, Instrument instrument) {
+        super(tracks.size());
         this.tracks = tracks;
         this.instrument = instrument;
     }

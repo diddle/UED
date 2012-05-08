@@ -4,6 +4,7 @@
  */
 package musictable;
 
+import GUI.GridPanel;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,22 +24,23 @@ public class Main {
      */
     public static void main(String[] args) throws IOException, InvalidMidiDataException {
         
-        
-        
         Player p = new Player(120, 16);
         Instrument[] il = p.getAllInstruments();
-        ToneGrid piano = new InstrumentToneGrid(16, 60, 16, il[0]);
-        piano.setIsActive(true);
+        ToneGrid piano = new InstrumentToneGrid(60, 16, il[0]);
         p.registerToneGrid(piano);
+        piano.setIsActive(true);
         piano.toggleTone(0, 0);
         piano.toggleTone(0, 4);
         piano.toggleTone(0, 7);
-        
         piano.toggleTone(4, 0);
         piano.toggleTone(8, 0);
         piano.toggleTone(12, 0);
         
         p.start();
+        GridPanel gf = new GridPanel(p);
+        //gf.setVisible(true);
+        gf.display();
+        
         try {
             Thread.sleep(10000);
         } catch (InterruptedException ex) {

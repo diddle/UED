@@ -22,18 +22,8 @@ public abstract class ToneGrid {
     protected MidiChannel channel;
     protected boolean isActive;
 
-    public ToneGrid(int w, int h) {
-        this.w = w;
+    public ToneGrid(int h) {
         this.h = h;
-        this.grid = new ArrayList<List<Boolean>>();
-        for (int i = 0; i < w; i++) {
-            List<Boolean> el = new ArrayList<Boolean>();
-            this.grid.add(el);
-            for (int j = 0; j < h; j++) {
-                el.add(false);
-            }
-        }
-        this.isActive = false;
     }
 
     public void toggleTone(int x, int y) {
@@ -91,6 +81,27 @@ public abstract class ToneGrid {
 
     public void setChannel(MidiChannel channel) {
         this.channel = channel;
+    }
+    
+    public void registerCallBack(int w) {
+        this.w = w;
+        this.grid = new ArrayList<List<Boolean>>();
+        for (int i = 0; i < w; i++) {
+            List<Boolean> el = new ArrayList<Boolean>();
+            this.grid.add(el);
+            for (int j = 0; j < h; j++) {
+                el.add(false);
+            }
+        }
+        this.isActive = false;
+    }
+    
+    public void clear() {
+        for(List<Boolean> l1 : this.grid) {
+            for(int i = 0; i < l1.size(); i++) {
+                l1.set(i, false);
+            }
+        }
     }
     
 }
