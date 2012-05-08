@@ -81,12 +81,18 @@ public class Player implements Runnable {
                 this.grids.add(grid);
             }
         }
-        this.s.loadInstrument(grid.getInstrument());
-        MidiChannel[] channels = this.s.getChannels();
-        Patch instrPatch = grid.getInstrument().getPatch();
-        this.lastChannelIndex++;
-        channels[this.lastChannelIndex].programChange(instrPatch.getBank(), instrPatch.getProgram());
-        grid.setChannel(channels[this.lastChannelIndex]);
+        if(grid instanceof DrumToneGrid) {
+            MidiChannel[] channels = this.s.getChannels();
+            grid.setChannel(channels[9]);
+        }
+        else {
+            this.s.loadInstrument(grid.getInstrument());
+            MidiChannel[] channels = this.s.getChannels();
+            Patch instrPatch = grid.getInstrument().getPatch();
+            this.lastChannelIndex++;
+            channels[this.lastChannelIndex].programChange(instrPatch.getBank(), instrPatch.getProgram());
+            grid.setChannel(channels[this.lastChannelIndex]);
+        }
     }
     
     public void setTempo(int bpm) {

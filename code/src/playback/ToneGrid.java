@@ -53,11 +53,13 @@ public abstract class ToneGrid {
         }
     }
     
-    public void playColumnTones(int x) {
+    public abstract void playColumnTones(int x);
+    
+    public void playColumnTones(int x, int velocity) {
         List<Integer> tones = this.getColumnTones(x);
         this.channel.allNotesOff();
         for(int tone : tones) {
-            this.channel.noteOn(tone, 60);
+            this.channel.noteOn(tone, velocity);
         }
     }
     

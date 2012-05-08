@@ -39,6 +39,8 @@ public class InstrumentToneGrid extends ToneGrid{
         }
         return oct * 12 + remNew;
     }
+    
+    
 
     @Override
     public List<Integer> getColumnTones(int x) {
@@ -51,5 +53,10 @@ public class InstrumentToneGrid extends ToneGrid{
             i++;
         }
         return tones;
+    }
+
+    @Override
+    public void playColumnTones(int x) {
+        super.playColumnTones(x, 60);
     }
 }
