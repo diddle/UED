@@ -24,6 +24,8 @@ public class GridPanel extends JPanel{
     private Point click = new Point(10,10);
     private boolean drawing;
     
+    private static double radOffset = 0.25d * Math.PI;
+    
     private Player p;
 
     public GridPanel(Player p) {
@@ -90,10 +92,10 @@ public class GridPanel extends JPanel{
         for(int i=0; i<numLines; i++) {
             int startR = r;
             int endR = r - step * this.p.getHeight();
-            int startX = (int)(startR * Math.cos(i * radPerLine)) + x;
-            int startY = (int)(startR * Math.sin(i * radPerLine)) + y;
-            int endX = (int)(endR * Math.cos(i * radPerLine)) + x;
-            int endY = (int)(endR * Math.sin(i * radPerLine)) + y;
+            int startX = (int)(startR * Math.cos(i * radPerLine + radOffset)) + x;
+            int startY = (int)(startR * Math.sin(i * radPerLine + radOffset)) + y;
+            int endX = (int)(endR * Math.cos(i * radPerLine + radOffset)) + x;
+            int endY = (int)(endR * Math.sin(i * radPerLine + radOffset)) + y;
             g.drawLine(startX, startY, endX, endY);
         }
     }
@@ -119,12 +121,12 @@ public class GridPanel extends JPanel{
                         // je wel bezierpunten aanmaken
                         
                         int tr = r - ty * step;
-                        double trad = (double)(i * this.p.getWidth()) * radPerLine + (double)tx * radPerLine;
+                        double trad = (double)(i * this.p.getWidth()) * radPerLine + (double)tx * radPerLine + radOffset;
                         int px = (int)(tr * Math.cos(trad)) + x;
                         int py = (int)(tr * Math.sin(trad)) + y;
                         Point p1 = new Point(px, py);
                         
-                        double trad2 = (double)(i * this.p.getWidth()) * radPerLine + (double)(tx+1) * radPerLine;
+                        double trad2 = (double)(i * this.p.getWidth()) * radPerLine + (double)(tx+1) * radPerLine + radOffset;
                         px = (int)(tr * Math.cos(trad2)) + x;
                         py = (int)(tr * Math.sin(trad2)) + y;
                         Point p2 = new Point(px, py);
@@ -188,13 +190,20 @@ public class GridPanel extends JPanel{
         if(rx > 0 && ry < 0) {
             radr += Math.PI * 2d;
         }
+        radr -= radOffset;
         // nu weten we de hoek (radr) en de straal (rr)
         double sizePerPerson = (Math.PI * 2d) / (double)(this.p.getActiveGrids().size());
         int personIndex = (int)Math.floor(radr / sizePerPerson);
+        int num = this.p.getActiveGrids().size();
+        personIndex = (personIndex % num + num) % num;
         ToneGrid tg = this.p.getActiveGrids().get(personIndex);
         int colIndex = (int)Math.floor((radr - (double)personIndex * sizePerPerson) / radPerLine);
+        int w = this.p.getWidth();
+        colIndex = (colIndex % w + w) % w;
         int noteIndex = this.p.getHeight() - (int)Math.floor(((double)(rr - (r - step * this.p.getHeight())) / (double)step)) - 1;
-        tg.toggleTone(colIndex, noteIndex);
+        if(noteIndex >= 0 && noteIndex < this.p.getHeight()) {
+            tg.toggleTone(colIndex, noteIndex);
+        }
         
     }
     

@@ -15,11 +15,13 @@ import javax.sound.midi.Instrument;
 public class InstrumentToneGrid extends ToneGrid{
     
     private int baseNote;
+    private int velocity;
     
-    public InstrumentToneGrid(int baseNote, int numNotes, Instrument instrument) {
+    public InstrumentToneGrid(int baseNote, int numNotes, Instrument instrument, int velocity) {
         super(numNotes);
         this.instrument = instrument;
         this.baseNote = baseNote;
+        this.velocity = velocity;
     }
 
     public int getBaseNote() {
@@ -39,8 +41,6 @@ public class InstrumentToneGrid extends ToneGrid{
         }
         return oct * 12 + remNew;
     }
-    
-    
 
     @Override
     public List<Integer> getColumnTones(int x) {
@@ -57,6 +57,6 @@ public class InstrumentToneGrid extends ToneGrid{
 
     @Override
     public void playColumnTones(int x) {
-        super.playColumnTones(x, 60);
+        super.playColumnTones(x, velocity);
     }
 }

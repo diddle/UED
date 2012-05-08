@@ -30,17 +30,17 @@ public class Main {
         Player p = new Player(120, 16);
         Instrument[] il = p.getAllInstruments();
         
-        ToneGrid piano = new InstrumentToneGrid(36, 16, il[39]);
-        p.registerToneGrid(piano);
-        piano.setIsActive(true);
-        
-        ToneGrid guitar = new InstrumentToneGrid(60, 16, il[10]);
-        p.registerToneGrid(guitar);
-        guitar.setIsActive(true);
-        
-        ToneGrid bass = new InstrumentToneGrid(60, 16, il[197]);
+        ToneGrid bass = new InstrumentToneGrid(36, 16, il[39], 120);
         p.registerToneGrid(bass);
         bass.setIsActive(true);
+        
+        ToneGrid highthingy = new InstrumentToneGrid(60, 16, il[10], 60);
+        p.registerToneGrid(highthingy);
+        highthingy.setIsActive(true);
+        
+        ToneGrid strangesound1 = new InstrumentToneGrid(60, 16, il[197], 60);
+        p.registerToneGrid(strangesound1);
+        strangesound1.setIsActive(true);
         
         List<Integer> drumset = new ArrayList<Integer>();
         drumset.add(DrumToneGrid.d35_Acoustic_Bass_Drum);
