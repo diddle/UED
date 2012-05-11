@@ -25,7 +25,7 @@ public class GridPanel extends JPanel {
     
     private MouseHandler mouseHandler = new MouseHandler();
     private boolean drawing;
-    private int step = 18;
+    private int squareHeight = 18;
     
     private static double radOffset = 0.25d * Math.PI;
     
@@ -52,9 +52,10 @@ public class GridPanel extends JPanel {
             RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(1,
             BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-        drawActiveTones((Graphics2D)g);
-        drawCircles(g);
-        drawLines(g);
+        drawGrids((Graphics2D)g);
+//        drawActiveTones((Graphics2D)g);
+//        drawCircles(g);
+//        drawLines(g);
     }
 
     private class MouseHandler extends MouseAdapter {
@@ -72,130 +73,106 @@ public class GridPanel extends JPanel {
 
     }
     
-    private void drawCircles(Graphics g) {
-        g.setColor(Color.BLACK);
-        int x = getWidth()/2;
-        int y = getHeight()/2;
-        int step = 18;
-        int r = getRadius();
-        for(int i=0; i<this.p.getHeight()+1; i++) {
-            int[] xywh = this.toXYWH(this.getWidth()/2, this.getHeight()/2, r - i * step);
-            g.drawOval(xywh[0], xywh[1], xywh[2], xywh[3]);
-        }
-    }
-    
-    private int[] toXYWH(int x, int y, int r) {
-        int[] result = new int[4];
-        result[0] = x-r;
-        result[1] = y-r;
-        result[2] = 2*r;
-        result[3] = 2*r;
-        return result;
-    }
-    
-    
-    private void drawGrid(Graphics g){
-        //TODO: allow changing of player amount
-    	int player = 4;
-    	for(int i=0; i<player; i++){
-    		drawPlayerField(g);
+    private void drawGrids(Graphics2D g){
+    	int people = p.getActiveGrids().size();
+    	for(int i=0; i<people; i++){
+    		drawPlayerGrid(g, i);
     	}
     }
-    private void drawPlayerField(Graphics g){
-    	//TODO: allow changing of column amount
-    	int columns = 16;
+    private void drawPlayerGrid(Graphics2D g, int personIndex){
+    	int columns = p.getWidth();
     	for(int i=0; i<columns; i++){
-    		drawColumn(g);
+    		drawColumn(g, personIndex, i);
     	}
     }
-    private void drawColumn(Graphics g){
-    	//TODO: allow changing of square amount
-    	int squares = 10;
-    	for(int i=0; i<squares; i++){
-    		drawSquare(g);
+    private void drawColumn(Graphics2D g, int personIndex, int colIndex){
+    	// TODO: allow changing of square amount
+    	int notes = 10;
+    	for(int i=0; i<notes; i++){
+    		drawSquare(g, personIndex, colIndex, i);
     	}
      	
     }
-    private void drawSquare(Graphics g){
-    	//here is where magic happens
+    private void drawSquare(Graphics2D g, int personIndex, int colIndex, int noteIndex){
+
+    	double beginAngle = (double)(personIndex*p.getWidth())*radPerColumn() + (double)colIndex*radPerColumn() + radOffset;
+    	double endAngle = (double)(personIndex*p.getWidth())*radPerColumn() + (double)(colIndex+1)*radPerColumn() + radOffset;
+    	
+    	double lowerRadius = getRadius() - noteIndex*squareHeight;
+    	double upperRadius = getRadius() - (noteIndex+1)*squareHeight;
+    	
+
+    	GeneralPath gp = new GeneralPath();
+    	gp.moveTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1
+    			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));	//y1
+    	gp.lineTo(upperRadius*Math.cos(beginAngle) + getWidth()/2,						//x2
+    			translateY((int)(upperRadius*Math.sin(beginAngle) + getHeight()/2)));	//y2
+    	gp.lineTo(upperRadius*Math.cos(endAngle) + getWidth()/2,						//x3
+    			translateY((int)(upperRadius*Math.sin(endAngle) + getHeight()/2)));		//y3
+    	gp.lineTo(lowerRadius*Math.cos(endAngle) + getWidth()/2,						//x4
+    			translateY((int)(lowerRadius*Math.sin(endAngle) + getHeight()/2)));		//y4
+    	gp.lineTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1
+    			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));	//y1
+    	gp.closePath();
+    	
+    	Color squareColour = getColorFor(personIndex);
+    	if(p.getActiveGrids().get(personIndex).getTone(colIndex, noteIndex)) {
+    		squareColour = Color.black;
+    	}
+	  	g.setPaint(squareColour);
+    	
+	  	g.fill(gp);
     }
     
-    private void drawLines(Graphics g) {
-        int x = getWidth()/2;
-        int y = getHeight()/2;
-        int step = 18;
-        int r = getRadius();
+    private Point[] generateBezierPoints(double radius, double beginAngle, double endAngle) {
+    	//TODO fix magicks
+    	double sweepAngle = beginAngle - endAngle;
+    	
+    	double[] p0 = {Math.cos(sweepAngle),
+    			Math.sin(sweepAngle)};
+    	double[] p1 = {(4d-p0[0])/3d,
+    			((1d-p0[0])*(3d-p0[0]))/(3d*p0[1])};
+    	double[] p2 = {p1[0],
+    			-1d*p1[1]};
+    	double[] p3 = {p0[0],
+    			-1d*p0[0]};
 
-        int numLines = this.p.getWidth() * this.p.getActiveGrids().size();
-        double radPerLine = (Math.PI * 2d) / ((double)numLines);
-        for(int i=0; i<numLines; i++) {
-            int startR = r;
-            int endR = r - step * this.p.getHeight();
-            int startX = (int)(startR * Math.cos(i * radPerLine + radOffset)) + this.getWidth()/2;
-            int startY = (int)(startR * Math.sin(i * radPerLine + radOffset)) + this.getHeight()/2;
-            int endX = (int)(endR * Math.cos(i * radPerLine + radOffset)) + this.getWidth()/2;
-            int endY = (int)(endR * Math.sin(i * radPerLine + radOffset)) + this.getHeight()/2;
-            g.drawLine(startX, startY, endX, endY);
-        }
+    	double[][] p = {p0, p1, p2, p3};
+    	Point[] result = new Point[4];
+    	
+    	for(int i = 0; i < p.length; i++) {
+    		p[i] = rotate(p[i][0]*radius, p[i][1]*radius, endAngle);
+    		result[i] = new Point();
+    		result[i].setLocation(p[i][0], p[i][1]);
+    	}
+    	
+    	return result;
     }
     
-    private void drawActiveTones(Graphics2D g) {
-        int x = getWidth()/2;
-        int y = getHeight()/2;
-        int step = 18;
-        int r = getRadius();
-
-        int numLines = this.p.getWidth() * this.p.getActiveGrids().size();
-        double radPerLine = (Math.PI * 2d) / ((double)numLines);
-        int i = 0;
-        int w = this.p.getWidth();
-        for(ToneGrid tg : this.p.getActiveGrids()) {
-            int start = i * w;
-            List<List<Boolean>> tones = tg.getAllTones();
-            int tx = 0;
-            for(List<Boolean> col : tones) {
-                for(int ty=0; ty<col.size(); ty++) {
-                    if(col.get(ty)) {
-                        
-                        // NB: gebruik curveTo voor mooie lijnen, maar dan moet
-                        // je wel bezierpunten aanmaken
-                        
-                        int tr = r - ty * step;
-                        double trad = (double)(i * this.p.getWidth()) * radPerLine + (double)tx * radPerLine + radOffset;
-                        int px = (int)(tr * Math.cos(trad)) + this.getWidth()/2;
-                        int py = (int)(tr * Math.sin(trad)) + this.getHeight()/2;
-                        Point p1 = new Point(px, py);
-                        
-                        double trad2 = (double)(i * this.p.getWidth()) * radPerLine + (double)(tx+1) * radPerLine + radOffset;
-                        px = (int)(tr * Math.cos(trad2)) + this.getWidth()/2;
-                        py = (int)(tr * Math.sin(trad2)) + this.getHeight()/2;
-                        Point p2 = new Point(px, py);
-                        
-                        int tr2 = r - (ty+1) * step;
-                        px = (int)(tr2 * Math.cos(trad2)) + this.getWidth()/2;
-                        py = (int)(tr2 * Math.sin(trad2)) + this.getHeight()/2;
-                        Point p3 = new Point(px, py);
-                        
-                        px = (int)(tr2 * Math.cos(trad)) + this.getWidth()/2;
-                        py = (int)(tr2 * Math.sin(trad)) + this.getHeight()/2;
-                        Point p4 = new Point(px, py);
-                        
-                        GeneralPath gp = new GeneralPath();
-                        gp.moveTo(p1.x, this.translateY(p1.y));
-                        gp.lineTo(p2.x, this.translateY(p2.y));
-                        gp.lineTo(p3.x, this.translateY(p3.y));
-                        gp.lineTo(p4.x, this.translateY(p4.y));
-                        gp.lineTo(p1.x, this.translateY(p1.y));
-                        gp.closePath();
-                        g.setPaint(this.getColorFor(i));
-                        g.fill(gp);
-                        
-                    }
-                }
-                tx++;
-            }
-            i++;
-        }
+    private double radPerColumn() {
+        return (Math.PI * 2d) / ((double)(p.getWidth() * p.getActiveGrids().size()));
+    }
+    
+    private double[] rotate(double x, double y, double rotationAngle) {
+    	return rotate(x, y, 0d, 0d, rotationAngle);
+    }
+    
+    private double[] rotate(double x, double y, double centerX, double centerY, double rotationAngle) {
+    	double diffX = x-centerX;
+		double diffY = y-centerY;
+		
+		double radius = Math.sqrt(diffX*diffX+diffY*diffY);
+		double angle = Math.atan2(diffY, diffX);
+		
+		angle += rotationAngle;
+		
+		Point result = new Point();
+		x = radius*Math.cos(angle);
+		y = radius*Math.sin(angle);
+		x += centerX;
+		y += centerY;
+		
+		return new double[]{x, y};
     }
     
     private Color getColorFor(int person) {
@@ -204,7 +181,7 @@ public class GridPanel extends JPanel {
             case 1: return Color.BLUE;
             case 2: return Color.GREEN;
             case 3: return Color.YELLOW;
-            default: return Color.BLACK;
+            default: return Color.MAGENTA;
         }
     }
     
@@ -233,12 +210,12 @@ public class GridPanel extends JPanel {
         // nu weten we de hoek (radr) en de straal (rr)
         double sizePerPerson = (Math.PI * 2d) / (double)(p.getActiveGrids().size());
         int personIndex = (int)Math.floor(radr / sizePerPerson);
-        int num = this.p.getActiveGrids().size();
+        int num = p.getActiveGrids().size();
         personIndex = (personIndex % num + num) % num;
         int colIndex = (int)Math.floor((radr - (double)personIndex * sizePerPerson) / radPerCol);
-        int w = this.p.getWidth();
+        int w = p.getWidth();
         colIndex = (colIndex % w + w) % w;
-        int noteIndex = this.p.getHeight() - (int)Math.floor(((double)(rr - (getRadius() - step * this.p.getHeight())) / (double)step)) - 1;
+        int noteIndex = this.p.getHeight() - (int)Math.floor(((double)(rr - (getRadius() - squareHeight * this.p.getHeight())) / (double)squareHeight)) - 1;
         
     	return new NoteIndex(personIndex, colIndex, noteIndex);
     }
