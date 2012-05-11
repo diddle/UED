@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.midi.*;
+import GUI.GridPanel;
 
 /**
  *
@@ -26,6 +27,7 @@ public class Player implements Runnable {
     private Instrument[] il;
     private int lastChannelIndex = -1;
     private boolean stopped = false;
+    private GridPanel gridPanel;
     
     public Player(int bpm, int w) {
         this.grids = new ArrayList<ToneGrid>();
@@ -56,14 +58,18 @@ public class Player implements Runnable {
     public void run() {
         while(!this.stopped) {
             if(this.lastBeat < this.now() - 15000d / (double)this.bpm) {
+                this.lastBeat = this.now();
+                this.pos = (this.pos + 1) % this.w;
+                
+                if(this.gridPanel != null)
+                	gridPanel.repaint();
+                
                 synchronized(this.grids) {
                     for(ToneGrid g : this.grids) {
                         if(g.isIsActive())
                             g.playColumnTones(pos);
                     }
                 }
-                this.lastBeat = this.now();
-                this.pos = (this.pos + 1) % this.w;
             }
             try {
                 Thread.sleep(1);
@@ -93,6 +99,10 @@ public class Player implements Runnable {
             channels[this.lastChannelIndex].programChange(instrPatch.getBank(), instrPatch.getProgram());
             grid.setChannel(channels[this.lastChannelIndex]);
         }
+    }
+    
+    public void setGridPanel(GridPanel gridPanel) {
+    	this.gridPanel = gridPanel;
     }
     
     public void setTempo(int bpm) {

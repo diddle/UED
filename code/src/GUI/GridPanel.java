@@ -37,6 +37,7 @@ public class GridPanel extends JPanel {
     
     public GridPanel(Player p, int width, int height) {
         this.p = p;
+        this.p.setGridPanel(this);
         this.setPreferredSize(new Dimension(width, height));
         this.addMouseListener(mouseHandler);
         this.addMouseMotionListener(mouseHandler);
@@ -62,13 +63,15 @@ public class GridPanel extends JPanel {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            processClick(e.getPoint());
-            repaint();
+        	Point p = e.getPoint();
+        	p.setLocation(p.getX(), translateY(p.getY()));
+            processClick(p);
         }
         
         public void mouseDragged(MouseEvent e) {
-        	processDrag(e.getPoint());
-        	repaint();
+        	Point p = e.getPoint();
+        	p.setLocation(p.getX(), translateY(p.getY()));
+        	processDrag(p);
         }
 
     }
@@ -101,23 +104,49 @@ public class GridPanel extends JPanel {
     	double lowerRadius = getRadius() - noteIndex*squareHeight;
     	double upperRadius = getRadius() - (noteIndex+1)*squareHeight;
     	
-
     	GeneralPath gp = new GeneralPath();
-    	gp.moveTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1
+    	gp.moveTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1 (lower left)
     			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));	//y1
-    	gp.lineTo(upperRadius*Math.cos(beginAngle) + getWidth()/2,						//x2
+    	gp.lineTo(upperRadius*Math.cos(beginAngle) + getWidth()/2,						//x2 (upper left)
     			translateY((int)(upperRadius*Math.sin(beginAngle) + getHeight()/2)));	//y2
-    	gp.lineTo(upperRadius*Math.cos(endAngle) + getWidth()/2,						//x3
-    			translateY((int)(upperRadius*Math.sin(endAngle) + getHeight()/2)));		//y3
+    	
+    	Point[] upperBP = generateBezierPoints(upperRadius, beginAngle, endAngle);		//upper curve
+    	gp.curveTo(upperBP[1].getX() + getWidth()/2,
+    			translateY((int)(upperBP[1].getY() + getHeight()/2)),
+    			upperBP[2].getX() + getWidth()/2,
+    			translateY((int)(upperBP[2].getY() + getHeight()/2)),
+    			upperRadius*Math.cos(endAngle) + getWidth()/2,
+    			translateY((int)(upperRadius*Math.sin(endAngle) + getHeight()/2)));
+    	
+//    	gp.lineTo(upperRadius*Math.cos(endAngle) + getWidth()/2,						//x3
+//    			translateY((int)(upperRadius*Math.sin(endAngle) + getHeight()/2)));		//y3
+    	
     	gp.lineTo(lowerRadius*Math.cos(endAngle) + getWidth()/2,						//x4
     			translateY((int)(lowerRadius*Math.sin(endAngle) + getHeight()/2)));		//y4
-    	gp.lineTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1
-    			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));	//y1
-    	gp.closePath();
+
+    	Point[] lowerBP = generateBezierPoints(lowerRadius, beginAngle, endAngle);
+    	gp.curveTo(lowerBP[2].getX() + getWidth()/2,
+    			translateY((int)(lowerBP[2].getY() + getHeight()/2)),
+    			lowerBP[1].getX() + getWidth()/2,
+    			translateY((int)(lowerBP[1].getY() + getHeight()/2)),
+    			lowerRadius*Math.cos(beginAngle) + getWidth()/2,
+    			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));
     	
+//    	gp.lineTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1
+//    			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));	//y1
+    	
+    	gp.closePath();
+
     	Color squareColour = getColorFor(personIndex);
+
     	if(p.getActiveGrids().get(personIndex).getTone(colIndex, noteIndex)) {
     		squareColour = Color.black;
+    	}
+    	if(p.getPosition() == colIndex) {
+    		squareColour = Color.black;
+        	if(p.getActiveGrids().get(personIndex).getTone(colIndex, noteIndex)) {
+        		squareColour = Color.white;
+        	}
     	}
 	  	g.setPaint(squareColour);
     	
@@ -125,23 +154,23 @@ public class GridPanel extends JPanel {
     }
     
     private Point[] generateBezierPoints(double radius, double beginAngle, double endAngle) {
-    	//TODO fix magicks
-    	double sweepAngle = beginAngle - endAngle;
     	
-    	double[] p0 = {Math.cos(sweepAngle),
-    			Math.sin(sweepAngle)};
+    	double sweepAngle = endAngle - beginAngle;
+    	
+    	double[] p0 = {Math.cos(sweepAngle/2d),
+    			Math.sin(sweepAngle/-2d)};
     	double[] p1 = {(4d-p0[0])/3d,
     			((1d-p0[0])*(3d-p0[0]))/(3d*p0[1])};
     	double[] p2 = {p1[0],
     			-1d*p1[1]};
     	double[] p3 = {p0[0],
-    			-1d*p0[0]};
-
+    			-1d*p0[1]};
+    	
     	double[][] p = {p0, p1, p2, p3};
     	Point[] result = new Point[4];
     	
     	for(int i = 0; i < p.length; i++) {
-    		p[i] = rotate(p[i][0]*radius, p[i][1]*radius, endAngle);
+    		p[i] = rotate(radius*p[i][0], radius*p[i][1], beginAngle+sweepAngle/2d);
     		result[i] = new Point();
     		result[i].setLocation(p[i][0], p[i][1]);
     	}
@@ -166,7 +195,6 @@ public class GridPanel extends JPanel {
 		
 		angle += rotationAngle;
 		
-		Point result = new Point();
 		x = radius*Math.cos(angle);
 		y = radius*Math.sin(angle);
 		x += centerX;
@@ -221,7 +249,6 @@ public class GridPanel extends JPanel {
     }
     
     private void processClick(Point click) {
-        click.y = translateY(click.y);
         NoteIndex clickedNote = translatePointToNoteIndex(click);
         
         ToneGrid tg = this.p.getActiveGrids().get(clickedNote.getPerson());
@@ -234,7 +261,6 @@ public class GridPanel extends JPanel {
     }
     
     private void processDrag(Point point) {
-        point.y = translateY(point.y);
         NoteIndex clickedNote = translatePointToNoteIndex(point);
         ToneGrid tg = this.p.getActiveGrids().get(clickedNote.getPerson());
         try{
@@ -250,8 +276,8 @@ public class GridPanel extends JPanel {
         }
     }
     
-    private int translateY(int y) {
-        return this.getHeight() - y;
+    private double translateY(double y) {
+        return getHeight() - y;
     }
     
 //
