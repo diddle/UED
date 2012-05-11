@@ -30,15 +30,15 @@ public class Main {
         Player p = new Player(120, 16);
         Instrument[] il = p.getAllInstruments();
         
-        ToneGrid bass = new InstrumentToneGrid(36, 16, il[39], 120);
+        ToneGrid bass = new InstrumentToneGrid(36, 16, il[39%il.length], 120);
         p.registerToneGrid(bass);
         bass.setIsActive(true);
         
-        ToneGrid highthingy = new InstrumentToneGrid(60, 16, il[10], 60);
+        ToneGrid highthingy = new InstrumentToneGrid(60, 16, il[10%il.length], 60);
         p.registerToneGrid(highthingy);
         highthingy.setIsActive(true);
         
-        ToneGrid strangesound1 = new InstrumentToneGrid(60, 16, il[197], 60);
+        ToneGrid strangesound1 = new InstrumentToneGrid(60, 16, il[197%il.length], 60);
         p.registerToneGrid(strangesound1);
         strangesound1.setIsActive(true);
         
@@ -58,17 +58,11 @@ public class Main {
         drums.setIsActive(true);
         
         
-        p.start();
         GridPanel gf = new GridPanel(p);
         //gf.setVisible(true);
         gf.display();
-        
-        try {
-            Thread.sleep(30000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        p.stop();
+
+        p.start();
         
         
         

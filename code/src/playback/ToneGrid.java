@@ -33,6 +33,20 @@ public abstract class ToneGrid {
             col.set(y, !col.get(y));
         }
     }
+    
+    public void activateTone(int x, int y) {
+    	List<Boolean> col = this.grid.get(x);
+        synchronized (col) {
+            col.set(y, true);
+        }
+    }
+    
+    public void deactivateTone(int x, int y) {
+    	List<Boolean> col = this.grid.get(x);
+        synchronized (col) {
+            col.set(y, false);
+        }
+    }
 
     public synchronized List<List<Boolean>> getAllTones() {
         List<List<Boolean>> result = new ArrayList<List<Boolean>>();

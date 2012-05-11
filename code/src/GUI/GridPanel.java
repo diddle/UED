@@ -18,10 +18,12 @@ import playback.ToneGrid;
  *
  * @author Niels Visser
  */
-public class GridPanel extends JPanel{
+public class GridPanel extends JPanel {
+	
+	private static final int DEFAULTWIDTH = 1024;
+	private static final int DEFAULTHEIGHT = 768;
     
     private MouseHandler mouseHandler = new MouseHandler();
-    private Point click = new Point(10,10);
     private boolean drawing;
     
     private static double radOffset = 0.25d * Math.PI;
@@ -29,8 +31,12 @@ public class GridPanel extends JPanel{
     private Player p;
 
     public GridPanel(Player p) {
+    	this(p, DEFAULTWIDTH, DEFAULTHEIGHT);
+    }
+    
+    public GridPanel(Player p, int width, int height) {
         this.p = p;
-        this.setPreferredSize(new Dimension(1024, 768));
+        this.setPreferredSize(new Dimension(width, height));
         this.addMouseListener(mouseHandler);
         this.addMouseMotionListener(mouseHandler);
     }
@@ -54,19 +60,23 @@ public class GridPanel extends JPanel{
 
         @Override
         public void mousePressed(MouseEvent e) {
-            drawing = true;
             processClick(e.getPoint());
             repaint();
+        }
+        
+        public void mouseDragged(MouseEvent e) {
+        	processDrag(e.getPoint());
+        	repaint();
         }
 
     }
     
     private void drawCircles(Graphics g) {
         g.setColor(Color.BLACK);
-        int x = 512;
-        int y = 384;
+        int x = getWidth()/2;
+        int y = getHeight()/2;
         int step = 18;
-        int r = 375;
+        int r = getRadius();
         for(int i=0; i<this.p.getHeight()+1; i++) {
             int[] xywh = this.toXYWH(x, y, r - i * step);
             g.drawOval(xywh[0], xywh[1], xywh[2], xywh[3]);
@@ -83,10 +93,10 @@ public class GridPanel extends JPanel{
     }
     
     private void drawLines(Graphics g) {
-        int x = 512;
-        int y = 384;
+        int x = getWidth()/2;
+        int y = getHeight()/2;
         int step = 18;
-        int r = 375;
+        int r = getRadius();
         int numLines = this.p.getWidth() * this.p.getActiveGrids().size();
         double radPerLine = (Math.PI * 2d) / ((double)numLines);
         for(int i=0; i<numLines; i++) {
@@ -101,10 +111,10 @@ public class GridPanel extends JPanel{
     }
     
     private void drawActiveTones(Graphics2D g) {
-        int x = 512;
-        int y = 384;
+        int x = getWidth()/2;
+        int y = getHeight()/2;
         int step = 18;
-        int r = 375;
+        int r = getRadius();
         int numLines = this.p.getWidth() * this.p.getActiveGrids().size();
         double radPerLine = (Math.PI * 2d) / ((double)numLines);
         int i = 0;
@@ -168,47 +178,76 @@ public class GridPanel extends JPanel{
         }
     }
     
-    private void processClick(Point click) {
-        click.y = this.translateY(click.y);
-        int x = 512;
-        int y = 384;
-        int step = 18;
-        int r = 375;
-        int numLines = this.p.getWidth() * this.p.getActiveGrids().size();
-        double radPerLine = (Math.PI * 2d) / ((double)numLines);
+    private int getRadius(){
+    	return Math.min(getWidth()/2, getHeight()/2);
+    }
+    
+    private NoteIndex translatePointToNoteIndex(Point point) {
+    	// TODO: softcoden
+    	int step = 18;
+    	
+        double radPerCol = (Math.PI * 2d) / ((double)this.p.getWidth() * this.p.getActiveGrids().size());
         // centreer de punten
-        int rx = click.x - x;
-        int ry = click.y - y;
+        int rx = point.x - this.getWidth()/2;
+        int ry = point.y - this.getHeight()/2;
+        
         int rr = (int)Math.sqrt(rx*rx+ry*ry);
         double radr = Math.atan(((double)ry)/((double)rx));
         if(rx < 0 && ry > 0) {
             radr += Math.PI;
         }
-        if(rx < 0 && ry < 0) {
+        else if(rx < 0 && ry < 0) {
             radr += Math.PI;
         }
-        if(rx > 0 && ry < 0) {
+        else if(rx > 0 && ry < 0) {
             radr += Math.PI * 2d;
         }
         radr -= radOffset;
         // nu weten we de hoek (radr) en de straal (rr)
-        double sizePerPerson = (Math.PI * 2d) / (double)(this.p.getActiveGrids().size());
+        double sizePerPerson = (Math.PI * 2d) / (double)(p.getActiveGrids().size());
         int personIndex = (int)Math.floor(radr / sizePerPerson);
         int num = this.p.getActiveGrids().size();
         personIndex = (personIndex % num + num) % num;
-        ToneGrid tg = this.p.getActiveGrids().get(personIndex);
-        int colIndex = (int)Math.floor((radr - (double)personIndex * sizePerPerson) / radPerLine);
+        int colIndex = (int)Math.floor((radr - (double)personIndex * sizePerPerson) / radPerCol);
         int w = this.p.getWidth();
         colIndex = (colIndex % w + w) % w;
-        int noteIndex = this.p.getHeight() - (int)Math.floor(((double)(rr - (r - step * this.p.getHeight())) / (double)step)) - 1;
-        if(noteIndex >= 0 && noteIndex < this.p.getHeight()) {
-            tg.toggleTone(colIndex, noteIndex);
-        }
+        int noteIndex = this.p.getHeight() - (int)Math.floor(((double)(rr - (getRadius() - step * this.p.getHeight())) / (double)step)) - 1;
         
+    	return new NoteIndex(personIndex, colIndex, noteIndex);
+    }
+    
+    private void processClick(Point click) {
+        click.y = translateY(click.y);
+        NoteIndex clickedNote = translatePointToNoteIndex(click);
+        
+        ToneGrid tg = this.p.getActiveGrids().get(clickedNote.getPerson());
+        if(clickedNote.getNote() >= 0 && clickedNote.getNote() < this.p.getHeight()) {
+            tg.toggleTone(clickedNote.getColumn(), clickedNote.getNote());
+            drawing = tg.getTone(clickedNote.getColumn(), clickedNote.getNote());
+        }
+        else
+        	drawing = true;
+    }
+    
+    private void processDrag(Point point) {
+        point.y = translateY(point.y);
+        NoteIndex clickedNote = translatePointToNoteIndex(point);
+        ToneGrid tg = this.p.getActiveGrids().get(clickedNote.getPerson());
+        try{
+        	if(clickedNote.getNote() >= 0 && clickedNote.getNote() < this.p.getHeight()) {
+	        	if(drawing)
+	        		tg.activateTone(clickedNote.getColumn(), clickedNote.getNote());
+	        	else
+	        		tg.deactivateTone(clickedNote.getColumn(), clickedNote.getNote());
+        	}
+        }
+        catch(Exception e) {
+        	System.out.println("Hoerenkanker");
+        }
     }
     
     private int translateY(int y) {
-        return 768 - y;
+        return this.getHeight() - y;
     }
     
 //
@@ -266,5 +305,24 @@ public class GridPanel extends JPanel{
         f.setLocationRelativeTo(null);
         f.setVisible(true);
     }
-
+    
+    private class NoteIndex {
+    	private int person, column, note;
+    	
+    	public NoteIndex(int person, int column, int note) {
+    		this.person = person;
+    		this.column = column;
+    		this.note = note;
+    	}
+    	
+    	public int getPerson() {
+    		return person;
+    	}
+    	public int getColumn() {
+    		return column;
+    	}
+    	public int getNote() {
+    		return note;
+    	}
+    }
 }
