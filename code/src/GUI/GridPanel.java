@@ -25,6 +25,7 @@ public class GridPanel extends JPanel {
     
     private MouseHandler mouseHandler = new MouseHandler();
     private boolean drawing;
+    private int step = 18;
     
     private static double radOffset = 0.25d * Math.PI;
     
@@ -78,7 +79,7 @@ public class GridPanel extends JPanel {
         int step = 18;
         int r = getRadius();
         for(int i=0; i<this.p.getHeight()+1; i++) {
-            int[] xywh = this.toXYWH(x, y, r - i * step);
+            int[] xywh = this.toXYWH(this.getWidth()/2, this.getHeight()/2, r - i * step);
             g.drawOval(xywh[0], xywh[1], xywh[2], xywh[3]);
         }
     }
@@ -92,20 +93,48 @@ public class GridPanel extends JPanel {
         return result;
     }
     
+    
+    private void drawGrid(Graphics g){
+        //TODO: allow changing of player amount
+    	int player = 4;
+    	for(int i=0; i<player; i++){
+    		drawPlayerField(g);
+    	}
+    }
+    private void drawPlayerField(Graphics g){
+    	//TODO: allow changing of column amount
+    	int columns = 16;
+    	for(int i=0; i<columns; i++){
+    		drawColumn(g);
+    	}
+    }
+    private void drawColumn(Graphics g){
+    	//TODO: allow changing of square amount
+    	int squares = 10;
+    	for(int i=0; i<squares; i++){
+    		drawSquare(g);
+    	}
+     	
+    }
+    private void drawSquare(Graphics g){
+    	//here is where magic happens
+    }
+    
     private void drawLines(Graphics g) {
         int x = getWidth()/2;
         int y = getHeight()/2;
         int step = 18;
         int r = getRadius();
+
         int numLines = this.p.getWidth() * this.p.getActiveGrids().size();
         double radPerLine = (Math.PI * 2d) / ((double)numLines);
         for(int i=0; i<numLines; i++) {
             int startR = r;
             int endR = r - step * this.p.getHeight();
-            int startX = (int)(startR * Math.cos(i * radPerLine + radOffset)) + x;
-            int startY = (int)(startR * Math.sin(i * radPerLine + radOffset)) + y;
-            int endX = (int)(endR * Math.cos(i * radPerLine + radOffset)) + x;
-            int endY = (int)(endR * Math.sin(i * radPerLine + radOffset)) + y;
+            int startX = (int)(startR * Math.cos(i * radPerLine + radOffset)) + this.getWidth()/2;
+            int startY = (int)(startR * Math.sin(i * radPerLine + radOffset)) + this.getHeight()/2;
+            int endX = (int)(endR * Math.cos(i * radPerLine + radOffset)) + this.getWidth()/2;
+            int endY = (int)(endR * Math.sin(i * radPerLine + radOffset)) + this.getHeight()/2;
             g.drawLine(startX, startY, endX, endY);
         }
     }
@@ -115,6 +144,7 @@ public class GridPanel extends JPanel {
         int y = getHeight()/2;
         int step = 18;
         int r = getRadius();
+
         int numLines = this.p.getWidth() * this.p.getActiveGrids().size();
         double radPerLine = (Math.PI * 2d) / ((double)numLines);
         int i = 0;
@@ -132,22 +162,22 @@ public class GridPanel extends JPanel {
                         
                         int tr = r - ty * step;
                         double trad = (double)(i * this.p.getWidth()) * radPerLine + (double)tx * radPerLine + radOffset;
-                        int px = (int)(tr * Math.cos(trad)) + x;
-                        int py = (int)(tr * Math.sin(trad)) + y;
+                        int px = (int)(tr * Math.cos(trad)) + this.getWidth()/2;
+                        int py = (int)(tr * Math.sin(trad)) + this.getHeight()/2;
                         Point p1 = new Point(px, py);
                         
                         double trad2 = (double)(i * this.p.getWidth()) * radPerLine + (double)(tx+1) * radPerLine + radOffset;
-                        px = (int)(tr * Math.cos(trad2)) + x;
-                        py = (int)(tr * Math.sin(trad2)) + y;
+                        px = (int)(tr * Math.cos(trad2)) + this.getWidth()/2;
+                        py = (int)(tr * Math.sin(trad2)) + this.getHeight()/2;
                         Point p2 = new Point(px, py);
                         
                         int tr2 = r - (ty+1) * step;
-                        px = (int)(tr2 * Math.cos(trad2)) + x;
-                        py = (int)(tr2 * Math.sin(trad2)) + y;
+                        px = (int)(tr2 * Math.cos(trad2)) + this.getWidth()/2;
+                        py = (int)(tr2 * Math.sin(trad2)) + this.getHeight()/2;
                         Point p3 = new Point(px, py);
                         
-                        px = (int)(tr2 * Math.cos(trad)) + x;
-                        py = (int)(tr2 * Math.sin(trad)) + y;
+                        px = (int)(tr2 * Math.cos(trad)) + this.getWidth()/2;
+                        py = (int)(tr2 * Math.sin(trad)) + this.getHeight()/2;
                         Point p4 = new Point(px, py);
                         
                         GeneralPath gp = new GeneralPath();
@@ -183,9 +213,6 @@ public class GridPanel extends JPanel {
     }
     
     private NoteIndex translatePointToNoteIndex(Point point) {
-    	// TODO: softcoden
-    	int step = 18;
-    	
         double radPerCol = (Math.PI * 2d) / ((double)this.p.getWidth() * this.p.getActiveGrids().size());
         // centreer de punten
         int rx = point.x - this.getWidth()/2;
