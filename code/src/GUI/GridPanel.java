@@ -30,10 +30,21 @@ public class GridPanel extends JPanel {
     private static double radOffset = 0.25d * Math.PI;
     
     private Player p;
+    
+    /*constructor that uses default values for width and height.
+    Player p: Player whose panels will be drawn
+    */
 
     public GridPanel(Player p) {
     	this(p, DEFAULTWIDTH, DEFAULTHEIGHT);
     }
+    
+    /*constructor
+    Player p: Player whose panels will be drawn
+    int width: starting width of window 
+    int height: starting height of window
+    */ 
+  
     
     public GridPanel(Player p, int width, int height) {
         this.p = p;
@@ -42,12 +53,14 @@ public class GridPanel extends JPanel {
         this.addMouseListener(mouseHandler);
         this.addMouseMotionListener(mouseHandler);
     }
+    
+    //Method used to draw main component
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(Color.blue);
+        //g2d.setColor(Color.blue);
         g2d.setRenderingHint(
             RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
@@ -76,24 +89,40 @@ public class GridPanel extends JPanel {
 
     }
     
+    /* This method draws the complete turntable
+     */
+    
     private void drawGrids(Graphics2D g){
     	int people = p.getActiveGrids().size();
     	for(int i=0; i<people; i++){
     		drawPlayerGrid(g, i);
     	}
     }
+    
+    /* This method draws a chosen person's grid
+     * int personIndex: person whose grid is to be drawn.
+     */
+    
     private void drawPlayerGrid(Graphics2D g, int personIndex){
     	int columns = p.getWidth();
     	for(int i=0; i<columns; i++){
     		drawColumn(g, personIndex, i);
     	}
     }
+    
+    /* Draws one column for a person
+    */
+    
     private void drawColumn(Graphics2D g, int personIndex, int colIndex){
     	// TODO: allow changing of square amount
     	int notes = 10;
     	for(int i=0; i<notes; i++){
     		drawSquare(g, personIndex, colIndex, i);
     	}
+    
+    /* draws a singe square in the grid, using it's position to determine the size and curvature.
+    */
+    	
      	
     }
     private void drawSquare(Graphics2D g, int personIndex, int colIndex, int noteIndex){
@@ -203,6 +232,10 @@ public class GridPanel extends JPanel {
 		return new double[]{x, y};
     }
     
+    /* 
+    * @returns the color associated with a person.
+    */
+    
     private Color getColorFor(int person) {
         switch(person) {
             case 0: return Color.RED;
@@ -272,7 +305,7 @@ public class GridPanel extends JPanel {
         	}
         }
         catch(Exception e) {
-        	System.out.println("Hoerenkanker");
+        	System.out.println("Oh dear.");
         }
     }
     
