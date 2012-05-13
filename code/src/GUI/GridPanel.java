@@ -31,10 +31,21 @@ public class GridPanel extends JPanel {
     private static double radOffset = 0.25d * Math.PI;
     
     private Player player;
+    
+    /*constructor that uses default values for width and height.
+    Player p: Player whose panels will be drawn
+    */
 
     public GridPanel(Player p) {
     	this(p, DEFAULTWIDTH, DEFAULTHEIGHT);
     }
+    
+    /*constructor
+    Player p: Player whose panels will be drawn
+    int width: starting width of window 
+    int height: starting height of window
+    */ 
+  
     
     public GridPanel(Player p, int width, int height) {
         this.player = p;
@@ -43,12 +54,14 @@ public class GridPanel extends JPanel {
         this.addMouseListener(mouseHandler);
         this.addMouseMotionListener(mouseHandler);
     }
+    
+    //Method used to draw main component
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(Color.blue);
+        //g2d.setColor(Color.blue);
         g2d.setRenderingHint(
             RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
@@ -212,15 +225,20 @@ public class GridPanel extends JPanel {
 	  	g.fill(donut);
     }
     
-    //	Calls draw methods for each active grid
+    /* Calls draw methods for each active grid
+     */
+    
     private void drawGrids(Graphics2D g){
     	int people = player.getActiveGrids().size();
     	for(int i=0; i<people; i++){
     		drawPlayerGrid(g, i);
     	}
     }
-
-    //	Calls draw methods for each column in a grid
+    
+    /* Calls draw methods for each column in a grid
+     * int personIndex: person whose grid is to be drawn.
+     */
+    
     private void drawPlayerGrid(Graphics2D g, int personIndex){
     	int columns = player.getWidth();
     	for(int i=0; i<columns; i++){
@@ -228,21 +246,23 @@ public class GridPanel extends JPanel {
     	}
     }
 
-    //	Calls draw methods for each note in a column
+    /* Calls draw methods for each note in a column
+     */
     private void drawColumn(Graphics2D g, int personIndex, int colIndex){
     	int notes = player.getHeight();
     	for(int i=0; i<notes; i++){
     		drawNote(g, personIndex, colIndex, i);
     	}
-     	
     }
     
-    //	Draws the note with full width and height.
+    /* Draws the note with full width and height.
+     */
     private void drawNote(Graphics2D g, int personIndex, int colIndex, int toneIndex){
     	drawNote(g, personIndex, colIndex, toneIndex, 0.9, 0.9);
     }
     
-    //	Draws the note.
+    /* Draws the note.
+     */
     private void drawNote(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor){
 
     	double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
@@ -378,6 +398,10 @@ public class GridPanel extends JPanel {
 		
 		return new double[]{x, y};
     }
+    
+    /* 
+    * @returns the color associated with a person.
+    */
     
     private Color getColorFor(int person) {
         switch(person) {
