@@ -30,7 +30,7 @@ public class Main {
         Player p = new Player(120, 16);
         Instrument[] il = p.getAllInstruments();
         
-        ToneGrid bass = new InstrumentToneGrid(36, 16, il[39%il.length], 120);
+        ToneGrid bass = new InstrumentToneGrid(36, 10, il[39%il.length], 120);
         p.registerToneGrid(bass);
         bass.setIsActive(true);
         

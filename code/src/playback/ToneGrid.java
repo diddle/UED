@@ -11,49 +11,49 @@ import javax.sound.midi.MidiChannel;
 
 /**
  *
- * @author Niels Visser
+ * @author Niels Kamp, Kasper Vaessen, Niels Visser
  */
 public abstract class ToneGrid {
 
     protected List<List<Boolean>> grid;
-    protected int w;
-    protected int h;
+    protected int width;
+    protected int height;
     protected Instrument instrument;
     protected MidiChannel channel;
     protected boolean isActive;
 
-    public ToneGrid(int h) {
-        this.h = h;
+    public ToneGrid(int height) {
+        this.height = height;
     }
 
-    public void toggleTone(int x, int y) {
+    public void toggleTone(int column, int note) {
 
-        List<Boolean> col = this.grid.get(x);
+        List<Boolean> col = this.grid.get(column);
         synchronized (col) {
-            col.set(y, !col.get(y));
+            col.set(note, !col.get(note));
         }
     }
     
-    public void activateTone(int x, int y) {
-    	List<Boolean> col = this.grid.get(x);
+    public void activateTone(int column, int note) {
+    	List<Boolean> col = this.grid.get(column);
         synchronized (col) {
-            col.set(y, true);
+            col.set(note, true);
         }
     }
     
-    public void deactivateTone(int x, int y) {
-    	List<Boolean> col = this.grid.get(x);
+    public void deactivateTone(int column, int note) {
+    	List<Boolean> col = this.grid.get(column);
         synchronized (col) {
-            col.set(y, false);
+            col.set(note, false);
         }
     }
 
     public synchronized List<List<Boolean>> getAllTones() {
         List<List<Boolean>> result = new ArrayList<List<Boolean>>();
-        for (int i = 0; i < this.w; i++) {
+        for (int i = 0; i < this.width; i++) {
             List<Boolean> el = new ArrayList<Boolean>();
             result.add(el);
-            for (int j = 0; j < this.h; j++) {
+            for (int j = 0; j < this.height; j++) {
                 el.add(this.grid.get(i).get(j));
             }
         }
@@ -61,16 +61,16 @@ public abstract class ToneGrid {
     }
 
     
-    public boolean getTone(int x, int y) {
+    public boolean getTone(int column, int note) {
         synchronized (this.grid) {
-            return this.grid.get(x).get(y);
+            return this.grid.get(column).get(note);
         }
     }
     
-    public abstract void playColumnTones(int x);
+    public abstract void playColumnTones(int column);
     
-    public void playColumnTones(int x, int velocity) {
-        List<Integer> tones = this.getColumnTones(x);
+    public void playColumnTones(int column, int velocity) {
+        List<Integer> tones = this.getColumnTones(column);
         this.channel.allNotesOff();
         for(int tone : tones) {
             this.channel.noteOn(tone, velocity);
@@ -100,12 +100,12 @@ public abstract class ToneGrid {
     }
     
     public void registerCallBack(int w) {
-        this.w = w;
+        this.width = w;
         this.grid = new ArrayList<List<Boolean>>();
         for (int i = 0; i < w; i++) {
             List<Boolean> el = new ArrayList<Boolean>();
             this.grid.add(el);
-            for (int j = 0; j < h; j++) {
+            for (int j = 0; j < height; j++) {
                 el.add(false);
             }
         }

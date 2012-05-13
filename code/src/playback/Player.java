@@ -23,8 +23,8 @@ public class Player implements Runnable {
     private long lastBeat;
     private int w;
     private int pos;
-    private Synthesizer s;
-    private Instrument[] il;
+    private Synthesizer synthesizer;
+    private Instrument[] instrumentList;
     private int lastChannelIndex = -1;
     private boolean stopped = false;
     private GridPanel gridPanel;
@@ -37,9 +37,9 @@ public class Player implements Runnable {
         this.pos = 0;
         
         try {
-            this.s = MidiSystem.getSynthesizer();
-            this.s.open();
-            this.il = s.getAvailableInstruments();
+            this.synthesizer = MidiSystem.getSynthesizer();
+            this.synthesizer.open();
+            this.instrumentList = synthesizer.getAvailableInstruments();
         } catch (MidiUnavailableException ex) {
             Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -77,7 +77,7 @@ public class Player implements Runnable {
                 Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        this.s.close();
+        this.synthesizer.close();
     }
     
     public void registerToneGrid(ToneGrid grid) {
@@ -88,12 +88,12 @@ public class Player implements Runnable {
             }
         }
         if(grid instanceof DrumToneGrid) {
-            MidiChannel[] channels = this.s.getChannels();
+            MidiChannel[] channels = this.synthesizer.getChannels();
             grid.setChannel(channels[9]);
         }
         else {
-            this.s.loadInstrument(grid.getInstrument());
-            MidiChannel[] channels = this.s.getChannels();
+            this.synthesizer.loadInstrument(grid.getInstrument());
+            MidiChannel[] channels = this.synthesizer.getChannels();
             Patch instrPatch = grid.getInstrument().getPatch();
             this.lastChannelIndex++;
             channels[this.lastChannelIndex].programChange(instrPatch.getBank(), instrPatch.getProgram());
@@ -110,7 +110,7 @@ public class Player implements Runnable {
     }
 
     public Instrument[] getAllInstruments() {
-        return this.il;
+        return this.instrumentList;
     }
     
     public void stop() {

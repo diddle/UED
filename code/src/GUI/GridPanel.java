@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
-import java.util.List;
+import java.awt.geom.Area;
 import javax.swing.*;
 import playback.Player;
 import playback.ToneGrid;
@@ -25,19 +25,20 @@ public class GridPanel extends JPanel {
     
     private MouseHandler mouseHandler = new MouseHandler();
     private boolean drawing;
+    private NoteIndex pressedNote;
     private int squareHeight = 18;
     
     private static double radOffset = 0.25d * Math.PI;
     
-    private Player p;
+    private Player player;
 
     public GridPanel(Player p) {
     	this(p, DEFAULTWIDTH, DEFAULTHEIGHT);
     }
     
     public GridPanel(Player p, int width, int height) {
-        this.p = p;
-        this.p.setGridPanel(this);
+        this.player = p;
+        this.player.setGridPanel(this);
         this.setPreferredSize(new Dimension(width, height));
         this.addMouseListener(mouseHandler);
         this.addMouseMotionListener(mouseHandler);
@@ -53,7 +54,12 @@ public class GridPanel extends JPanel {
             RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(1,
             BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-        drawGrids((Graphics2D)g);
+        
+        drawInterfaceBackground(g2d);
+        drawGrids(g2d);
+
+		if(pressedNote != null)
+			drawNote(g2d, pressedNote.getPerson(), pressedNote.getColumn(), pressedNote.getNote(), 1.25d, 1.25d);
 //        drawActiveTones((Graphics2D)g);
 //        drawCircles(g);
 //        drawLines(g);
@@ -65,72 +71,213 @@ public class GridPanel extends JPanel {
         public void mousePressed(MouseEvent e) {
         	Point p = e.getPoint();
         	p.setLocation(p.getX(), translateY(p.getY()));
-            processClick(p);
+            processPress(p);
+            repaint();
         }
         
         public void mouseDragged(MouseEvent e) {
         	Point p = e.getPoint();
         	p.setLocation(p.getX(), translateY(p.getY()));
         	processDrag(p);
+            repaint();
+        }
+        
+        public void mouseReleased(MouseEvent e) {
+        	pressedNote = null;
         }
 
     }
     
+    private void drawInterfaceBackground(Graphics2D g){
+//    	int outerRadius = getRadius();
+//    	int innerRadius = getRadius() - player.getHeight()*squareHeight;
+
+    	int outerRadius = getRadius() + (int)(0.2*squareHeight);
+    	int innerRadius = getRadius() - (int)(0.1*squareHeight + player.getHeight()*squareHeight);
+    	
+    	Point[] outerUpperLeft, outerUpperRight, outerLowerRight, outerLowerLeft;
+    	Point[] innerUpperLeft, innerUpperRight, innerLowerRight, innerLowerLeft;
+
+    	outerUpperLeft  = generateBezierPoints(outerRadius, Math.PI, 0.5*Math.PI);
+    	outerUpperRight = generateBezierPoints(outerRadius, 0.5*Math.PI, 0.0);
+    	outerLowerRight = generateBezierPoints(outerRadius, 0.0, -0.5*Math.PI);
+    	outerLowerLeft  = generateBezierPoints(outerRadius, 1.5*Math.PI, Math.PI);
+
+    	innerUpperLeft  = generateBezierPoints(innerRadius, Math.PI, 0.5*Math.PI);
+    	innerUpperRight = generateBezierPoints(innerRadius, 0.5*Math.PI, 0.0);
+    	innerLowerRight = generateBezierPoints(innerRadius, 0.0, -0.5*Math.PI);
+    	innerLowerLeft  = generateBezierPoints(innerRadius, 1.5*Math.PI, Math.PI);
+//    	
+//    	System.out.println("Upper Left:\n" + outerUpperLeft[0].getX() + ", " +
+//    			outerUpperLeft[0].getY() + "\n" + 
+//    			outerUpperLeft[1].getX() + ", " +
+//    			outerUpperLeft[1].getY() + "\n" + 
+//    			outerUpperLeft[2].getX() + ", " +
+//    			outerUpperLeft[2].getY() + "\n" + 
+//    			outerUpperLeft[3].getX() + ", " +
+//    			outerUpperLeft[3].getY());
+//    	
+//    	System.out.println("Upper Right:\n" + outerUpperRight[0].getX() + ", " +
+//    			outerUpperRight[0].getY() + "\n" + 
+//    			outerUpperRight[1].getX() + ", " +
+//    			outerUpperRight[1].getY() + "\n" + 
+//    			outerUpperRight[2].getX() + ", " +
+//    			outerUpperRight[2].getY() + "\n" + 
+//    			outerUpperRight[3].getX() + ", " +
+//    			outerUpperRight[3].getY());
+//    	
+//    	System.out.println("Lower Right:\n" + outerLowerRight[0].getX() + ", " +
+//    			outerLowerRight[0].getY() + "\n" + 
+//    			outerLowerRight[1].getX() + ", " +
+//    			outerLowerRight[1].getY() + "\n" + 
+//    			outerLowerRight[2].getX() + ", " +
+//    			outerLowerRight[2].getY() + "\n" + 
+//    			outerLowerRight[3].getX() + ", " +
+//    			outerLowerRight[3].getY());
+//    	
+//    	System.out.println("Lower Left: \n" + outerLowerLeft[0].getX() + ", " +
+//    			outerLowerLeft[0].getY() + "\n" + 
+//    			outerLowerLeft[1].getX() + ", " +
+//    			outerLowerLeft[1].getY() + "\n" + 
+//    			outerLowerLeft[2].getX() + ", " +
+//    			outerLowerLeft[2].getY() + "\n" + 
+//    			outerLowerLeft[3].getX() + ", " +
+//    			outerLowerLeft[3].getY());
+//    	
+    	
+    	GeneralPath outerCircle = new GeneralPath(), innerCircle = new GeneralPath();
+    	
+    	outerCircle.moveTo(outerUpperLeft[0].getX() + getWidth()/2, 
+    			translateY(outerUpperLeft[0].getY() + getHeight()/2));
+    	outerCircle.curveTo(outerUpperLeft[1].getX() + getWidth()/2, 
+    			translateY(outerUpperLeft[1].getY() + getHeight()/2), 
+    			outerUpperLeft[2].getX() + getWidth()/2, 
+    			translateY(outerUpperLeft[2].getY() + getHeight()/2),
+    			outerUpperLeft[3].getX() + getWidth()/2,
+    			translateY(outerUpperLeft[3].getY() + getHeight()/2));
+    	outerCircle.curveTo(outerUpperRight[1].getX() + getWidth()/2, 
+    			translateY(outerUpperRight[1].getY() + getHeight()/2), 
+    			outerUpperRight[2].getX() + getWidth()/2, 
+    			translateY(outerUpperRight[2].getY() + getHeight()/2),
+    			outerUpperRight[3].getX() + getWidth()/2,
+    			translateY(outerUpperRight[3].getY() + getHeight()/2));
+    	outerCircle.curveTo(outerLowerRight[1].getX() + getWidth()/2, 
+    			translateY(outerLowerRight[1].getY() + getHeight()/2), 
+    			outerLowerRight[2].getX() + getWidth()/2, 
+    			translateY(outerLowerRight[2].getY() + getHeight()/2),
+    			outerLowerRight[3].getX() + getWidth()/2,
+    			translateY(outerLowerRight[3].getY() + getHeight()/2));
+    	outerCircle.curveTo(outerLowerLeft[1].getX() + getWidth()/2, 
+    			translateY(outerLowerLeft[1].getY() + getHeight()/2), 
+    			outerLowerLeft[2].getX() + getWidth()/2, 
+    			translateY(outerLowerLeft[2].getY() + getHeight()/2),
+    			outerLowerLeft[3].getX() + getWidth()/2,
+    			translateY(outerLowerLeft[3].getY() + getHeight()/2));
+    	outerCircle.closePath();
+    	
+    	innerCircle.moveTo(innerUpperLeft[0].getX() + getWidth()/2, 
+    			translateY(innerUpperLeft[0].getY() + getHeight()/2));
+    	innerCircle.curveTo(innerUpperLeft[1].getX() + getWidth()/2, 
+    			translateY(innerUpperLeft[1].getY() + getHeight()/2), 
+    			innerUpperLeft[2].getX() + getWidth()/2, 
+    			translateY(innerUpperLeft[2].getY() + getHeight()/2),
+    			innerUpperLeft[3].getX() + getWidth()/2,
+    			translateY(innerUpperLeft[3].getY() + getHeight()/2));
+    	innerCircle.curveTo(innerUpperRight[1].getX() + getWidth()/2, 
+    			translateY(innerUpperRight[1].getY() + getHeight()/2), 
+    			innerUpperRight[2].getX() + getWidth()/2, 
+    			translateY(innerUpperRight[2].getY() + getHeight()/2),
+    			innerUpperRight[3].getX() + getWidth()/2,
+    			translateY(innerUpperRight[3].getY() + getHeight()/2));
+    	innerCircle.curveTo(innerLowerRight[1].getX() + getWidth()/2, 
+    			translateY(innerLowerRight[1].getY() + getHeight()/2), 
+    			innerLowerRight[2].getX() + getWidth()/2, 
+    			translateY(innerLowerRight[2].getY() + getHeight()/2),
+    			innerLowerRight[3].getX() + getWidth()/2,
+    			translateY(innerLowerRight[3].getY() + getHeight()/2));
+    	innerCircle.curveTo(innerLowerLeft[1].getX() + getWidth()/2, 
+    			translateY(innerLowerLeft[1].getY() + getHeight()/2), 
+    			innerLowerLeft[2].getX() + getWidth()/2, 
+    			translateY(innerLowerLeft[2].getY() + getHeight()/2),
+    			innerLowerLeft[3].getX() + getWidth()/2,
+    			translateY(innerLowerLeft[3].getY() + getHeight()/2));
+    	innerCircle.closePath();
+    	
+    	Area donut = new Area(outerCircle);
+    	donut.subtract(new Area(innerCircle));
+    	
+
+	  	g.setPaint(Color.black);
+    	
+	  	g.fill(donut);
+    }
+    
+    //	Calls draw methods for each active grid
     private void drawGrids(Graphics2D g){
-    	int people = p.getActiveGrids().size();
+    	int people = player.getActiveGrids().size();
     	for(int i=0; i<people; i++){
     		drawPlayerGrid(g, i);
     	}
     }
+
+    //	Calls draw methods for each column in a grid
     private void drawPlayerGrid(Graphics2D g, int personIndex){
-    	int columns = p.getWidth();
+    	int columns = player.getWidth();
     	for(int i=0; i<columns; i++){
     		drawColumn(g, personIndex, i);
     	}
     }
+
+    //	Calls draw methods for each note in a column
     private void drawColumn(Graphics2D g, int personIndex, int colIndex){
-    	// TODO: allow changing of square amount
-    	int notes = 10;
+    	int notes = player.getHeight();
     	for(int i=0; i<notes; i++){
-    		drawSquare(g, personIndex, colIndex, i);
+    		drawNote(g, personIndex, colIndex, i);
     	}
      	
     }
-    private void drawSquare(Graphics2D g, int personIndex, int colIndex, int noteIndex){
+    
+    //	Draws the note with full width and height.
+    private void drawNote(Graphics2D g, int personIndex, int colIndex, int toneIndex){
+    	drawNote(g, personIndex, colIndex, toneIndex, 0.9, 0.9);
+    }
+    
+    //	Draws the note.
+    private void drawNote(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor){
 
-    	double beginAngle = (double)(personIndex*p.getWidth())*radPerColumn() + (double)colIndex*radPerColumn() + radOffset;
-    	double endAngle = (double)(personIndex*p.getWidth())*radPerColumn() + (double)(colIndex+1)*radPerColumn() + radOffset;
+    	double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
+    	double endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)colIndex + xFactor)*radPerColumn() + radOffset;
     	
-    	double lowerRadius = getRadius() - noteIndex*squareHeight;
-    	double upperRadius = getRadius() - (noteIndex+1)*squareHeight;
+    	double lowerRadius = getRadius() - ((double)(toneIndex+1) - yFactor)*squareHeight;
+    	double upperRadius = getRadius() - ((double)toneIndex + yFactor)*squareHeight;
     	
     	GeneralPath gp = new GeneralPath();
     	gp.moveTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1 (lower left)
-    			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));	//y1
+    			translateY(lowerRadius*Math.sin(beginAngle) + getHeight()/2));	//y1
     	gp.lineTo(upperRadius*Math.cos(beginAngle) + getWidth()/2,						//x2 (upper left)
-    			translateY((int)(upperRadius*Math.sin(beginAngle) + getHeight()/2)));	//y2
+    			translateY(upperRadius*Math.sin(beginAngle) + getHeight()/2));	//y2
     	
     	Point[] upperBP = generateBezierPoints(upperRadius, beginAngle, endAngle);		//upper curve
     	gp.curveTo(upperBP[1].getX() + getWidth()/2,
-    			translateY((int)(upperBP[1].getY() + getHeight()/2)),
+    			translateY(upperBP[1].getY() + getHeight()/2),
     			upperBP[2].getX() + getWidth()/2,
-    			translateY((int)(upperBP[2].getY() + getHeight()/2)),
+    			translateY(upperBP[2].getY() + getHeight()/2),
     			upperRadius*Math.cos(endAngle) + getWidth()/2,
-    			translateY((int)(upperRadius*Math.sin(endAngle) + getHeight()/2)));
+    			translateY(upperRadius*Math.sin(endAngle) + getHeight()/2));
     	
 //    	gp.lineTo(upperRadius*Math.cos(endAngle) + getWidth()/2,						//x3
 //    			translateY((int)(upperRadius*Math.sin(endAngle) + getHeight()/2)));		//y3
     	
     	gp.lineTo(lowerRadius*Math.cos(endAngle) + getWidth()/2,						//x4
-    			translateY((int)(lowerRadius*Math.sin(endAngle) + getHeight()/2)));		//y4
+    			translateY(lowerRadius*Math.sin(endAngle) + getHeight()/2));		//y4
 
     	Point[] lowerBP = generateBezierPoints(lowerRadius, beginAngle, endAngle);
     	gp.curveTo(lowerBP[2].getX() + getWidth()/2,
-    			translateY((int)(lowerBP[2].getY() + getHeight()/2)),
+    			translateY(lowerBP[2].getY() + getHeight()/2),
     			lowerBP[1].getX() + getWidth()/2,
-    			translateY((int)(lowerBP[1].getY() + getHeight()/2)),
+    			translateY(lowerBP[1].getY() + getHeight()/2),
     			lowerRadius*Math.cos(beginAngle) + getWidth()/2,
-    			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));
+    			translateY(lowerRadius*Math.sin(beginAngle) + getHeight()/2));
     	
 //    	gp.lineTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1
 //    			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));	//y1
@@ -138,15 +285,25 @@ public class GridPanel extends JPanel {
     	gp.closePath();
 
     	Color squareColour = getColorFor(personIndex);
-
-    	if(p.getActiveGrids().get(personIndex).getTone(colIndex, noteIndex)) {
-    		squareColour = Color.black;
+    	
+    	for(int i = 0; i < player.getHeight()-toneIndex; i++)
+    		squareColour = new Color(Math.max(squareColour.getRed()-8, 0),
+    				Math.max(squareColour.getGreen()-8, 0),
+					Math.max(squareColour.getBlue()-8, 0));
+    	
+    	boolean toneActive = player.getActiveGrids().get(personIndex).getTone(colIndex, toneIndex);
+    	boolean tonePlayed = player.getPosition() == colIndex;
+    	
+    	if(toneActive && tonePlayed) {
+    		squareColour = new Color(squareColour.getRed()/2 + Color.white.getRed()/2,
+    				squareColour.getGreen()/2 + Color.white.getGreen()/2,
+    				squareColour.getBlue()/2 + Color.white.getBlue()/2);
     	}
-    	if(p.getPosition() == colIndex) {
+    	else if(toneActive) {
+    		squareColour = Color.white;
+    	}
+    	else if(tonePlayed) {
     		squareColour = Color.black;
-        	if(p.getActiveGrids().get(personIndex).getTone(colIndex, noteIndex)) {
-        		squareColour = Color.white;
-        	}
     	}
 	  	g.setPaint(squareColour);
     	
@@ -155,7 +312,13 @@ public class GridPanel extends JPanel {
     
     private Point[] generateBezierPoints(double radius, double beginAngle, double endAngle) {
     	
-    	double sweepAngle = endAngle - beginAngle;
+//    	beginAngle = ((beginAngle + Math.PI) % (2d*Math.PI)) - Math.PI;
+//    	endAngle = ((endAngle + Math.PI) % (2d*Math.PI)) - Math.PI;
+    	
+    	double sweepAngle = Math.abs(endAngle - beginAngle);
+    	
+    	double minAngle = Math.min(beginAngle, endAngle);
+    	double maxAngle = Math.max(beginAngle, endAngle);
     	
     	double[] p0 = {Math.cos(sweepAngle/2d),
     			Math.sin(sweepAngle/-2d)};
@@ -170,16 +333,29 @@ public class GridPanel extends JPanel {
     	Point[] result = new Point[4];
     	
     	for(int i = 0; i < p.length; i++) {
-    		p[i] = rotate(radius*p[i][0], radius*p[i][1], beginAngle+sweepAngle/2d);
+    		p[i] = rotate(radius*p[i][0], radius*p[i][1], minAngle+sweepAngle/2d);
     		result[i] = new Point();
     		result[i].setLocation(p[i][0], p[i][1]);
+    	}
+
+    	result[0].setLocation(radius*Math.cos(minAngle), radius*Math.sin(minAngle));
+    	result[3].setLocation(radius*Math.cos(maxAngle), radius*Math.sin(maxAngle));
+    	
+    	if(beginAngle > endAngle) {
+    		Point temp = result[0];
+    		result[0] = result[3];
+    		result[3] = temp;
+    		
+    		temp = result[1];
+    		result[1] = result[2];
+    		result[2] = temp;
     	}
     	
     	return result;
     }
     
     private double radPerColumn() {
-        return (Math.PI * 2d) / ((double)(p.getWidth() * p.getActiveGrids().size()));
+        return (Math.PI * 2d) / ((double)(player.getWidth() * player.getActiveGrids().size()));
     }
     
     private double[] rotate(double x, double y, double rotationAngle) {
@@ -208,7 +384,7 @@ public class GridPanel extends JPanel {
             case 0: return Color.RED;
             case 1: return Color.BLUE;
             case 2: return Color.GREEN;
-            case 3: return Color.YELLOW;
+            case 3: return Color.ORANGE;
             default: return Color.MAGENTA;
         }
     }
@@ -218,14 +394,13 @@ public class GridPanel extends JPanel {
     }
     
     private NoteIndex translatePointToNoteIndex(Point point) {
-        double radPerCol = (Math.PI * 2d) / ((double)this.p.getWidth() * this.p.getActiveGrids().size());
         // centreer de punten
         int rx = point.x - this.getWidth()/2;
         int ry = point.y - this.getHeight()/2;
-        
+                
         int rr = (int)Math.sqrt(rx*rx+ry*ry);
         double radr = Math.atan(((double)ry)/((double)rx));
-        if(rx < 0 && ry > 0) {
+        if(rx < 0 && ry >= 0) {
             radr += Math.PI;
         }
         else if(rx < 0 && ry < 0) {
@@ -236,44 +411,46 @@ public class GridPanel extends JPanel {
         }
         radr -= radOffset;
         // nu weten we de hoek (radr) en de straal (rr)
-        double sizePerPerson = (Math.PI * 2d) / (double)(p.getActiveGrids().size());
+        double sizePerPerson = (Math.PI * 2d) / (double)(player.getActiveGrids().size());
         int personIndex = (int)Math.floor(radr / sizePerPerson);
-        int num = p.getActiveGrids().size();
+        int num = player.getActiveGrids().size();
         personIndex = (personIndex % num + num) % num;
-        int colIndex = (int)Math.floor((radr - (double)personIndex * sizePerPerson) / radPerCol);
-        int w = p.getWidth();
+        int colIndex = (int)Math.floor((radr - (double)personIndex * sizePerPerson) / radPerColumn());
+        int w = player.getWidth();
         colIndex = (colIndex % w + w) % w;
-        int noteIndex = this.p.getHeight() - (int)Math.floor(((double)(rr - (getRadius() - squareHeight * this.p.getHeight())) / (double)squareHeight)) - 1;
+        int toneIndex = player.getHeight() - (int)Math.floor(((double)(rr - (getRadius() - squareHeight * player.getHeight())) / (double)squareHeight)) - 1;
         
-    	return new NoteIndex(personIndex, colIndex, noteIndex);
+        if(toneIndex >= 0 && toneIndex < player.getHeight())
+        	return new NoteIndex(personIndex, colIndex, toneIndex);
+        return null;
     }
     
-    private void processClick(Point click) {
-        NoteIndex clickedNote = translatePointToNoteIndex(click);
+    //	Process press events
+    private void processPress(Point point) {
+    	pressedNote = translatePointToNoteIndex(point);
         
-        ToneGrid tg = this.p.getActiveGrids().get(clickedNote.getPerson());
-        if(clickedNote.getNote() >= 0 && clickedNote.getNote() < this.p.getHeight()) {
-            tg.toggleTone(clickedNote.getColumn(), clickedNote.getNote());
-            drawing = tg.getTone(clickedNote.getColumn(), clickedNote.getNote());
+        
+        if(pressedNote != null && pressedNote.getNote() >= 0 && pressedNote.getNote() < this.player.getHeight()) {
+            ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
+            tg.toggleTone(pressedNote.getColumn(), pressedNote.getNote());
+            drawing = tg.getTone(pressedNote.getColumn(), pressedNote.getNote());
         }
         else
         	drawing = true;
     }
     
+    //	Process drag events
     private void processDrag(Point point) {
-        NoteIndex clickedNote = translatePointToNoteIndex(point);
-        ToneGrid tg = this.p.getActiveGrids().get(clickedNote.getPerson());
-        try{
-        	if(clickedNote.getNote() >= 0 && clickedNote.getNote() < this.p.getHeight()) {
-	        	if(drawing)
-	        		tg.activateTone(clickedNote.getColumn(), clickedNote.getNote());
-	        	else
-	        		tg.deactivateTone(clickedNote.getColumn(), clickedNote.getNote());
-        	}
-        }
-        catch(Exception e) {
-        	System.out.println("Hoerenkanker");
-        }
+    	pressedNote = translatePointToNoteIndex(point);
+    	
+        
+    	if(pressedNote != null && pressedNote.getNote() >= 0 && pressedNote.getNote() < this.player.getHeight()) {
+            ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
+        	if(drawing)
+        		tg.activateTone(pressedNote.getColumn(), pressedNote.getNote());
+        	else
+        		tg.deactivateTone(pressedNote.getColumn(), pressedNote.getNote());
+    	}
     }
     
     private double translateY(double y) {
@@ -353,6 +530,17 @@ public class GridPanel extends JPanel {
     	}
     	public int getNote() {
     		return note;
+    	}
+    	
+    	public boolean equals(Object o) {
+    		if(o instanceof NoteIndex) {
+    			NoteIndex noteIndex = (NoteIndex)o;
+    			if(noteIndex.getPerson() == this.getPerson() &&
+    					noteIndex.getColumn() == this.getColumn() &&
+    					noteIndex.getNote() == this.getNote())
+    				return true;
+    		}
+    		return false;
     	}
     }
 }
