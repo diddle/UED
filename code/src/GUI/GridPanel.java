@@ -10,7 +10,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Area;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import javax.swing.*;
+import network.TouchPacket;
+import network.TouchSocket;
 import playback.Player;
 import playback.ToneGrid;
 
@@ -53,6 +59,19 @@ public class GridPanel extends JPanel {
         this.setPreferredSize(new Dimension(width, height));
         this.addMouseListener(mouseHandler);
         this.addMouseMotionListener(mouseHandler);
+        // fullscreen...
+//        GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//        GraphicsDevice[] devices = graphicsEnvironment.getScreenDevices();
+//        devices[0].setFullScreenWindow(this);
+//        //setUndecorated(true);
+//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//        setBounds(0,0,screenSize.width, screenSize.height);
+        
+        // touch table connect...
+        TouchHandler th = new TouchHandler();
+        TouchSocket ts = new TouchSocket();
+        ts.addObserver(th);
+        ts.startServer();
     }
     
     //Method used to draw main component
@@ -99,6 +118,57 @@ public class GridPanel extends JPanel {
         	pressedNote = null;
         }
 
+    }
+    
+    private class TouchHandler implements Observer {
+        
+        public TouchHandler() {
+            this.pressed = new ArrayList<Integer>();
+        }
+        
+        public void touchPressed(Point p) {
+            p.setLocation(p.getX(), translateY(p.getY()));
+            processPress(p);
+            repaint();
+        }
+        
+        public void touchDragged(Point p) {
+            p.setLocation(p.getX(), translateY(p.getY()));
+            processDrag(p);
+            repaint();
+        }
+        
+        public void touchReleased(Point p) {
+            pressedNote = null;
+        }
+        
+        private List<Integer> pressed;
+
+        @Override
+        public void update(Observable o, Object arg) {
+            TouchPacket packet = (TouchPacket)arg;
+            if(packet.id == 800) {
+                // discard, special packet
+                return;
+            }
+            // translate x and y...
+            int x = (int)(((double)packet.x / 32768d) * (double)DEFAULTWIDTH);
+            int y = (int)(((double)packet.y / 32768d) * (double)DEFAULTHEIGHT);
+            Point p = new Point(x,y);
+            if(packet.touch == 1 && this.pressed.contains(packet.id)) {
+                // send drag
+                this.touchDragged(p);
+            }
+            else if(packet.touch == 1 && !this.pressed.contains(packet.id)) {
+                // send pressed
+                this.touchPressed(p);
+            }
+            else if(packet.touch == 0) {
+                this.pressed.remove(packet.id);
+                // send release
+                this.touchReleased(p);
+            }
+        }
     }
     
     private void drawInterfaceBackground(Graphics2D g){

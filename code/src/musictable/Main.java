@@ -8,9 +8,8 @@ import GUI.GridPanel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.sound.midi.*;
+import network.TouchSocket;
 import playback.DrumToneGrid;
 import playback.InstrumentToneGrid;
 import playback.Player;
@@ -30,15 +29,15 @@ public class Main {
         Player p = new Player(120, 16);
         Instrument[] il = p.getAllInstruments();
         
-        ToneGrid bass = new InstrumentToneGrid(36, 10, il[39%il.length], 120);
+        ToneGrid bass = new InstrumentToneGrid(36, 10, il[1%il.length], 60);
         p.registerToneGrid(bass);
         bass.setIsActive(true);
         
-        ToneGrid highthingy = new InstrumentToneGrid(60, 16, il[10%il.length], 60);
+        ToneGrid highthingy = new InstrumentToneGrid(60, 16, il[25%il.length], 60);
         p.registerToneGrid(highthingy);
         highthingy.setIsActive(true);
         
-        ToneGrid strangesound1 = new InstrumentToneGrid(60, 16, il[197%il.length], 60);
+        ToneGrid strangesound1 = new InstrumentToneGrid(60, 16, il[33%il.length], 60);
         p.registerToneGrid(strangesound1);
         strangesound1.setIsActive(true);
         
@@ -61,7 +60,7 @@ public class Main {
         GridPanel gf = new GridPanel(p);
         //gf.setVisible(true);
         gf.display();
-
+        
         p.start();
         
         
