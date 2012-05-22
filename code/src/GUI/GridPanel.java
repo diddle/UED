@@ -12,6 +12,9 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.*;
@@ -31,7 +34,7 @@ public class GridPanel extends JPanel {
     
     private MouseHandler mouseHandler = new MouseHandler();
     private boolean drawing;
-    private NoteIndex pressedNote;
+    private HashMap<Integer, Point> pressedNotes;
     private int squareHeight = 18;
     
     private static double radOffset = 0.25d * Math.PI;
@@ -54,6 +57,7 @@ public class GridPanel extends JPanel {
   
     
     public GridPanel(Player p, int width, int height) {
+    	this.pressedNotes = new HashMap<Integer, Point>();
         this.player = p;
         this.player.setGridPanel(this);
         this.setPreferredSize(new Dimension(width, height));
@@ -90,8 +94,15 @@ public class GridPanel extends JPanel {
         drawInterfaceBackground(g2d);
         drawGrids(g2d);
 
-		if(pressedNote != null)
-			drawNote(g2d, pressedNote.getPerson(), pressedNote.getColumn(), pressedNote.getNote(), 1.25d, 1.25d);
+		if(!pressedNotes.isEmpty()) {
+		    Iterator<Map.Entry<Integer, Point>> it = pressedNotes.entrySet().iterator();
+		    while (it.hasNext()) {
+		        NoteIndex noteIndex = translatePointToNoteIndex((Point)((Map.Entry)it.next()).getValue());
+		        
+		        drawNote(g2d, noteIndex.getPerson(), noteIndex.getColumn(), noteIndex.getNote(), 1.125d, 1.125d);
+		    }
+			
+		}
 //        drawActiveTones((Graphics2D)g);
 //        drawCircles(g);
 //        drawLines(g);
@@ -103,46 +114,48 @@ public class GridPanel extends JPanel {
         public void mousePressed(MouseEvent e) {
         	Point p = e.getPoint();
         	p.setLocation(p.getX(), translateY(p.getY()));
-            processPress(p);
+            processPress(0, p);
             repaint();
         }
         
         public void mouseDragged(MouseEvent e) {
         	Point p = e.getPoint();
         	p.setLocation(p.getX(), translateY(p.getY()));
-        	processDrag(p);
+        	processDrag(0, p);
             repaint();
         }
         
         public void mouseReleased(MouseEvent e) {
-        	pressedNote = null;
+        	processRelease(0);
+        	repaint();
         }
 
     }
     
     private class TouchHandler implements Observer {
+    	
+        private List<Integer> pressed;
         
         public TouchHandler() {
             this.pressed = new ArrayList<Integer>();
         }
         
-        public void touchPressed(Point p) {
+        public void touchPressed(int id, Point p) {
             p.setLocation(p.getX(), translateY(p.getY()));
-            processPress(p);
+            processPress(id, p);
             repaint();
         }
         
-        public void touchDragged(Point p) {
+        public void touchDragged(int id, Point p) {
             p.setLocation(p.getX(), translateY(p.getY()));
-            processDrag(p);
+            processDrag(id, p);
             repaint();
         }
         
-        public void touchReleased(Point p) {
-            pressedNote = null;
+        public void touchReleased(int id) {
+            processRelease(id);
+            repaint();
         }
-        
-        private List<Integer> pressed;
 
         @Override
         public void update(Observable o, Object arg) {
@@ -152,21 +165,22 @@ public class GridPanel extends JPanel {
                 return;
             }
             // translate x and y...
-            int x = (int)(((double)packet.x / 32768d) * (double)DEFAULTWIDTH);
-            int y = (int)(((double)packet.y / 32768d) * (double)DEFAULTHEIGHT);
+            int x = (int)(((double)packet.x / 32768d) * (double)getWidth());
+            int y = (int)(((double)packet.y / 32768d) * (double)getHeight());
             Point p = new Point(x,y);
             if(packet.touch == 1 && this.pressed.contains(packet.id)) {
                 // send drag
-                this.touchDragged(p);
+                this.touchDragged((int)packet.id, p);
             }
             else if(packet.touch == 1 && !this.pressed.contains(packet.id)) {
+            	this.pressed.add((int)packet.id);
                 // send pressed
-                this.touchPressed(p);
+                this.touchPressed((int)packet.id, p);
             }
             else if(packet.touch == 0) {
-                this.pressed.remove(packet.id);
+                this.pressed.remove((int)packet.id);
                 // send release
-                this.touchReleased(p);
+                this.touchReleased((int)packet.id);
             }
         }
     }
@@ -520,11 +534,13 @@ public class GridPanel extends JPanel {
     }
     
     //	Process press events
-    private void processPress(Point point) {
-    	pressedNote = translatePointToNoteIndex(point);
-        
-        
-        if(pressedNote != null && pressedNote.getNote() >= 0 && pressedNote.getNote() < this.player.getHeight()) {
+    private void processPress(int id, Point point) {
+    	
+    	pressedNotes.put(id, point);
+    	
+        NoteIndex pressedNote = translatePointToNoteIndex(point);
+    	
+        if(!pressedNotes.isEmpty() && pressedNote.getNote() >= 0 && pressedNote.getNote() < this.player.getHeight()) {
             ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
             tg.toggleTone(pressedNote.getColumn(), pressedNote.getNote());
             drawing = tg.getTone(pressedNote.getColumn(), pressedNote.getNote());
@@ -534,17 +550,23 @@ public class GridPanel extends JPanel {
     }
     
     //	Process drag events
-    private void processDrag(Point point) {
-    	pressedNote = translatePointToNoteIndex(point);
+    private void processDrag(int id, Point point) {
+    	pressedNotes.put(id, point);
+    	
+    	NoteIndex pressedNote = translatePointToNoteIndex(point);
     	
         
-    	if(pressedNote != null && pressedNote.getNote() >= 0 && pressedNote.getNote() < this.player.getHeight()) {
+    	if(pressedNotes != null && pressedNote.getNote() >= 0 && pressedNote.getNote() < this.player.getHeight()) {
             ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
         	if(drawing)
         		tg.activateTone(pressedNote.getColumn(), pressedNote.getNote());
         	else
         		tg.deactivateTone(pressedNote.getColumn(), pressedNote.getNote());
     	}
+    }
+    
+    private void processRelease(int id) {
+    	pressedNotes.remove(id);
     }
     
     private double translateY(double y) {
