@@ -26,77 +26,58 @@ public class TouchSocket extends Observable implements Runnable {
         new Thread(this).start();
     }
     
-    private void broadcast() {
+    private void listen() {
+        TouchBroadcaster tb  = new TouchBroadcaster();
         try {
-            DatagramSocket socket = new DatagramSocket();
-//            ByteBuffer dataBuffer = ByteBuffer.allocate(64);
-//            dataBuffer.flip();
-//            byte[] data = new byte[dataBuffer.limit()];
-//            dataBuffer.get(data);
-            byte[] data = "TOUCHKITTBC".getBytes();
-            int udpPort = 3330;
-            for (NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                for (InetAddress address : Collections.list(iface.getInetAddresses())) {
-                    if (!address.isSiteLocalAddress()) {
-                        continue;
+            ServerSocket server = new ServerSocket(3333);
+            while (true) {
+                System.out.println("Server started.");
+                System.out.println("Broadcast sent.");
+                // one client at a time
+                System.out.println("Waiting for clients...");
+                tb.startBroadcast();
+                Socket client = server.accept();
+                tb.stopBroadcast();
+                System.out.println("Client accepted.");
+                DataInputStream in = new DataInputStream(client.getInputStream());
+                boolean connected = true;
+                while (connected) {
+                    try {
+                        // stel pakket samen
+                        TouchPacket p = new TouchPacket();
+                        p.id = readUnsignedInt(in);
+                        System.out.println("Read: id (" + p.id + ")");
+                        p.x = readUnsignedInt(in);
+                        System.out.println("Read: x (" + p.x + ")");
+                        p.y = readUnsignedInt(in);
+                        System.out.println("Read: y (" + p.y + ")");
+                        p.touch = readUnsignedInt(in);
+                        System.out.println("Read: touch (" + p.touch + ")");
+                        this.setChanged();
+                        this.notifyObservers(p);
+                    } catch (IOException ex) {
+                        connected = false;
                     }
-                    // Java 1.5 doesn't support getting the subnet mask, so try the two most common.
-                    byte[] ip = address.getAddress();
-                    ip[3] = -1; // 255.255.255.0
-                    socket.send(new DatagramPacket(data, data.length, InetAddress.getByAddress(ip), udpPort));
-                    ip[2] = -1; // 255.255.0.0
-                    socket.send(new DatagramPacket(data, data.length, InetAddress.getByAddress(ip), udpPort));
                 }
             }
-            //        try {
-            //            MulticastSocket s;
-            //            InetAddress address = InetAddress.getByName("255.255.255.255");
-            //            int port = 3330;
-            //            String msg = "TOUCHKITTBC";
-            //            Socket socket = new Socket(address, port);
-            //            OutputStream out = socket.getOutputStream();
-            //            byte [] output = msg.getBytes();
-            //            out.write(output);
-            //            out.flush();
-            //        } catch (IOException ex) {
-            //        }
-            //        }
         } catch (IOException ex) {
             Logger.getLogger(TouchSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    private void listen() {
-        while(true) {
-            try {
-                ServerSocket server = new ServerSocket(3333);
-                System.out.println("Server started.");
-                this.broadcast();
-                System.out.println("Broadcast sent.");
-                // one client at a time
-                while(true) {
-                    System.out.println("Waiting for clients...");
-                    Socket client = server.accept();
-                    System.out.println("Client accepted.");
-                    DataInputStream in = new DataInputStream(client.getInputStream());
-                    while(true) {
-                        // stel pakket samen
-                        TouchPacket p = new TouchPacket();
-                        p.id = in.readInt();
-                        System.out.println("Read: id (" + p.id + ")");
-                        p.x = in.readInt();
-                        System.out.println("Read: x (" + p.x + ")");
-                        p.y = in.readInt();
-                        System.out.println("Read: y (" + p.y + ")");
-                        p.touch = in.readInt();
-                        System.out.println("Read: touch (" + p.touch + ")");
-                        this.notifyObservers(p);
-                    }
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(TouchSocket.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+    private long readUnsignedInt(DataInputStream in) throws IOException{
+        byte[] val = new byte[4];
+        val[0] = in.readByte();
+        val[1] = in.readByte();
+        val[2] = in.readByte();
+        val[3] = in.readByte();
+//        data[offset+0]=(value>>0) & 0xFF;
+//        data[offset+1]=(value>>8) & 0xFF;
+//        data[offset+3]=(value>>24) & 0xFF;
+//        data[offset+3]=(value>>24) & 0xFF;
+        long result = ((long)val[0]) + (((long)val[1]) << 8) + (((long)val[2]) << 16) + (((long)val[3]) << 24);
+        return result;
+
     }
 
     @Override

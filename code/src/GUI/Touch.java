@@ -2,15 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package network;
+package GUI;
+
+import java.awt.Point;
 
 /**
  *
  * @author Niels Visser
  */
-public class TouchPacket {
-    public long id;
-    public long x;
-    public long y;
-    public long touch;
+public class Touch {
+    public int id;
+    public Point pos;
 }
