@@ -5,11 +5,11 @@
 package musictable;
 
 import GUI.GridPanel;
+import GUI.MainWindow;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sound.midi.*;
-import network.TouchSocket;
 import playback.DrumToneGrid;
 import playback.InstrumentToneGrid;
 import playback.Player;
@@ -57,9 +57,10 @@ public class Main {
         drums.setIsActive(true);
         
         
-        GridPanel gf = new GridPanel(p);
-        //gf.setVisible(true);
-        gf.display();
+        
+        ////gf.setVisible(true);
+        //gf.display();
+        new MainWindow(p);
         
         p.start();
         
