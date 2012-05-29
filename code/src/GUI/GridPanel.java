@@ -33,8 +33,7 @@ public class GridPanel extends JPanel {
 	private static final int DEFAULTHEIGHT = 768;
     
     private MouseHandler mouseHandler = new MouseHandler();
-    private boolean drawing;
-    private HashMap<Integer, Point> pressedNotes;
+    private HashMap<Integer, Pointer> pressedNotes;
     private int squareHeight = 18;
     
     private static double radOffset = 0.25d * Math.PI;
@@ -57,7 +56,7 @@ public class GridPanel extends JPanel {
   
     
     public GridPanel(Player p, int width, int height) {
-    	this.pressedNotes = new HashMap<Integer, Point>();
+    	this.pressedNotes = new HashMap<Integer, Pointer>();
         this.player = p;
         this.player.setGridPanel(this);
         this.setPreferredSize(new Dimension(width, height));
@@ -95,11 +94,12 @@ public class GridPanel extends JPanel {
         drawGrids(g2d);
 
 		if(!pressedNotes.isEmpty()) {
-		    Iterator<Map.Entry<Integer, Point>> it = pressedNotes.entrySet().iterator();
+		    Iterator<Map.Entry<Integer, Pointer>> it = pressedNotes.entrySet().iterator();
 		    while (it.hasNext()) {
-		        NoteIndex noteIndex = translatePointToNoteIndex((Point)((Map.Entry)it.next()).getValue());
-		        
-		        drawNote(g2d, noteIndex.getPerson(), noteIndex.getColumn(), noteIndex.getNote(), 1.125d, 1.125d);
+		        NoteIndex noteIndex = translatePointToNoteIndex(it.next().getValue().getLocation());
+		        if(noteIndex != null) {
+		        	drawNote(g2d, noteIndex.getPerson(), noteIndex.getColumn(), noteIndex.getNote(), 1.125d, 1.125d);
+		        }
 		    }
 			
 		}
@@ -542,27 +542,32 @@ public class GridPanel extends JPanel {
     //	Process press events
     private void processPress(int id, Point point) {
     	
-    	pressedNotes.put(id, point);
+    	boolean drawing;
     	
         NoteIndex pressedNote = translatePointToNoteIndex(point);
     	
-        if(pressedNote != null && pressedNote.getNote() >= 0 && pressedNote.getNote() < this.player.getHeight()) {
+        if(pressedNote != null) {
             ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
             tg.toggleTone(pressedNote.getColumn(), pressedNote.getNote());
             drawing = tg.getTone(pressedNote.getColumn(), pressedNote.getNote());
         }
         else
         	drawing = true;
+
+    	pressedNotes.put(id, new Pointer(point, drawing));
     }
     
     //	Process drag events
     private void processDrag(int id, Point point) {
-    	pressedNotes.put(id, point);
+    	
+    	boolean drawing = pressedNotes.get(id).isDrawing();
+    	
+    	pressedNotes.put(id, new Pointer(point, drawing));
     	
     	NoteIndex pressedNote = translatePointToNoteIndex(point);
     	
-        
-    	if(pressedNote != null && pressedNote.getNote() >= 0 && pressedNote.getNote() < this.player.getHeight()) {
+
+    	if(pressedNote != null) {
             ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
         	if(drawing)
         		tg.activateTone(pressedNote.getColumn(), pressedNote.getNote());
@@ -663,6 +668,24 @@ public class GridPanel extends JPanel {
     				return true;
     		}
     		return false;
+    	}
+    }
+    
+    private class Pointer {
+    	private Point point;
+    	private boolean drawing;
+    	
+    	public Pointer(Point point, boolean drawing) {
+    		this.point = point;
+    		this.drawing = drawing;
+    	}
+    	
+    	public Point getLocation() {
+    		return this.point.getLocation();
+    	}
+    	
+    	public boolean isDrawing() {
+    		return drawing;
     	}
     }
 }

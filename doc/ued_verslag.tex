@@ -44,8 +44,7 @@ De opdracht bestaat uit het ontwikkelen van een applicatie die de mogelijkheden 
 Hoe aan deze opdracht invulling gegeven moet worden, is niet gespecificeerd. Het is aan de projectgroep om deze invulling te bedenken en de opdrachtgever ten behoeve van sturing bij het ontwerpproces te betrekken.
 
 \subsection{Inhoud}
-FIXME: +inspiratiebronnen.
-In dit paper wordt in hoofdstuk~\ref{sec_domein} ingegaan op het domein van de te realiseren applicatie: door wie zal het eindresultaat gebruikt worden en met welk doel. Ook wordt beschreven aan welke functionele eisen de gerealiseerde applicatie moet voldoen om de doelgroep succesvol dit doel te laten bereiken. In hoofdstuk~\ref{sec_concept} staat beschreven hoe deze functionele eisen verwerkt zijn in meerdere conceptuele ontwerpen en welk van deze ontwerpen vervolgens in samenspraak met de opdrachtgever is uitgekozen om verder uit te werken. Dit verder uitwerken wordt gedaan in hoofdstuk~\ref{sec_detail}. In dit hoofdstuk staat een functionele specificatie van het gekozen ontwerp en een beschrijving van de technische realisatie: een technisch ontwerp.
+In dit paper wordt in hoofdstuk~\ref{sec_domein} ingegaan op het domein van de te realiseren applicatie: door wie zal het eindresultaat gebruikt worden en met welk doel. Ook wordt beschreven aan welke functionele eisen de gerealiseerde applicatie moet voldoen om de doelgroep succesvol dit doel te laten bereiken. In hoofdstuk~\ref{sec_concept} staat beschreven hoe deze functionele eisen verwerkt zijn in meerdere conceptuele ontwerpen, welke inspiratiebronnen zijn gebruikt voor de bedachte concepten en welk van deze ontwerpen vervolgens in samenspraak met de opdrachtgever is uitgekozen om verder uit te werken. Dit verder uitwerken wordt gedaan in hoofdstuk~\ref{sec_detail}. In dit hoofdstuk staat een functionele specificatie van het gekozen ontwerp en een beschrijving van de technische realisatie: een technisch ontwerp.
 
 Na het ontwerpen en realiseren van de applicatie, zal de usability ervan getest moeten worden, alsook de user experience. De opzet van deze tests en de resultaten ervan staan beschreven in hoofdstuk~\ref{sec_evaluatie}. Naar aanleiding van deze resultaten zal in hoofdstuk~\ref{sec_discussie} behandeld worden in hoeverre de gerealiseerde applicatie voldoet aan de eerder gestelde eisen.
 
@@ -70,11 +69,11 @@ Vanwege het open karakter van de opdracht -- het mensen laten kennismaken met he
 \label{sec_concept}
 In aanloop naar het ontwerp heeft de opdrachtgever vier voorstellen gekregen, verdeeld over twee categorie\"en: \'e\'en co\"operatief en drie competitief. Uit deze voorstellen is uiteindelijk een concept gekozen dat het beste aansloot bij het gedachtegoed van de opdrachtgever en het doel dat de opdrachtgever met de applicatie voor ogen had.
 
-Het co\"operatieve voorstel bestond uit een muziektafel waarbij meerdere mensen samen werkten aan het componeren van een harmonieuze symfonie. De drie competitieve voorstellen waren spellen. De eerste was een boogschietspel, waarbij iedere speler moest voorkomen dat zijn doelwit geraakt werd door de pijlen van andere spelers af te weren, terwijl hij probeerde de doelwitten van de andere spelers te raken. Een ander voorstel was een multiplayer snake waarbij spelers elkaars slang moesten ontwijken, terwijl ze streefden naar het opeten van punten en bonussen. Ten slotte was er nog een voetbaltafel waarbij twee teams proberen de bal in het doel van het andere team te krijgen door middel van knoppen langs de zijkant die de poppetjes van hun team op het speelveld aansturen.
+Het co\"operatieve voorstel bestond uit een muziektafel waarbij meerdere mensen samen werkten aan het componeren van een harmonieuze symfonie. Dit concept is geïnspireerd op een muziekspelletje op internet, waarbij met verschillende instrumenten een symfonie gecreëerd kan worden [http://games.co.za/music-sequencer.html]. De drie competitieve voorstellen waren spellen. De eerste was een boogschietspel, waarbij iedere speler moest voorkomen dat zijn doelwit geraakt werd door de pijlen van andere spelers af te weren, terwijl hij probeerde de doelwitten van de andere spelers te raken. De populariteit van spellen als Angry Birds [http://www.angrybirds.com/] diende hierbij ter inspiratie voor het mikken: de pijl en boog vormden hier een invulling van. Een ander voorstel was een multiplayer snake waarbij spelers elkaars slang moesten ontwijken, terwijl ze streefden naar het opeten van punten en bonussen. Ten slotte was er nog een voetbaltafel waarbij twee teams proberen de bal in het doel van het andere team te krijgen door middel van knoppen langs de zijkant die de poppetjes van hun team op het speelveld aansturen.
 
 Vanwege het korte tijdsschema van dit project zijn deze voorstellen alleen kort, tekstueel uitgewerkt en voorzien van een ruwe schets. Er zijn geen functionele requirements voor elk voorstel opgesteld. De voorstellen zijn met een mondelinge toelichting overgedragen aan de opdrachtgever en uiteindelijk is in overleg besloten te kiezen voor de muziektafel. Dit concept had voor nieuwe gebruikers de laagste instapdrempel, liet het best de mogelijkheden van de multi-touch tafel zien en bevat een creatieve draai, waar de opdrachtgever in zijn missie naar streeft. [FIXME: motivatie]
 
-\subsection{Uitwerking Muziektafel}
+\subsection{Eisen Muziektafel}
 Voordat begonnen kon worden aan het functionele ontwerp van de muziektafel, moet eerst uitgezocht worden aan welke functionele eisen dit ontwerp zal moeten voldoen. Hieronder volgende de functionele eisen, waaraan het ontwerp, in combinatie met de geformuleerde eisen uit hoofdstuk~\ref{sec_domein}, moet voldoen. Indien een eis toelichting vereist, is deze gegeven, alsmede van wie de eis afkomstig is.
 
 \begin{itemize}
@@ -96,9 +95,83 @@ Voordat begonnen kon worden aan het functionele ontwerp van de muziektafel, moet
 	\item \textbf{Het speelveld van een speler moet door de speler in \'e\'en handeling ontdaan kunnen worden van alle geselecteerde noten.}
 \end{itemize}
 
+\subsection{Uitwerking Muziektafel}
+\subsubsection{Eerste ontwerp}
+
+Op basis van deze eisen is een eerste conceptueel ontwerp gemaakt. De schets van dit ontwerp is opgenomen in Figuur~\ref{fig:muziektafel_v1}. Te zien hierin is allereerst de cirkel waarop spelers noten kunnen selecteren: de notenbalk. Het onderscheid tussen de verschillende speelvelden is aangegeven door vier verschillende kleuren. Op de cirkel liggen 10 toonhoogtes en 16 16e maten. Standaard is het tempo ingesteld op 120 beats per minuut, maar dit is door middel van de plus- en minknop in het midden van de cirkel in te stellen.
+
+Onder ieder speelveld staan twee knoppen; een waarmee de geselecteerde noten van het speelveld verwijderd kunnen worden en een waarmee een instrument gekozen kan worden. Om aan te geven dat de linkerknop knop iets verwijderd, is gebruik gemaakt van een vuilnisbak-icoon. Met de rechterknop hebben spelers de kans om het instrument van hun speelveld aan te passen. Om aan te geven dat het hun instrumentkeuze betreft, wordt er op de knop een icoon getoond van het instrument waar ze momenteel mee spelen. De knoppen hebben dezelfde kleur als het speelveld, om voor spelers duidelijk te maken welke knoppen bij hun gedeelte van de cirkel horen. Wanneer op de instrumentkeuzeknop gedrukt wordt, wordt er een overlay getoond over de notenbalk. In deze overlay kan de speler een van de acht beschikbare instrumenten kiezen: een piano, gitaar, basgitaar, drumstel, fluit, viool, orchel of triangel. In Figuur~\ref{fig:muziektafel_v1} is deze overlay voor het blauwe speelveld zichtbaar. Wanneer de speler op een instrument klikt, sluit de overlay zich en zal de notenbalk van dat speelveld afgespeeld worden met het gekozen instrument.
+
+Daarnaast is er boven de notenbalk een extra onderdeel zichtbaar: de alternatieve notenbalk. Iedere speler heeft de beschikking over 2 sets van 16 16e maten. Een van deze twee wordt weergegeven op de notenbalk en kan door de speler bewerkt worden, de ander wordt boven de notenbalk weergegeven als knop. Wanneer op die knop gedrukt wordt, worden de twee sets noten omgewisseld; de set noten van de notenbalk wordt vervangen door de andere set. Bij het afspelen van de noten wordt vanaf de eerstvolgende 16e maat de nieuwe set noten gebruikt. Wanneer de wis-knop linksonder op het speelveld gebruikt wordt, wordt alleen de set noten gewist die op dat moment in de notenbalk staat. De andere set blijft bewaard.
+
+\begin{figure}
+  \includegraphics[width=84mm]{img/muziektafel_v1}
+  \caption{Schets van het eerste ontwerp}
+  \label{fig:muziektafel_v1}
+\end{figure}
+
+Zodra de applicatie gestart wordt, wordt begonnen met het afspelen van de notenbalk. De noten van de vier speelvelden worden per 16e maat tegelijk afgespeeld. Om aan te geven welke 16e maat afgespeeld wordt, wordt de notenbalk voor deze 16e maat gearceerd. In Figuur~\ref{fig:muziektafel_v1} is dat te zien aan de feller gekleurde kolommen.
+
+\subsubsection{Tweede ontwerp}
+Nog voor de evaluatie met eindgebruikers van het initiële ontwerp werden in samenspraak met de opdrachtgever echter verscheidene gebreken geconstateerd. Het eerste dat opviel, was de drukte van de interface: elk gedeelte van het speelveld wordt gebruikt voor een of andere functionaliteit. De oorspronkelijk bedachte visualisatie op de achtergrond van de speelvelden - bedoeld om de muziektafel naast het oor ook voor het oog uitnodigend te laten zijn - krijgt hierdoor erg weinig ruimte. Ook zou die visualisatie de interface nog drukker maken. Een ander punt dat de bruikbaarheid van de applicatie niet ten goede komt, is dat het door de cirkelvormigheid van de notenbalk moeilijk te zien is welke noten op dezelfde rij zitten. Dit bemoeilijkt het kunnen zien van de verschillende toonhoogtes binnen de 16 16e maten en daarmee het eenvoudig componeren van de gewenste melodie.
+
+\begin{figure}
+  \includegraphics[width=84mm]{img/muziektafel_v2}
+  \caption{Schets van het tweede ontwerp}
+  \label{fig:muziektafel_v2}
+\end{figure}
+
+De gekozen kleurstelling bleek daarnaast niet geschikt voor kleurenblinden: de aangrenzende speelvelden zijn voor hen niet goed te onderscheiden. Ook werd de alternatieve notenbalk niet intuïtief genoeg bevonden, terwijl deze wel een aanzienlijk deel van de interface in beslag nam.
+
+Naar aanleiding van deze interne bezwaren tegen het ontwerp, is besloten om het ontwerp grondig aan te passen. Bepaalde functionaliteit is geschrapt of uit de primaire interface gehaald en achter een menu geplaatst; de primaire interface is versimpeld zodat er standaard niet meer in beeld is dan nodig. Het resultaat van dit herontwerp is te zien in Figuur~\ref{fig:muziektafel_v2}. De grote knoppen uit het eerste ontwerp zijn gecondenseerd naar twee kleinere knoppen boven de notenbalk. De eerder aanwezige alternatieve notenbalk is geschrapt (FIXME: of verplaatst naar een submenu) en het instellen van tempo heeft niet langer de centrale rol tussen de speelvelden en ook de knop voor het leeggooien van de notenbalk is verwijderd. Deze drie opties zijn in plaats daarvan achter de instellingenknop geplaatst. Deze knop heeft een tandwiel als icoon, waarvan het gebruik als instellingen-icoon als ingeburgerd wordt verondersteld.
+
+De verwijdering van al deze knoppen heeft ervoor gezorgd dat de interface opgeruimder oogt, terwijl de visualisatie meer ruimte heeft gekregen. Door de speelvelden niet langer doorzichtig te maken worden deze beter onderscheidbaar van de visualisatie, terwijl de opvallender kleuren bijdragen aan het aantrekkelijk maken van het ontwerp. Daarbij zijn de kleuren nu zo gekozen zijn dat de speelvelden voor kleurenblinden goed te onderscheiden zijn en zijn de verschillende toonhoogtes om en om anders gekleurd zodat deze beter van elkaar te onderscheiden zijn.
+
+\subsection{Evaluatie LoFi-prototype}
+\subsubsection{Opzet}
+Om uit te vinden hoe intuïtief het bedachte ontwerp voor de gewenste doelgroep is, is de schets van het tweede ontwerp voorgelegd aan een aantal proefpersonen. Ook is een eerste versie van de applicatie gemaakt, die alleen een werkende notenbalk-cirkel bevat. Door middel van de muis kunnen noten aangeklikt worden welke afgespeeld zullen worden door vier voorgeprogammeerde instrumenten: een voor ieder speelveld. De applicatie kan hiermee gebruikt worden door één persoon.
+
+Vanwege het gewenste uitnodigende karakter van de multi-touch tafel is gekozen om bij de evaluatie voornamelijk de intuïtieve werking van het ontwerp te testen. We hebben hierbij het volgende script gebruikt om de gebruikers te ondervragen:
+
+\begin{itemize}
+  \item De proefpersoon krijgt de schets van het ontwerp uit Figuur~\ref{fig:muziektafel_v1} te zien.
+  \item \textbf{Vraag 1:} Als je naar de interface kijkt, wat denk je dat de applicatie doet?
+  \item \textbf{Vraag 2:} Hoe zou je deze besturen? Wat zou je als eerste proberen?
+  \item Na deze twee vragen wordt de proefpersoon uitgelegd dat het een muziekapplicatie betreft.
+  \item \textbf{Vraag 3:} Nu je weet wat de applicatie doet, hoe zou je het besturen?
+  \item \textbf{Vraag 4:} Voor hoeveel spelers is het spel geschikt?
+  \item Indien de speler niet bedacht heeft dat het een multi-touch applicatie is, wordt hem de besturing van de notenbalk uitgelegd. Ook wordt er verteld dat het op een multi-touch tafel gespeeld wordt samen met anderen.
+  \item \textbf{Vraag 5:} Vind je de representatie van noten duidelijk?
+  \item \textbf{Vraag 6:} Als je het muziekinstrument wilt veranderen, hoe zou je dat doen?
+  \item \textbf{Vraag 7:} Als je het tempo van de muziek wilt aanpassen, hoe zou je dat doen?
+  \item \textbf{Vraag 8:} Waar denk je dat de knop met de muzieknoot voor dient?
+  \item \textbf{Vraag 9:} Als je opnieuw wilt beginnen met een leeg veld, hoe zou je dat doen?
+  \item \textbf{Vraag 10:} Waar denk je dat de knop met het tandwiel voor dient?
+  \item \textbf{Vraag 11:} Heb je verder nog opmerkingen over het doel van de applicatie en hoe de interface er nu uit ziet?
+\end{itemize}
+
+De eerste twee vragen dienen om te achterhalen of de applicatie de juiste indruk geeft bij mensen: nodigt de applicatie uit tot muziek maken? De derde en vierde vraag zijn bedoeld om te controleren of de interface laat zien het door meerdere mensen tegelijk bestuurd kan worden en of hoe de proefpersoon zelf denkt dat dit werkt. Vervolgens worden een voor een naar de intuïtiviteit van de overige features gevraagd en gecontroleerd of de gebruikte iconen begrepen werden. Indien de proefpersoon het antwoord op een vraag niet wist, werd hem dit na vraag 2 en 4 uitgelegd, aangezien dit noodzakelijk was voor het vervolg van de evaluatie. Bij de andere vragen werd deze uitleg zoveel mogelijk voorkomen om de proefpersoon niet te beïnvloeden. Bij de laatste vraag kon de gebruiker alle feedback die hij verder nog had kwijt.
+
+\subsubsection{Resultaten}
+Aangezien de doelgroep van de applicatie breed is, is bij de evaluatie geprobeerd om deze groep van geïnterviewden zo breed mogelijk te houden. Onder de ondervraagden zitten studenten, mensen van middelbare leeftijd en senioren. Van de proefpersonen begreep het merendeel na de eerste oogopslag dat het muziek een rol speelt bij de applicatie; het muzieknoot-icoon heeft aan dit besef bijgedragen. Ook was het de meeste mensen duidelijk dat de applicatie bestuurd kon worden door op de notenbalk te klikken. Een enkeling zou eerst op het de instrumentenkeuzeknop klikken, maar alle proefpersonen zouden in ieder geval ergens in de interface klikken - ook zonder uitleg.
+
+Minder duidelijk was het dat het een applicatie voor vier spelers betrof. De kleuren werden als onderscheiding van verschillende instrumenten aangemerkt en niet als onderscheiding van speelvelden voor verschillende spelers. Enkelen zagen wel in dat het met meerdere mensen gespeeld kon worden, maar achtten het primair voor één speler vanwege deze verwarde scheiding van speelvelden.
+
+Toen de proefpersonen wisten dat met de applicatie instrumenten bestuurd konden worden, was de representatie van de notenbalk bij iedereen duidelijk; een enkeling vroeg zich wel af welke toonhoogte een rij noten had en of de hogere noten hoog of laat in de notenbalk stonden. De knop om te wisselen van instrument was echter minder eenvoudig gevonden aangezien sommigen het een instelling vonden en kozen om op de instellingenknop te klikken. Het gekozen icoon voor de instellingenknop bleek daarmee zo intuïtief te werken als gehoopt: alle gebruikers vonden dat instellingen via deze knop te bereiken waren.
+
+Uit de overige opmerkingen kwam een aantal interessante suggesties en vragen naar voren:
+\begin{itemize}
+  \item Het kunnen stoppen van de muziek vonden sommige proefpersonen wenselijk.
+  \item Een knop waarmee willekeurige instellingen gekozen worden, zou een leuke toevoeging zijn.
+  \item Om de term BPM te verduidelijken zou vermeld kunnen worden hoe lang het afspelen van het speelveld duurt.
+  \item Het bleek onduidelijk hoe een menu gesloten moest worden.
+\end{itemize}
+
+
 
 \section{Gedetailleerd Ontwerp}
 \label{sec_detail}
+
 
 \section{Evaluatie}
 \label{sec_evaluatie}
