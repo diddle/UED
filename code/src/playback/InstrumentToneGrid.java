@@ -59,4 +59,13 @@ public class InstrumentToneGrid extends ToneGrid{
     public void playColumnTones(int x) {
         super.playColumnTones(x, velocity);
     }
+
+    @Override
+	public void setInstrument(Instrument instrument) {
+		this.instrument=instrument;
+	}
+	
+	public void setVelocity(int velocity){
+		this.velocity = velocity ;
+	}
 }
