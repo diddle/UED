@@ -46,13 +46,13 @@ public class TouchSocket extends Observable implements Runnable {
                         // stel pakket samen
                         TouchPacket p = new TouchPacket();
                         p.id = readUnsignedInt(in);
-                        System.out.println("Read: id (" + p.id + ")");
+                        //System.out.println("Read: id (" + p.id + ")");
                         p.x = readUnsignedInt(in);
-                        System.out.println("Read: x (" + p.x + ")");
+                        //System.out.println("Read: x (" + p.x + ")");
                         p.y = readUnsignedInt(in);
-                        System.out.println("Read: y (" + p.y + ")");
+                        //System.out.println("Read: y (" + p.y + ")");
                         p.touch = readUnsignedInt(in);
-                        System.out.println("Read: touch (" + p.touch + ")");
+                        //System.out.println("Read: touch (" + p.touch + ")");
                         this.setChanged();
                         this.notifyObservers(p);
                     } catch (IOException ex) {

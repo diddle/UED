@@ -31,7 +31,9 @@ public class MainWindow extends JFrame {
             // Can only do this when the frame is not visible
             this.setUndecorated(true);
         }
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        //GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        GraphicsDevice gd = devices[devices.length-1];
         try {
             if (gd.isFullScreenSupported()) {
                 gd.setFullScreenWindow(this);
