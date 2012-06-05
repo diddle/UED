@@ -369,8 +369,8 @@ public class GridPanel extends JPanel {
     		drawColumn(g, personIndex, i);
     	}
     	//Add Button Drawing
-    	drawButton(g, personIndex, 2, player.getHeight()+1, 0.9, 0.9);
-    	drawButton(g, personIndex, 10, player.getHeight()+1, 0.9, 0.9);
+    	drawButton(g, personIndex, 2, player.getHeight()+1, 0.9, 0.9,1);
+    	drawButton(g, personIndex, 10, player.getHeight()+1, 0.9, 0.9,2);
     }
 
     /* Calls draw methods for each note in a column
@@ -462,7 +462,7 @@ public class GridPanel extends JPanel {
 
     /* Draws the Button.
      */
-    private void drawButton(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor){
+    private void drawButton(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor,int id){
 
     	double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
     	double endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+3) + xFactor)*radPerColumn() + radOffset;
@@ -504,7 +504,7 @@ public class GridPanel extends JPanel {
     	gp.closePath();
 
     	Color squareColour = getColorFor(personIndex);
-    	if (activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==MENU_MENU||activeMenu[personIndex]==INSTRUMENT_MENU2){
+    	if (()activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==INSTRUMENT_MENU2)&&ID==2||activeMenu[personIndex]==MENU_MENU&&id==1){
     		squareColour=squareColour.darker().darker();
     	}
 	  	g.setPaint(squareColour);
