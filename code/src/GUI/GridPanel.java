@@ -17,9 +17,12 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.sound.midi.Instrument;
 import javax.swing.*;
 import network.TouchPacket;
 import network.TouchSocket;
+import playback.InstrumentHolder;
 import playback.Player;
 import playback.ToneGrid;
 
@@ -40,12 +43,27 @@ public class GridPanel extends JPanel {
     
     private Player player;
     
+    /*
+     * Variables Relating to Menu's
+     */
+    private int activeMenu[];
+    private final static int NO_MENU = 0;
+    private final static int INSTRUMENT_MENU = 1;
+    private final static int MENU_MENU = 2;
+    private final static int INSTRUMENT_MENU2 = 3;
+    
+    
+    
     /*constructor that uses default values for width and height.
     Player p: Player whose panels will be drawn
     */
 
     public GridPanel(Player p) {
     	this(p, DEFAULTWIDTH, DEFAULTHEIGHT);
+    	activeMenu = new int[10];
+    	for(int i=0;i<10;i++){
+    		activeMenu[i]=0;
+    	}
     }
     
     /*constructor
@@ -76,6 +94,10 @@ public class GridPanel extends JPanel {
         TouchSocket ts = new TouchSocket();
         ts.addObserver(th);
         ts.startServer();
+        activeMenu = new int[10];
+    	for(int i=0;i<10;i++){
+    		activeMenu[i]=0;
+    	}
     }
     
     //Method used to draw main component
@@ -93,7 +115,7 @@ public class GridPanel extends JPanel {
         
         drawInterfaceBackground(g2d);
         drawGrids(g2d);
-
+        
 		if(!pressedNotes.isEmpty()) {
 		    Iterator<Map.Entry<Integer, Pointer>> it = pressedNotes.entrySet().iterator();
 		    while (it.hasNext()) {
@@ -102,7 +124,18 @@ public class GridPanel extends JPanel {
 		        	drawNote(g2d, noteIndex.getPerson(), noteIndex.getColumn(), noteIndex.getNote(), 1.125d, 1.125d);
 		        }
 		    }
-			
+		//TODO Draw Instrument Menu if active here
+		   for (int i=0;i<player.getActiveGrids().size();i++){
+			   if (activeMenu[i]==INSTRUMENT_MENU){
+				   drawInstrumentMenu(g2d,i);
+			   }
+			   if (activeMenu[i]==INSTRUMENT_MENU2){
+				   drawInstrumentMenu2(g2d,i);
+			   }
+			   if (activeMenu[i]==MENU_MENU){
+				   drawMenuMenu(g2d,i);
+			   }
+		   }
 		}
 //        drawActiveTones((Graphics2D)g);
 //        drawCircles(g);
@@ -335,6 +368,9 @@ public class GridPanel extends JPanel {
     	for(int i=0; i<columns; i++){
     		drawColumn(g, personIndex, i);
     	}
+    	//Add Button Drawing
+    	drawButton(g, personIndex, 3, player.getHeight()+1, 0.9, 0.9);
+    	drawButton(g, personIndex, 11, player.getHeight()+1, 0.9, 0.9);
     }
 
     /* Calls draw methods for each note in a column
@@ -416,9 +452,79 @@ public class GridPanel extends JPanel {
     	else if(tonePlayed) {
     		squareColour = Color.black;
     	}
+    	if (activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==MENU_MENU){
+    		squareColour.darker();
+    	}
 	  	g.setPaint(squareColour);
     	
 	  	g.fill(gp);
+    }
+
+    /* Draws the Button.
+     */
+    private void drawButton(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor){
+
+    	double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
+    	double endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+4) + xFactor)*radPerColumn() + radOffset;
+    	
+    	double lowerRadius = getRadius() - ((double)(toneIndex+1) - yFactor)*squareHeight;
+    	double upperRadius = getRadius() - ((double)(toneIndex+4) + yFactor)*squareHeight;
+    	
+    	GeneralPath gp = new GeneralPath();
+    	gp.moveTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1 (lower left)
+    			translateY(lowerRadius*Math.sin(beginAngle) + getHeight()/2));	//y1
+    	gp.lineTo(upperRadius*Math.cos(beginAngle) + getWidth()/2,						//x2 (upper left)
+    			translateY(upperRadius*Math.sin(beginAngle) + getHeight()/2));	//y2
+    	
+    	Point[] upperBP = generateBezierPoints(upperRadius, beginAngle, endAngle);		//upper curve
+    	gp.curveTo(upperBP[1].getX() + getWidth()/2,
+    			translateY(upperBP[1].getY() + getHeight()/2),
+    			upperBP[2].getX() + getWidth()/2,
+    			translateY(upperBP[2].getY() + getHeight()/2),
+    			upperRadius*Math.cos(endAngle) + getWidth()/2,
+    			translateY(upperRadius*Math.sin(endAngle) + getHeight()/2));
+    	
+//    	gp.lineTo(upperRadius*Math.cos(endAngle) + getWidth()/2,						//x3
+//    			translateY((int)(upperRadius*Math.sin(endAngle) + getHeight()/2)));		//y3
+    	
+    	gp.lineTo(lowerRadius*Math.cos(endAngle) + getWidth()/2,						//x4
+    			translateY(lowerRadius*Math.sin(endAngle) + getHeight()/2));		//y4
+
+    	Point[] lowerBP = generateBezierPoints(lowerRadius, beginAngle, endAngle);
+    	gp.curveTo(lowerBP[2].getX() + getWidth()/2,
+    			translateY(lowerBP[2].getY() + getHeight()/2),
+    			lowerBP[1].getX() + getWidth()/2,
+    			translateY(lowerBP[1].getY() + getHeight()/2),
+    			lowerRadius*Math.cos(beginAngle) + getWidth()/2,
+    			translateY(lowerRadius*Math.sin(beginAngle) + getHeight()/2));
+    	
+//    	gp.lineTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1
+//    			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));	//y1
+    	
+    	gp.closePath();
+
+    	Color squareColour = getColorFor(personIndex);
+    	if (activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==MENU_MENU){
+    		squareColour.darker();
+    	}
+	  	g.setPaint(squareColour);
+    	
+	  	g.fill(gp);
+    }
+
+    private void drawInstrumentMenu(Graphics2D g, int personIndex){
+    	//TODO
+    	
+    }
+    
+    private void drawInstrumentMenu2(Graphics2D g, int personIndex){
+    	//TODO
+    	
+    }
+    
+    private void drawMenuMenu(Graphics2D g, int personIndex){
+    	//TODO
+    	
     }
     
     private Point[] generateBezierPoints(double radius, double beginAngle, double endAngle) {
@@ -540,21 +646,111 @@ public class GridPanel extends JPanel {
         return null;
     }
     
+    private NoteIndex translatePointToIndex(Point point) {
+        // centreer de punten
+        int rx = point.x - this.getWidth()/2;
+        int ry = point.y - this.getHeight()/2;
+                
+        int rr = (int)Math.sqrt(rx*rx+ry*ry);
+        double radr = Math.atan(((double)ry)/((double)rx));
+        if(rx < 0 && ry >= 0) {
+            radr += Math.PI;
+        }
+        else if(rx < 0 && ry < 0) {
+            radr += Math.PI;
+        }
+        else if(rx > 0 && ry < 0) {
+            radr += Math.PI * 2d;
+        }
+        radr -= radOffset;
+        // nu weten we de hoek (radr) en de straal (rr)
+        double sizePerPerson = (Math.PI * 2d) / (double)(player.getActiveGrids().size());
+        int personIndex = (int)Math.floor(radr / sizePerPerson);
+        int num = player.getActiveGrids().size();
+        personIndex = (personIndex % num + num) % num;
+        int colIndex = (int)Math.floor((radr - (double)personIndex * sizePerPerson) / radPerColumn());
+        int w = player.getWidth();
+        colIndex = (colIndex % w + w) % w;
+        int toneIndex = player.getHeight() - (int)Math.floor(((double)(rr - (getRadius() - squareHeight * player.getHeight())) / (double)squareHeight)) - 1;
+        
+        
+        return new NoteIndex(personIndex, colIndex, toneIndex);
+        
+    }
+    
     //	Process press events
     private void processPress(int id, Point point) {
     	
     	boolean drawing;
     	
-        NoteIndex pressedNote = translatePointToNoteIndex(point);
+        NoteIndex pressedNote = translatePointToIndex(point);
     	
-        if(pressedNote != null) {
+        if(pressedNote.getNote() >= 0 && pressedNote.getNote() < player.getHeight()&&activeMenu[pressedNote.getPerson()]==NO_MENU) {
             ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
             tg.toggleTone(pressedNote.getColumn(), pressedNote.getNote());
             drawing = tg.getTone(pressedNote.getColumn(), pressedNote.getNote());
         }
-        else
+        else {
         	drawing = true;
-
+        if (pressedNote.getNote() >= player.getHeight() && pressedNote.getNote() < player.getHeight()+4){
+        	//Menu's may have been pressed
+        	//col 3-6 11-14
+        	if (pressedNote.getColumn()>=3&&pressedNote.getColumn()<=6){
+        		if (activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU||activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2)
+        			activeMenu[pressedNote.getPerson()]=NO_MENU;
+        		else
+        		activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU;        		
+        	}
+        	if (pressedNote.getColumn()>=11&&pressedNote.getColumn()<=14){
+        		if (activeMenu[pressedNote.getPerson()]==MENU_MENU)
+        			activeMenu[pressedNote.getPerson()]=NO_MENU;
+        		else
+        		activeMenu[pressedNote.getPerson()]=MENU_MENU;
+        	}
+        }
+        if (pressedNote.getNote()>=4&&pressedNote.getNote()<=8&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU){
+        	//Instrument Button has Been Pressed in INSTRUMENT_MENU
+        	if (pressedNote.getColumn()>=3&&pressedNote.getColumn()<=5){
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[1]);
+        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	}
+        	if (pressedNote.getColumn()>=6&&pressedNote.getColumn()<=8){
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[25]);
+        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+			}
+        	if (pressedNote.getColumn()>=9&&pressedNote.getColumn()<=11){
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[33]);
+        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+			}
+        	if (pressedNote.getColumn()>=12&&pressedNote.getColumn()<=14){
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.GetDrums());
+        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+    		}}
+        if (pressedNote.getNote()>=4&&pressedNote.getNote()<=8&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2){
+        	//Instrument Button has Been Pressed in INSTRUMENT_MENU2
+        	if (pressedNote.getColumn()>=3&&pressedNote.getColumn()<=5){
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[41]);
+        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	}
+        	if (pressedNote.getColumn()>=6&&pressedNote.getColumn()<=8){
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[57]);
+        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+			}
+        	if (pressedNote.getColumn()>=9&&pressedNote.getColumn()<=11){
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[74]);
+        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+			}
+        	if (pressedNote.getColumn()>=12&&pressedNote.getColumn()<=14){
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[92]);
+        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+    		}}
+        if (pressedNote.getNote()>=1&&pressedNote.getNote()<=3&&pressedNote.getColumn()>=15&&pressedNote.getColumn()<=16&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU)
+        	activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU2;
+        if (pressedNote.getNote()>=1&&pressedNote.getNote()<=3&&pressedNote.getColumn()>=1&&pressedNote.getColumn()<=3&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2)
+        	activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU;
+        
+        }
+        	
     	pressedNotes.put(id, new Pointer(point, drawing));
     }
     
@@ -568,7 +764,7 @@ public class GridPanel extends JPanel {
     	NoteIndex pressedNote = translatePointToNoteIndex(point);
     	
 
-    	if(pressedNote != null) {
+    	if(pressedNote != null&&activeMenu[pressedNote.getPerson()]==NO_MENU) {
             ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
         	if(drawing)
         		tg.activateTone(pressedNote.getColumn(), pressedNote.getNote());
