@@ -147,6 +147,7 @@ public class GridPanel extends JPanel {
         public void mousePressed(MouseEvent e) {
         	Point p = e.getPoint();
         	p.setLocation(p.getX(), translateY(p.getY()));
+        	
             processPress(0, p);
             repaint();
         }
@@ -368,8 +369,8 @@ public class GridPanel extends JPanel {
     		drawColumn(g, personIndex, i);
     	}
     	//Add Button Drawing
-    	drawButton(g, personIndex, 3, player.getHeight()+1, 0.9, 0.9);
-    	drawButton(g, personIndex, 11, player.getHeight()+1, 0.9, 0.9);
+    	drawButton(g, personIndex, 2, player.getHeight()+1, 0.9, 0.9);
+    	drawButton(g, personIndex, 10, player.getHeight()+1, 0.9, 0.9);
     }
 
     /* Calls draw methods for each note in a column
@@ -451,8 +452,8 @@ public class GridPanel extends JPanel {
     	else if(tonePlayed) {
     		squareColour = Color.black;
     	}
-    	if (activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==MENU_MENU){
-    		squareColour.darker();
+    	if (activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==MENU_MENU||activeMenu[personIndex]==INSTRUMENT_MENU2){
+    		squareColour=squareColour.darker().darker();
     	}
 	  	g.setPaint(squareColour);
     	
@@ -464,10 +465,10 @@ public class GridPanel extends JPanel {
     private void drawButton(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor){
 
     	double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
-    	double endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+4) + xFactor)*radPerColumn() + radOffset;
+    	double endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+3) + xFactor)*radPerColumn() + radOffset;
     	
     	double lowerRadius = getRadius() - ((double)(toneIndex+1) - yFactor)*squareHeight;
-    	double upperRadius = getRadius() - ((double)(toneIndex+4) + yFactor)*squareHeight;
+    	double upperRadius = getRadius() - ((double)(toneIndex+2) + yFactor)*squareHeight;
     	
     	GeneralPath gp = new GeneralPath();
     	gp.moveTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1 (lower left)
@@ -503,8 +504,8 @@ public class GridPanel extends JPanel {
     	gp.closePath();
 
     	Color squareColour = getColorFor(personIndex);
-    	if (activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==MENU_MENU){
-    		squareColour.darker();
+    	if (activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==MENU_MENU||activeMenu[personIndex]==INSTRUMENT_MENU2){
+    		squareColour=squareColour.darker().darker();
     	}
 	  	g.setPaint(squareColour);
     	
@@ -672,7 +673,7 @@ public class GridPanel extends JPanel {
         colIndex = (colIndex % w + w) % w;
         int toneIndex = player.getHeight() - (int)Math.floor(((double)(rr - (getRadius() - squareHeight * player.getHeight())) / (double)squareHeight)) - 1;
         
-        
+        System.out.println("Col: "+colIndex+" Row: "+toneIndex);
         return new NoteIndex(personIndex, colIndex, toneIndex);
         
     }
@@ -691,16 +692,16 @@ public class GridPanel extends JPanel {
         }
         else {
         	drawing = true;
-        if (pressedNote.getNote() >= player.getHeight() && pressedNote.getNote() < player.getHeight()+4){
+        if (pressedNote.getNote() >= player.getHeight()+1 && pressedNote.getNote() < player.getHeight()+4){
         	//Menu's may have been pressed
         	//col 3-6 11-14
-        	if (pressedNote.getColumn()>=3&&pressedNote.getColumn()<=6){
+        	if (pressedNote.getColumn()>=2&&pressedNote.getColumn()<=5){
         		if (activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU||activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2)
         			activeMenu[pressedNote.getPerson()]=NO_MENU;
         		else
         		activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU;        		
         	}
-        	if (pressedNote.getColumn()>=11&&pressedNote.getColumn()<=14){
+        	if (pressedNote.getColumn()>=10&&pressedNote.getColumn()<=13){
         		if (activeMenu[pressedNote.getPerson()]==MENU_MENU)
         			activeMenu[pressedNote.getPerson()]=NO_MENU;
         		else
@@ -708,45 +709,45 @@ public class GridPanel extends JPanel {
         	}
         }
         List<GridConfiguration> configs = InstrumentHolder.getInstance().getAvailableConfigurations();
-        if (pressedNote.getNote()>=4&&pressedNote.getNote()<=8&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU){
+        if (pressedNote.getNote()>=3&&pressedNote.getNote()<=6&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU){
         	//Instrument Button has Been Pressed in INSTRUMENT_MENU
-        	if (pressedNote.getColumn()>=3&&pressedNote.getColumn()<=5){
+        	if (pressedNote.getColumn()>=2&&pressedNote.getColumn()<=4){
         		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(0));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
         	}
-        	if (pressedNote.getColumn()>=6&&pressedNote.getColumn()<=8){
+        	if (pressedNote.getColumn()>=5&&pressedNote.getColumn()<=7){
         		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(1));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
 			}
-        	if (pressedNote.getColumn()>=9&&pressedNote.getColumn()<=11){
+        	if (pressedNote.getColumn()>=8&&pressedNote.getColumn()<=10){
         		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(2));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
 			}
-        	if (pressedNote.getColumn()>=12&&pressedNote.getColumn()<=14){
+        	if (pressedNote.getColumn()>=11&&pressedNote.getColumn()<=13){
         		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(3));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
     		}}
-        if (pressedNote.getNote()>=4&&pressedNote.getNote()<=8&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2){
+        if (pressedNote.getNote()>=3&&pressedNote.getNote()<=6&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2){
         	//Instrument Button has Been Pressed in INSTRUMENT_MENU2
-        	if (pressedNote.getColumn()>=3&&pressedNote.getColumn()<=5){
+        	if (pressedNote.getColumn()>=2&&pressedNote.getColumn()<=4){
         		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(1));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
         	}
-        	if (pressedNote.getColumn()>=6&&pressedNote.getColumn()<=8){
+        	if (pressedNote.getColumn()>=5&&pressedNote.getColumn()<=7){
         		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(2));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
 			}
-        	if (pressedNote.getColumn()>=9&&pressedNote.getColumn()<=11){
+        	if (pressedNote.getColumn()>=8&&pressedNote.getColumn()<=10){
         		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(3));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
 			}
-        	if (pressedNote.getColumn()>=12&&pressedNote.getColumn()<=14){
+        	if (pressedNote.getColumn()>=11&&pressedNote.getColumn()<=13){
         		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(0));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
     		}}
-        if (pressedNote.getNote()>=1&&pressedNote.getNote()<=3&&pressedNote.getColumn()>=15&&pressedNote.getColumn()<=16&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU)
+        if (pressedNote.getNote()>=1&&pressedNote.getNote()<=2&&pressedNote.getColumn()>=14&&pressedNote.getColumn()<=15&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU)
         	activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU2;
-        if (pressedNote.getNote()>=1&&pressedNote.getNote()<=3&&pressedNote.getColumn()>=1&&pressedNote.getColumn()<=3&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2)
+        if (pressedNote.getNote()>=1&&pressedNote.getNote()<=2&&pressedNote.getColumn()>=0&&pressedNote.getColumn()<=2&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2)
         	activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU;
         
         }
