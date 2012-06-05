@@ -69,7 +69,7 @@ public class Player implements Runnable {
                 this.pos = (this.pos + 1) % this.w;
                 
                 if(this.gridPanel != null)
-                	gridPanel.repaint();
+                    gridPanel.repaint();
                 
                 synchronized(this.grids) {
                     for(ToneGrid g : this.grids) {
@@ -185,6 +185,76 @@ public class Player implements Runnable {
             grid.setChannel(channels[this.lastChannelIndex]);
             useChannel(this.lastChannelIndex, grid);
         }
+    }
+    
+    /**
+     * 
+     * @param grid
+     * @param instrument Drums are equal to null for the purposes of this method
+     * @param velocity
+     */
+    public void setInstrument(ToneGrid grid,Instrument instrument,int velocity){
+    	if(grid instanceof DrumToneGrid){
+    		//check if 
+    		if(instrument == null){
+    			//doNothing
+    		}
+    		else{
+    			grid.setIsActive(false);
+    			grid.getChannel().allNotesOff();
+    			ToneGrid newToneGrid = new InstrumentToneGrid(60, 16, instrument, velocity);
+    	        this.registerToneGrid(newToneGrid);
+    	        newToneGrid.setAllTones(grid.getAllTones());
+    	        newToneGrid.setIsActive(true);
+    		}
+    	} else {
+    		if(instrument==null){
+    			boolean drums = false;
+    			for(int i=0; i < getActiveGrids().size(); i++){
+    				if(getActiveGrids().get(i) instanceof DrumToneGrid){
+    					drums=true;
+    				}
+    			}
+    			if(!drums){
+    				
+        			boolean stop=false;
+        			for(int i=0;i<getActiveGrids().size()&&!stop;i++){
+        				if(getActiveGrids().get(i).getChannel().equals(synthesizer.getChannels()[lastChannelIndex])){
+        					getActiveGrids().get(i).setChannel(grid.getChannel());
+        					lastChannelIndex--;
+        					stop=true;
+        					
+        				}
+        			}
+        			grid.setIsActive(false);
+        			grid.getChannel().allNotesOff();
+        			List<Integer> drumset = new ArrayList<Integer>();
+        	        drumset.add(DrumToneGrid.d35_Acoustic_Bass_Drum);
+        	        drumset.add(DrumToneGrid.d36_Bass_Drum_1);
+        	        drumset.add(DrumToneGrid.d37_Side_Stick);
+        	        drumset.add(DrumToneGrid.d38_Acoustic_Snare);
+        	        drumset.add(DrumToneGrid.d41_Low_Floor_Tom);
+        	        drumset.add(DrumToneGrid.d42_Closed_Hi_Hat);
+        	        drumset.add(DrumToneGrid.d44_Pedal_Hi_Hat);
+        	        drumset.add(DrumToneGrid.d49_Crash_Cymbal_1);
+        	        drumset.add(DrumToneGrid.d56_Cowbell);
+        	        drumset.add(DrumToneGrid.d54_Tambourine);
+        			ToneGrid newToneGrid = new DrumToneGrid(drumset);
+        	        this.registerToneGrid(newToneGrid);
+        	        newToneGrid.setAllTones(grid.getAllTones());
+        	        newToneGrid.setIsActive(true);
+    			//kanaal vrijmaken, nieuwe drumgrid maken, alle tonen inzetten van de grid, registeren.
+    			//drum laden
+    			}
+    		} else{
+    			grid.setInstrument(instrument);
+    			((InstrumentToneGrid) grid).setVelocity(velocity);
+    			this.synthesizer.loadInstrument(grid.getInstrument());
+    			Patch instrPatch = grid.getInstrument().getPatch();
+    			grid.getChannel().programChange(instrPatch.getBank(), instrPatch.getProgram());
+    		}
+    		
+    	}
     }
     
     public void setGridPanel(GridPanel gridPanel) {

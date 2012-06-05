@@ -14,6 +14,7 @@ import javax.sound.midi.MidiChannel;
 /**
  *
  * @author Niels Kamp, Kasper Vaessen, Niels Visser
+ * @param <syncronized>
  */
 public abstract class ToneGrid {
 
@@ -46,7 +47,7 @@ public abstract class ToneGrid {
     }
     
     public void activateTone(int column, int note) {
-    	List<Boolean> col = this.grid.get(column);
+        List<Boolean> col = this.grid.get(column);
         synchronized (col) {
             col.set(note, true);
         }
@@ -69,6 +70,10 @@ public abstract class ToneGrid {
             }
         }
         return result;
+    }
+    
+    public synchronized void setAllTones(List<List<Boolean>> grid){
+    	this.grid=grid;
     }
 
     
@@ -94,6 +99,8 @@ public abstract class ToneGrid {
     public Instrument getInstrument() {
         return this.instrument;
     }
+    
+    public abstract void setInstrument(Instrument instrument);
 
     public boolean isIsActive() {
         return isActive;
