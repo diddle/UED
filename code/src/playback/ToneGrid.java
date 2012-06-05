@@ -16,30 +16,20 @@ import javax.sound.midi.MidiChannel;
  * @author Niels Kamp, Kasper Vaessen, Niels Visser
  * @param <syncronized>
  */
-public abstract class ToneGrid {
+public class ToneGrid {
 
     protected List<List<Boolean>> grid;
     protected int width;
     protected int height;
-    protected Instrument instrument;
-    protected MidiChannel channel;
     protected boolean isActive;
+    protected GridConfiguration gc;
 
-    public ToneGrid(int height) {
-        this.height = height;
+    public ToneGrid(GridConfiguration gc) {
+        this.height = 10;
+        this.gc = gc;
     }
     
-    public List<List<Boolean>> getGrid() {
-        return this.grid;
-    }
-    
-    public void setGrid(List<List<Boolean>> grid) {
-        this.grid = grid;
-    }
-    
-
     public void toggleTone(int column, int note) {
-
         List<Boolean> col = this.grid.get(column);
         synchronized (col) {
             col.set(note, !col.get(note));
@@ -72,35 +62,35 @@ public abstract class ToneGrid {
         return result;
     }
     
-    public synchronized void setAllTones(List<List<Boolean>> grid){
-    	this.grid=grid;
-    }
-
-    
     public boolean getTone(int column, int note) {
         synchronized (this.grid) {
             return this.grid.get(column).get(note);
         }
     }
     
-    public abstract void playColumnTones(int column, ParticlePanel vp);
-    
-    public void playColumnTones(int column, int velocity, ParticlePanel vp) {
+    /**
+     * Delegeert aan gridconfig
+     * @param column
+     * @param vp 
+     */
+    public void playColumnTones(int column, ParticlePanel vp) {
         List<Integer> tones = this.getColumnTones(column);
-        this.channel.allNotesOff();
-        for(int tone : tones) {
-            this.channel.noteOn(tone, velocity);
-            vp.notePlayed(tone, velocity, null);
+        this.gc.playTones(tones, vp);
+    }
+    
+    public List<Integer> getColumnTones(int x) {
+        List<Boolean> notesArray = this.grid.get(x);
+        List<Integer> notesList = new ArrayList<Integer>();
+        for(int i=0; i<notesArray.size(); i++) {
+            if(notesArray.get(i))
+                notesList.add(i);
         }
+        return notesList;
     }
     
-    public abstract List<Integer> getColumnTones(int x);
-    
-    public Instrument getInstrument() {
-        return this.instrument;
+    public void setConfiguration(GridConfiguration gc) {
+        this.gc = gc;
     }
-    
-    public abstract void setInstrument(Instrument instrument);
 
     public boolean isIsActive() {
         return isActive;
@@ -108,14 +98,6 @@ public abstract class ToneGrid {
 
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
-    }
-
-    public MidiChannel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(MidiChannel channel) {
-        this.channel = channel;
     }
     
     public void registerCallBack(int w) {

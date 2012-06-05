@@ -28,23 +28,23 @@ public class Main {
         
         // voeg drums toe
         List<Integer> drumkit = new ArrayList<Integer>();
-        drumkit.add(DrumToneGrid.d35_Acoustic_Bass_Drum);
-        drumkit.add(DrumToneGrid.d36_Bass_Drum_1);
-        drumkit.add(DrumToneGrid.d37_Side_Stick);
-        drumkit.add(DrumToneGrid.d38_Acoustic_Snare);
-        drumkit.add(DrumToneGrid.d41_Low_Floor_Tom);
-        drumkit.add(DrumToneGrid.d42_Closed_Hi_Hat);
-        drumkit.add(DrumToneGrid.d44_Pedal_Hi_Hat);
-        drumkit.add(DrumToneGrid.d49_Crash_Cymbal_1);
-        drumkit.add(DrumToneGrid.d56_Cowbell);
-        drumkit.add(DrumToneGrid.d54_Tambourine);
+        drumkit.add(DrumGridConfiguration.d35_Acoustic_Bass_Drum);
+        drumkit.add(DrumGridConfiguration.d36_Bass_Drum_1);
+        drumkit.add(DrumGridConfiguration.d37_Side_Stick);
+        drumkit.add(DrumGridConfiguration.d38_Acoustic_Snare);
+        drumkit.add(DrumGridConfiguration.d41_Low_Floor_Tom);
+        drumkit.add(DrumGridConfiguration.d42_Closed_Hi_Hat);
+        drumkit.add(DrumGridConfiguration.d44_Pedal_Hi_Hat);
+        drumkit.add(DrumGridConfiguration.d49_Crash_Cymbal_1);
+        drumkit.add(DrumGridConfiguration.d56_Cowbell);
+        drumkit.add(DrumGridConfiguration.d54_Tambourine);
         DrumGridConfiguration drums = new DrumGridConfiguration(drumkit, 60);
         InstrumentHolder.getInstance().addConfiguration(drums);
         // voeg piano toe
         InstrumentGridConfiguration piano = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("piano"), 60);
         InstrumentHolder.getInstance().addConfiguration(piano);
         // voeg bas toe
-        InstrumentGridConfiguration bass = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("bass"), 36);
+        InstrumentGridConfiguration bass = new InstrumentGridConfiguration(36, 16, InstrumentHolder.SearchInstrument("bass"), 60);
         InstrumentHolder.getInstance().addConfiguration(bass);
         // voeg gitaar toe
         InstrumentGridConfiguration guitar = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("gt."), 60);
@@ -54,19 +54,19 @@ public class Main {
         ParticlePanel vp = new ParticlePanel();
         Player p = new Player(120, 16, vp);
         
-        ToneGrid bassGrid = new InstrumentToneGrid(bass);
+        ToneGrid bassGrid = new ToneGrid(bass);
         p.registerToneGrid(bassGrid);
         bassGrid.setIsActive(true);
         
-        ToneGrid highthingy = new InstrumentToneGrid(piano);
+        ToneGrid highthingy = new ToneGrid(piano);
         p.registerToneGrid(highthingy);
         highthingy.setIsActive(true);
         
-        ToneGrid strangesound1 = new InstrumentToneGrid(guitar);
+        ToneGrid strangesound1 = new ToneGrid(guitar);
         p.registerToneGrid(strangesound1);
         strangesound1.setIsActive(true);
         
-        ToneGrid drumGrid = new DrumToneGrid(drums);
+        ToneGrid drumGrid = new ToneGrid(drums);
         p.registerToneGrid(drumGrid);
         drumGrid.setIsActive(true);
         

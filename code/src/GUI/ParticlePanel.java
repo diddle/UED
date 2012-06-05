@@ -127,7 +127,7 @@ public class ParticlePanel extends JPanel implements Runnable, MouseListener {
 //		filters[3].setEnabled(true);
 //		filters[4].setEnabled(true);
                 filters[10].setEnabled(true);
-                filters[11].setEnabled(true);
+                //4filters[11].setEnabled(true);
                 filters[12].setEnabled(true);
                 filters[13].setEnabled(true);
 //                filters[9].setEnabled(true);

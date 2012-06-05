@@ -24,22 +24,21 @@ public class Player implements Runnable {
     private List<ToneGrid> grids;
     private int bpm;
     private long lastBeat;
-    private int w;
+    private int width;
     private int pos;
     private Synthesizer synthesizer;
     private Instrument[] instrumentList;
-    private int lastChannelIndex = -1;
     private boolean stopped = false;
     private GridPanel gridPanel;
     private HashMap<Integer, List<ToneGrid>> channelUses;
     private ParticlePanel vp;
     
-    public Player(int bpm, int w, ParticlePanel vp) {
+    public Player(int bpm, int width, ParticlePanel vp) {
         this.grids = new ArrayList<ToneGrid>();
         this.channelUses = new HashMap<Integer, List<ToneGrid>>();
         this.bpm = bpm;
         this.lastBeat = this.now();
-        this.w = w;
+        this.width = width;
         this.pos = 0;
         this.vp = vp;
         
@@ -66,7 +65,7 @@ public class Player implements Runnable {
         while(!this.stopped) {
             if(this.lastBeat < this.now() - 15000d / (double)this.bpm) {
                 this.lastBeat = this.now();
-                this.pos = (this.pos + 1) % this.w;
+                this.pos = (this.pos + 1) % this.width;
                 
                 if(this.gridPanel != null)
                     gridPanel.repaint();
@@ -87,27 +86,6 @@ public class Player implements Runnable {
         this.synthesizer.close();
     }
     
-    private void useChannel(int channel, ToneGrid tg) {
-        if(!this.channelUses.containsKey(new Integer(9))) {
-            this.channelUses.put(channel, new ArrayList<ToneGrid>());
-        }
-        this.channelUses.get(channel).add(tg);
-    }
-    
-    private void releaseChannel(int channel, ToneGrid tg) {
-        this.channelUses.get(channel).remove(tg);
-    }
-    
-    private int getFreeChannel() {
-        // 16 kanalen
-        for(int i=0; i<16; i++) {
-            if(i != 9 && (!this.channelUses.containsKey(i) || this.channelUses.get(i).isEmpty())) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    
     private int gridIndex(ToneGrid g) {
         for(int i = 0; i< this.grids.size(); i++) {
             if(this.grids.get(i) == g) {
@@ -117,144 +95,13 @@ public class Player implements Runnable {
         return -1;
     }
     
-    public void changeInstrument(ToneGrid tg, Instrument newInstrument) {
-        GridConfiguration gc = null;
-        List<List<Boolean>> gridBackup = tg.getGrid();
-        ToneGrid newToneGrid = null;
-        if(newInstrument.toString().toLowerCase().contains("drum")) {
-            //... drums
-            Instrument drums = InstrumentHolder.GetDrums();
-            gc = InstrumentHolder.getInstance().GetGridConfigurationByInstrument(drums);
-            if(gc == null) {
-                throw new RuntimeException("Could not find configuration for drum kit!");
-            }
-            newToneGrid = new DrumToneGrid((DrumGridConfiguration)gc);
-        }
-        else {
-            gc = InstrumentHolder.getInstance().GetGridConfigurationByInstrument(newInstrument);
-            if(gc == null) {
-                throw new RuntimeException("Could not find configuration for " + newInstrument.toString());
-            }
-            newToneGrid = new InstrumentToneGrid((InstrumentGridConfiguration)gc);
-        }
-        newToneGrid.setGrid(gridBackup);
-        // maak het kanaal klaar
-        int currentGridIndex = this.gridIndex(tg);
-        MidiChannel[] channels = this.synthesizer.getChannels();
-        int currentChannel = -1;
-        for(Integer key : this.channelUses.keySet()) {
-            List<ToneGrid> tgl = this.channelUses.get(key);
-            if(tgl.contains(tg)) {
-                currentChannel = key;
-            }
-        }
-        if(currentChannel == -1) {
-            throw new RuntimeException("Channel could not be found");
-        }
-        if(currentChannel != 9) {
-            this.releaseChannel(currentChannel, tg);
-        }
-        int newChannel = this.getFreeChannel();
-        Patch instrPatch = newInstrument.getPatch();
-        channels[newChannel].programChange(instrPatch.getBank(), instrPatch.getProgram());
-        tg.setIsActive(false);
-        newToneGrid.channel = channels[newChannel];
-        newToneGrid.setIsActive(true);
-        this.grids.set(currentGridIndex, newToneGrid);
-    }
-    
-    
     public void registerToneGrid(ToneGrid grid) {
-        grid.registerCallBack(this.w);
+        grid.registerCallBack(this.width);
         synchronized (this.grids) {
             if (!this.grids.contains(grid)) {
                 this.grids.add(grid);
             }
         }
-        if(grid instanceof DrumToneGrid) {
-            MidiChannel[] channels = this.synthesizer.getChannels();
-            useChannel(9, grid);
-            grid.setChannel(channels[9]);
-        }
-        else {
-            this.synthesizer.loadInstrument(grid.getInstrument());
-            MidiChannel[] channels = this.synthesizer.getChannels();
-            Patch instrPatch = grid.getInstrument().getPatch();
-            this.lastChannelIndex++;
-            channels[this.lastChannelIndex].programChange(instrPatch.getBank(), instrPatch.getProgram());
-            grid.setChannel(channels[this.lastChannelIndex]);
-            useChannel(this.lastChannelIndex, grid);
-        }
-    }
-    
-    /**
-     * 
-     * @param grid
-     * @param instrument Drums are equal to null for the purposes of this method
-     * @param velocity
-     */
-    public void setInstrument(ToneGrid grid,Instrument instrument,int velocity){
-    	if(grid instanceof DrumToneGrid){
-    		//check if 
-    		if(instrument == null){
-    			//doNothing
-    		}
-    		else{
-    			grid.setIsActive(false);
-    			grid.getChannel().allNotesOff();
-    			ToneGrid newToneGrid = new InstrumentToneGrid(60, 16, instrument, velocity);
-    	        this.registerToneGrid(newToneGrid);
-    	        newToneGrid.setAllTones(grid.getAllTones());
-    	        newToneGrid.setIsActive(true);
-    		}
-    	} else {
-    		if(instrument==null){
-    			boolean drums = false;
-    			for(int i=0; i < getActiveGrids().size(); i++){
-    				if(getActiveGrids().get(i) instanceof DrumToneGrid){
-    					drums=true;
-    				}
-    			}
-    			if(!drums){
-    				
-        			boolean stop=false;
-        			for(int i=0;i<getActiveGrids().size()&&!stop;i++){
-        				if(getActiveGrids().get(i).getChannel().equals(synthesizer.getChannels()[lastChannelIndex])){
-        					getActiveGrids().get(i).setChannel(grid.getChannel());
-        					lastChannelIndex--;
-        					stop=true;
-        					
-        				}
-        			}
-        			grid.setIsActive(false);
-        			grid.getChannel().allNotesOff();
-        			List<Integer> drumset = new ArrayList<Integer>();
-        	        drumset.add(DrumToneGrid.d35_Acoustic_Bass_Drum);
-        	        drumset.add(DrumToneGrid.d36_Bass_Drum_1);
-        	        drumset.add(DrumToneGrid.d37_Side_Stick);
-        	        drumset.add(DrumToneGrid.d38_Acoustic_Snare);
-        	        drumset.add(DrumToneGrid.d41_Low_Floor_Tom);
-        	        drumset.add(DrumToneGrid.d42_Closed_Hi_Hat);
-        	        drumset.add(DrumToneGrid.d44_Pedal_Hi_Hat);
-        	        drumset.add(DrumToneGrid.d49_Crash_Cymbal_1);
-        	        drumset.add(DrumToneGrid.d56_Cowbell);
-        	        drumset.add(DrumToneGrid.d54_Tambourine);
-        			ToneGrid newToneGrid = new DrumToneGrid(drumset);
-        	        this.registerToneGrid(newToneGrid);
-        	        newToneGrid.setAllTones(grid.getAllTones());
-        	        newToneGrid.setIsActive(true);
-    			//kanaal vrijmaken, nieuwe drumgrid maken, alle tonen inzetten van de grid, registeren.
-    			//drum laden
-    			}
-    		} else{
-    			grid.setInstrument(instrument);
-    			((InstrumentToneGrid) grid).setVelocity(velocity);
-    			this.synthesizer.loadInstrument(grid.getInstrument());
-    			Patch instrPatch = grid.getInstrument().getPatch();
-    			grid.getChannel().programChange(instrPatch.getBank(), instrPatch.getProgram());
-    		}
-    		
-    	}
     }
     
     public void setGridPanel(GridPanel gridPanel) {
@@ -296,6 +143,6 @@ public class Player implements Runnable {
     }
     
     public int getWidth() {
-        return this.w;
+        return this.width;
     }
 }
