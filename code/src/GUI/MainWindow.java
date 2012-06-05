@@ -4,9 +4,12 @@
  */
 package GUI;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import playback.Player;
 
 /**
@@ -14,15 +17,22 @@ import playback.Player;
  * @author Niels Visser
  */
 public class MainWindow extends JFrame {
-    public MainWindow(Player p) {
+    public MainWindow(Player p, ParticlePanel vp) {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //this.fullScreen();
         //this.setBounds ( 10 , 10 , 200 , 200 );
         //this.setVisible(true);
         GridPanel gf = new GridPanel(p);
-        this.add(gf);
-        this.fullScreen();
+//        JLayeredPane layers = getLayeredPane();
+        JLayeredPane layers = new JLayeredPane();
+//        layers.setPreferredSize(new Dimension(300, 310));
+        layers.add(vp, new Integer(1));
+        vp.setBounds(0, -128, 1024, 1024);
+        layers.add(gf, new Integer(2));
+        gf.setBounds(0, 0, 1024, 768);
+        this.add(layers);
         
+        this.fullScreen();
     }
     
     private void fullScreen() {

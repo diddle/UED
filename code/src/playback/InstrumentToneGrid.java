@@ -4,9 +4,11 @@
  */
 package playback;
 
+import GUI.NoteIndex;
+import GUI.ParticlePanel;
+import GUI.VisualizationPanel;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sound.midi.Instrument;
 
 /**
  *
@@ -17,11 +19,11 @@ public class InstrumentToneGrid extends ToneGrid{
     private int baseNote;
     private int velocity;
     
-    public InstrumentToneGrid(int baseNote, int numNotes, Instrument instrument, int velocity) {
-        super(numNotes);
-        this.instrument = instrument;
-        this.baseNote = baseNote;
-        this.velocity = velocity;
+    public InstrumentToneGrid(InstrumentGridConfiguration config) {
+        super(config.getNumnotes());
+        this.instrument = config.getInstrument();
+        this.baseNote = config.getBasenote();
+        this.velocity = config.getVelocity();
     }
 
     public int getBaseNote() {
@@ -56,7 +58,7 @@ public class InstrumentToneGrid extends ToneGrid{
     }
 
     @Override
-    public void playColumnTones(int x) {
-        super.playColumnTones(x, velocity);
+    public void playColumnTones(int x, ParticlePanel vp) {
+        super.playColumnTones(x, velocity, vp);
     }
 }

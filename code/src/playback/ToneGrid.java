@@ -4,6 +4,8 @@
  */
 package playback;
 
+import GUI.ParticlePanel;
+import GUI.VisualizationPanel;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sound.midi.Instrument;
@@ -25,6 +27,15 @@ public abstract class ToneGrid {
     public ToneGrid(int height) {
         this.height = height;
     }
+    
+    public List<List<Boolean>> getGrid() {
+        return this.grid;
+    }
+    
+    public void setGrid(List<List<Boolean>> grid) {
+        this.grid = grid;
+    }
+    
 
     public void toggleTone(int column, int note) {
 
@@ -67,13 +78,14 @@ public abstract class ToneGrid {
         }
     }
     
-    public abstract void playColumnTones(int column);
+    public abstract void playColumnTones(int column, ParticlePanel vp);
     
-    public void playColumnTones(int column, int velocity) {
+    public void playColumnTones(int column, int velocity, ParticlePanel vp) {
         List<Integer> tones = this.getColumnTones(column);
         this.channel.allNotesOff();
         for(int tone : tones) {
             this.channel.noteOn(tone, velocity);
+            vp.notePlayed(tone, velocity, null);
         }
     }
     

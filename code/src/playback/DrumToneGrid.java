@@ -4,9 +4,11 @@
  */
 package playback;
 
+import GUI.NoteIndex;
+import GUI.ParticlePanel;
+import GUI.VisualizationPanel;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sound.midi.Instrument;
 
 /**
  *
@@ -16,9 +18,9 @@ public class DrumToneGrid extends ToneGrid {
     
     private List<Integer> tracks;
     
-    public DrumToneGrid(List<Integer> tracks) {
-        super(tracks.size());
-        this.tracks = tracks;
+    public DrumToneGrid(DrumGridConfiguration config) {
+        super(config.getDrumkit().size());
+        this.tracks = config.getDrumkit();
     }
 
     @Override
@@ -34,8 +36,9 @@ public class DrumToneGrid extends ToneGrid {
         return tones;
     }
     
-    public void playColumnTones(int x) {
-        super.playColumnTones(x, 127);
+    @Override
+    public void playColumnTones(int x, ParticlePanel vp) {
+        super.playColumnTones(x, 127, vp);
     }
     
     public static int d35_Acoustic_Bass_Drum = 35;
