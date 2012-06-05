@@ -25,6 +25,40 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, InvalidMidiDataException {
+//        Synthesizer s = null;
+//        try {
+//            s = MidiSystem.getSynthesizer();
+//            s.open();
+//        } catch (MidiUnavailableException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        
+//                Soundbank bank = s.getDefaultSoundbank();
+//                s.loadAllInstruments(bank);
+//                Instrument instrs[] = s.getAvailableInstruments();
+//                for (int i = 0; i < instrs.length; i++) {
+//                    System.out.println(instrs[i].getName());
+//                }
+//                MidiChannel[] channels = s.getChannels();
+//                Patch seashorePatch = instrs[10].getPatch();
+//                channels[1].programChange(seashorePatch.getBank(), seashorePatch.getProgram());
+//        
+//        
+//        MidiChannel c = null;
+//        c = s.getChannels()[1];
+//
+//        c.noteOn(60, 60);
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        c.allNotesOff();
+//        System.exit(0);
+        
+        ParticlePanel vp = new ParticlePanel();
+        Player p = Player.getInstance();
+        p.init(120, 16, vp);
         
         // voeg drums toe
         List<Integer> drumkit = new ArrayList<Integer>();
@@ -51,9 +85,6 @@ public class Main {
         InstrumentHolder.getInstance().addConfiguration(guitar);
         
         
-        ParticlePanel vp = new ParticlePanel();
-        Player p = new Player(120, 16, vp);
-        
         ToneGrid bassGrid = new ToneGrid(bass);
         p.registerToneGrid(bassGrid);
         bassGrid.setIsActive(true);
@@ -75,8 +106,8 @@ public class Main {
         
         p.start();
         try {
-            Thread.sleep(10000);
-            //p.changeInstrument(highthingy, InstrumentHolder.SearchInstrument("drum"));
+            Thread.sleep(5000);
+            p.changeInstrument(drumGrid, guitar);
             
             
             //Main m = new Main();

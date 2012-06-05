@@ -33,12 +33,7 @@ public class InstrumentHolder {
     }
     
     public static Instrument[] InstrumentList() {
-        try {
-            return MidiSystem.getSynthesizer().getAvailableInstruments();
-        } catch (MidiUnavailableException ex) {
-            Logger.getLogger(InstrumentHolder.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        return Player.getInstance().getSynthesizer().getAvailableInstruments();
     }
     
     public static Instrument GetDrums() {

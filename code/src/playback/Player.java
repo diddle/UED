@@ -32,8 +32,18 @@ public class Player implements Runnable {
     private GridPanel gridPanel;
     private HashMap<Integer, List<ToneGrid>> channelUses;
     private ParticlePanel vp;
+    private static Player instance = null;
     
-    public Player(int bpm, int width, ParticlePanel vp) {
+    private Player() {}
+    
+    public static Player getInstance() {
+        if(instance == null) {
+            instance = new Player();
+        }
+        return instance;
+    }
+    
+    public void init(int bpm, int width, ParticlePanel vp) {
         this.grids = new ArrayList<ToneGrid>();
         this.channelUses = new HashMap<Integer, List<ToneGrid>>();
         this.bpm = bpm;
@@ -44,11 +54,17 @@ public class Player implements Runnable {
         
         try {
             this.synthesizer = MidiSystem.getSynthesizer();
+            Soundbank bank = this.synthesizer.getDefaultSoundbank();
+            this.synthesizer.loadAllInstruments(bank);
             this.synthesizer.open();
             this.instrumentList = synthesizer.getAvailableInstruments();
         } catch (MidiUnavailableException ex) {
             Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public Synthesizer getSynthesizer() {
+        return this.synthesizer;
     }
     
     private long now() {
@@ -71,6 +87,9 @@ public class Player implements Runnable {
                     gridPanel.repaint();
                 
                 synchronized(this.grids) {
+                    for(GridConfiguration gc : InstrumentHolder.getInstance().getAvailableConfigurations()) {
+                        gc.muteActiveTones();
+                    }
                     for(ToneGrid g : this.grids) {
                         if(g.isIsActive())
                             g.playColumnTones(pos, this.vp);
@@ -84,15 +103,6 @@ public class Player implements Runnable {
             }
         }
         this.synthesizer.close();
-    }
-    
-    private int gridIndex(ToneGrid g) {
-        for(int i = 0; i< this.grids.size(); i++) {
-            if(this.grids.get(i) == g) {
-                return i;
-            }
-        }
-        return -1;
     }
     
     public void registerToneGrid(ToneGrid grid) {

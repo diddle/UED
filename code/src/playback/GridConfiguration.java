@@ -28,11 +28,8 @@ public abstract class GridConfiguration {
         // configureer kanaal...
         this.channel = null;
         int channelIndex = GetChannelFor(instrument);
-        try {
-            this.channel = MidiSystem.getSynthesizer().getChannels()[channelIndex];
-        } catch (MidiUnavailableException ex) {
-            Logger.getLogger(GridConfiguration.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.channel = Player.getInstance().getSynthesizer().getChannels()[channelIndex];
+        UseChannel(channelIndex, instrument);
     }
 
     public int getVelocity() {
@@ -57,7 +54,6 @@ public abstract class GridConfiguration {
      * @param vp 
      */
     protected void playNotesOnChannel(List<Integer> tones, int velocity, ParticlePanel vp) {
-        this.channel.allNotesOff();
         for(int tone : tones) {
             this.channel.noteOn(tone, velocity);
             vp.notePlayed(tone, velocity, null);
@@ -168,11 +164,7 @@ public abstract class GridConfiguration {
      */
     protected static void PatchChannel(int channel, Instrument newInstrument) {
         MidiChannel[] channels = null;
-        try {
-            channels = MidiSystem.getSynthesizer().getChannels();
-        } catch (MidiUnavailableException ex) {
-            Logger.getLogger(GridConfiguration.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        channels = Player.getInstance().getSynthesizer().getChannels();
         Patch instrPatch = newInstrument.getPatch();
         channels[channel].programChange(instrPatch.getBank(), instrPatch.getProgram());
     }
@@ -183,5 +175,9 @@ public abstract class GridConfiguration {
      */
     public String toString() {
         return this.instrument.getName();
+    }
+
+    void muteActiveTones() {
+        this.channel.allNotesOff();
     }
 }
