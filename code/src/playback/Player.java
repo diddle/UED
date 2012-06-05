@@ -134,6 +134,10 @@ public class Player implements Runnable {
         return result;
     }
     
+    public void changeInstrument(ToneGrid grid, GridConfiguration config) {
+        grid.setConfiguration(config);
+    }
+    
     /**
      * MOET OPGESLAGEN WORDEN IN DE PLAYER!
      * @return 

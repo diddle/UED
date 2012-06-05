@@ -10,7 +10,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Area;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,10 +17,10 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.sound.midi.Instrument;
 import javax.swing.*;
 import network.TouchPacket;
 import network.TouchSocket;
+import playback.GridConfiguration;
 import playback.InstrumentHolder;
 import playback.Player;
 import playback.ToneGrid;
@@ -708,40 +707,41 @@ public class GridPanel extends JPanel {
         		activeMenu[pressedNote.getPerson()]=MENU_MENU;
         	}
         }
+        List<GridConfiguration> configs = InstrumentHolder.getInstance().getAvailableConfigurations();
         if (pressedNote.getNote()>=4&&pressedNote.getNote()<=8&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU){
         	//Instrument Button has Been Pressed in INSTRUMENT_MENU
         	if (pressedNote.getColumn()>=3&&pressedNote.getColumn()<=5){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[1]);
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(0));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
         	}
         	if (pressedNote.getColumn()>=6&&pressedNote.getColumn()<=8){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[25]);
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(1));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
 			}
         	if (pressedNote.getColumn()>=9&&pressedNote.getColumn()<=11){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[33]);
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(2));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
 			}
         	if (pressedNote.getColumn()>=12&&pressedNote.getColumn()<=14){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.GetDrums());
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(3));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
     		}}
         if (pressedNote.getNote()>=4&&pressedNote.getNote()<=8&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2){
         	//Instrument Button has Been Pressed in INSTRUMENT_MENU2
         	if (pressedNote.getColumn()>=3&&pressedNote.getColumn()<=5){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[41]);
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(1));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
         	}
         	if (pressedNote.getColumn()>=6&&pressedNote.getColumn()<=8){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[57]);
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(2));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
 			}
         	if (pressedNote.getColumn()>=9&&pressedNote.getColumn()<=11){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[74]);
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(3));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
 			}
         	if (pressedNote.getColumn()>=12&&pressedNote.getColumn()<=14){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), InstrumentHolder.InstrumentList()[92]);
+        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(0));
         		activeMenu[pressedNote.getPerson()]=NO_MENU;
     		}}
         if (pressedNote.getNote()>=1&&pressedNote.getNote()<=3&&pressedNote.getColumn()>=15&&pressedNote.getColumn()<=16&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU)
