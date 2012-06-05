@@ -4,11 +4,10 @@
  */
 package playback;
 
-import GUI.NoteIndex;
 import GUI.ParticlePanel;
-import GUI.VisualizationPanel;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sound.midi.Instrument;
 
 /**
  *
@@ -21,6 +20,11 @@ public class DrumToneGrid extends ToneGrid {
     public DrumToneGrid(DrumGridConfiguration config) {
         super(config.getDrumkit().size());
         this.tracks = config.getDrumkit();
+    }
+
+    DrumToneGrid(List<Integer> drumset) {
+        this(new DrumGridConfiguration(drumset, 127));
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
@@ -88,4 +92,9 @@ public class DrumToneGrid extends ToneGrid {
     public static int d79_Open_Cuica = 79;
     public static int d80_Mute_Triangle = 80;
     public static int d81_Open_Triangle = 81;
+
+    @Override
+    public void setInstrument(Instrument instrument) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

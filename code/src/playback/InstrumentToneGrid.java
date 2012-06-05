@@ -9,6 +9,7 @@ import GUI.ParticlePanel;
 import GUI.VisualizationPanel;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sound.midi.Instrument;
 
 /**
  *
@@ -24,6 +25,11 @@ public class InstrumentToneGrid extends ToneGrid{
         this.instrument = config.getInstrument();
         this.baseNote = config.getBasenote();
         this.velocity = config.getVelocity();
+    }
+
+    InstrumentToneGrid(int i, int i0, Instrument instrument, int velocity) {
+        this(null);
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public int getBaseNote() {
