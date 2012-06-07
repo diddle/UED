@@ -27,31 +27,24 @@ import playback.ToneGrid;
 
 /**
  *
- * @author Niels Visser
+ * @authors Niels Visser, Kasper Vaessen, Alexander Drechsel, Niels Kamp
  */
 public class GridPanel extends JPanel {
 	
 	private static final int DEFAULTWIDTH = 1024;
 	private static final int DEFAULTHEIGHT = 768;
-	
-	private static final Color[][] playerColors = {{new Color(255, 0, 0),
-														new Color(255, 191, 0),
-														new Color(127, 95, 0),
-														new Color(63, 127, 0)},
-													{new Color(0, 255, 255),
-														new Color(0, 63, 255),
-														new Color(0, 31, 127),
-														new Color(63, 0, 127)},
-													{new Color(127, 255, 0),
-														new Color(0, 255, 63),
-														new Color(0, 127, 31),
-														new Color(0, 127, 127)},
-													{new Color(127, 0 ,255),
-														new Color(255, 0, 191),
-														new Color(127, 0, 95),
-														new Color(127, 0, 0)}};
-    
-    private MouseHandler mouseHandler = new MouseHandler();
+
+	private static final Color[][] playerColors = {
+			{ new Color(255, 0, 0), new Color(255, 191, 0),
+					new Color(127, 95, 0), new Color(63, 127, 0) },
+			{ new Color(0, 255, 255), new Color(0, 63, 255),
+					new Color(0, 31, 127), new Color(63, 0, 127) },
+			{ new Color(127, 255, 0), new Color(0, 255, 63),
+					new Color(0, 127, 31), new Color(0, 127, 127) },
+			{ new Color(127, 0, 255), new Color(255, 0, 191),
+					new Color(127, 0, 95), new Color(127, 0, 0) } };
+
+	private MouseHandler mouseHandler = new MouseHandler();
     private HashMap<Integer, Pointer> pressedNotes;
     private int squareHeight = 18;
     
@@ -138,25 +131,25 @@ public class GridPanel extends JPanel {
 		        NoteIndex noteIndex = translatePointToNoteIndex(it.next().getValue().getLocation());
 		        if(noteIndex != null) {
 		        	drawNote(g2d, noteIndex.getPerson(), noteIndex.getColumn(), noteIndex.getNote(), 1.125d, 1.125d);
-		        }
-		    }
-		//TODO Draw Instrument Menu if active here
-		   for (int i=0;i<player.getActiveGrids().size();i++){
-			   if (activeMenu[i]==INSTRUMENT_MENU){
-				   drawInstrumentMenu(g2d,i);
-			   }
-			   if (activeMenu[i]==INSTRUMENT_MENU2){
-				   drawInstrumentMenu2(g2d,i);
-			   }
-			   if (activeMenu[i]==MENU_MENU){
-				   drawMenuMenu(g2d,i);
-			   }
-		   }
+				}
+			}
+			// TODO Draw Instrument Menu if active here
 		}
-//        drawActiveTones((Graphics2D)g);
-//        drawCircles(g);
-//        drawLines(g);
-    }
+		for (int i = 0; i < player.getActiveGrids().size(); i++) {
+			if (activeMenu[i] == INSTRUMENT_MENU) {
+				drawInstrumentMenu(g2d, i);
+			}
+			if (activeMenu[i] == INSTRUMENT_MENU2) {
+				drawInstrumentMenu2(g2d, i);
+			}
+			if (activeMenu[i] == MENU_MENU) {
+				drawMenuMenu(g2d, i);
+			}
+		}
+		// drawActiveTones((Graphics2D)g);
+		// drawCircles(g);
+		// drawLines(g);
+	}
 
     private class MouseHandler extends MouseAdapter {
 
@@ -386,8 +379,8 @@ public class GridPanel extends JPanel {
     		drawColumn(g, personIndex, i);
     	}
     	//Add Button Drawing
-    	drawButton(g, personIndex, 2, player.getHeight()+1, 0.9, 0.9,1);
-    	drawButton(g, personIndex, 10, player.getHeight()+1, 0.9, 0.9,2);
+    	drawButton(g, personIndex, 2, player.getHeight()+1, 0.9, 0.9, 1);
+    	drawButton(g, personIndex, 10, player.getHeight()+1, 0.9, 0.9, 2);
     }
 
     /* Calls draw methods for each note in a column
@@ -409,43 +402,16 @@ public class GridPanel extends JPanel {
      */
     private void drawNote(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor){
 
-    	double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
-    	double endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)colIndex + xFactor)*radPerColumn() + radOffset;
+    	double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
+    			(double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
+    	double endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
+    			(double)((double)colIndex + xFactor)*radPerColumn() + radOffset;
     	
     	double lowerRadius = getRadius() - ((double)(toneIndex+1) - yFactor)*squareHeight;
     	double upperRadius = getRadius() - ((double)toneIndex + yFactor)*squareHeight;
-    	
-    	GeneralPath gp = new GeneralPath();
-    	gp.moveTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1 (lower left)
-    			translateY(lowerRadius*Math.sin(beginAngle) + getHeight()/2));	//y1
-    	gp.lineTo(upperRadius*Math.cos(beginAngle) + getWidth()/2,						//x2 (upper left)
-    			translateY(upperRadius*Math.sin(beginAngle) + getHeight()/2));	//y2
-    	
-    	Point[] upperBP = generateBezierPoints(upperRadius, beginAngle, endAngle);		//upper curve
-    	gp.curveTo(upperBP[1].getX() + getWidth()/2,
-    			translateY(upperBP[1].getY() + getHeight()/2),
-    			upperBP[2].getX() + getWidth()/2,
-    			translateY(upperBP[2].getY() + getHeight()/2),
-    			upperRadius*Math.cos(endAngle) + getWidth()/2,
-    			translateY(upperRadius*Math.sin(endAngle) + getHeight()/2));
-    	
-//    	gp.lineTo(upperRadius*Math.cos(endAngle) + getWidth()/2,						//x3
-//    			translateY((int)(upperRadius*Math.sin(endAngle) + getHeight()/2)));		//y3
-    	
-    	gp.lineTo(lowerRadius*Math.cos(endAngle) + getWidth()/2,						//x4
-    			translateY(lowerRadius*Math.sin(endAngle) + getHeight()/2));		//y4
-
-    	Point[] lowerBP = generateBezierPoints(lowerRadius, beginAngle, endAngle);
-    	gp.curveTo(lowerBP[2].getX() + getWidth()/2,
-    			translateY(lowerBP[2].getY() + getHeight()/2),
-    			lowerBP[1].getX() + getWidth()/2,
-    			translateY(lowerBP[1].getY() + getHeight()/2),
-    			lowerRadius*Math.cos(beginAngle) + getWidth()/2,
-    			translateY(lowerRadius*Math.sin(beginAngle) + getHeight()/2));
-    	
-//    	gp.lineTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1
-//    			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));	//y1
-    	
+    	 	
+    	GeneralPath gp = drawPath(beginAngle, endAngle, lowerRadius,
+				upperRadius);
     	gp.closePath();
 
     	Color squareColour = getColorFor(personIndex, colIndex, toneIndex);
@@ -481,18 +447,33 @@ public class GridPanel extends JPanel {
      */
     private void drawButton(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor,int id){
 
-    	double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
-    	double endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + (double)((double)(colIndex+3) + xFactor)*radPerColumn() + radOffset;
+    	double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
+    			(double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
+    	double endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
+    			(double)((double)(colIndex+3) + xFactor)*radPerColumn() + radOffset;
     	
     	double lowerRadius = getRadius() - ((double)(toneIndex+1) - yFactor)*squareHeight;
     	double upperRadius = getRadius() - ((double)(toneIndex+2) + yFactor)*squareHeight;
     	
-    	GeneralPath gp = new GeneralPath();
+    	GeneralPath gp = drawPath(beginAngle, endAngle, lowerRadius, upperRadius);
+    	gp.closePath();
+
+    	Color squareColour = getColorFor(personIndex, colIndex+4, toneIndex);
+    	if ((activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==INSTRUMENT_MENU2)&&id==2||activeMenu[personIndex]==MENU_MENU&&id==1){
+    		squareColour=squareColour.darker().darker();
+    	}
+	  	g.setPaint(squareColour);
+    	
+	  	g.fill(gp);
+    }
+
+	private GeneralPath drawPath(double beginAngle, double endAngle, double lowerRadius, double upperRadius) {
+		GeneralPath gp = new GeneralPath();
     	gp.moveTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1 (lower left)
     			translateY(lowerRadius*Math.sin(beginAngle) + getHeight()/2));	//y1
     	gp.lineTo(upperRadius*Math.cos(beginAngle) + getWidth()/2,						//x2 (upper left)
     			translateY(upperRadius*Math.sin(beginAngle) + getHeight()/2));	//y2
-    	
+   	
     	Point[] upperBP = generateBezierPoints(upperRadius, beginAngle, endAngle);		//upper curve
     	gp.curveTo(upperBP[1].getX() + getWidth()/2,
     			translateY(upperBP[1].getY() + getHeight()/2),
@@ -517,30 +498,136 @@ public class GridPanel extends JPanel {
     	
 //    	gp.lineTo(lowerRadius*Math.cos(beginAngle) + getWidth()/2,						//x1
 //    			translateY((int)(lowerRadius*Math.sin(beginAngle) + getHeight()/2)));	//y1
-    	
-    	gp.closePath();
+    
+		return gp;
+	}
 
-    	Color squareColour = getColorFor(personIndex, colIndex+4, toneIndex);
-    	if ((activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==INSTRUMENT_MENU2)&&id==2||activeMenu[personIndex]==MENU_MENU&&id==1){
-    		squareColour=squareColour.darker().darker();
-    	}
-	  	g.setPaint(squareColour);
-    	
-	  	g.fill(gp);
-    }
+	private void drawInstrumentMenu(Graphics2D g, int personIndex) {
+    	int colIndex = 2;
+    	int toneIndex = 3;
+		double xFactor = 0.9;
+		double yFactor = 0.9;
+		int i = 0;
+		List<GridConfiguration> configs = InstrumentHolder.getInstance().getAvailableConfigurations();
+		
 
-    private void drawInstrumentMenu(Graphics2D g, int personIndex){
-    	//TODO
-    	
-    }
+		for (colIndex = 2; colIndex < 12; colIndex = colIndex + 3, i = i+1) {
+
+			double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+					+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
+			double endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+					+ (double) ((double) (colIndex + 2) + xFactor) * radPerColumn() + radOffset;
+
+			double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor) * squareHeight;
+			double upperRadius = getRadius() - ((double) (toneIndex + 3) + yFactor) * squareHeight;
+
+			GeneralPath gp = drawPath(beginAngle, endAngle, lowerRadius, upperRadius);
+			gp.closePath();
+
+			g.setPaint(Color.WHITE);
+			g.fill(gp);
+			
+			
+		}
+		// g.drawRect(x, y, width, height);
+		
+		toneIndex = 1;
+		colIndex = 14;
+		double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+				+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
+		double endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+				+ (double) ((double) (colIndex + 1) + xFactor) * radPerColumn() + radOffset;
+
+		double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor) * squareHeight;
+		double upperRadius = getRadius() - ((double) (toneIndex + 1) + yFactor) * squareHeight;
+
+		GeneralPath gp = drawPath(beginAngle, endAngle, lowerRadius, upperRadius);
+		gp.closePath();
+
+		g.setPaint(Color.WHITE);
+		g.fill(gp);
+		
+		
+	}
+	
     
     private void drawInstrumentMenu2(Graphics2D g, int personIndex){
-    	//TODO
-    	
+    	int colIndex = 2;
+    	int toneIndex = 3;
+		double xFactor = 0.9;
+		double yFactor = 0.9;
+
+		for (colIndex = 2; colIndex < 12; colIndex = colIndex + 3) {
+			double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+					+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
+			double endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+					+ (double) ((double) (colIndex + 2) + xFactor) * radPerColumn() + radOffset;
+
+			double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor) * squareHeight;
+			double upperRadius = getRadius() - ((double) (toneIndex + 3) + yFactor) * squareHeight;
+
+			GeneralPath gp = drawPath(beginAngle, endAngle, lowerRadius, upperRadius);
+			gp.closePath();
+
+			g.setPaint(Color.WHITE);
+			g.fill(gp);
+		}
+
+
+		toneIndex = 1;
+		colIndex = 0;
+		double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+				+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
+		double endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+				+ (double) ((double) (colIndex + 1) + xFactor) * radPerColumn() + radOffset;
+
+		double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor) * squareHeight;
+		double upperRadius = getRadius() - ((double) (toneIndex + 1) + yFactor) * squareHeight;
+
+		GeneralPath gp = drawPath(beginAngle, endAngle, lowerRadius, upperRadius);
+		gp.closePath();
+
+		g.setPaint(Color.WHITE);
+		g.fill(gp);
+		
+		
+		
     }
     
     private void drawMenuMenu(Graphics2D g, int personIndex){
-    	//TODO
+    	int colIndex = 3;
+    	int toneIndex = 0;
+		double xFactor = 0.9;
+		double yFactor = 0.9;
+		
+		double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+				+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
+		double endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+				+ (double) ((double) (colIndex + 7) + xFactor) * radPerColumn() + radOffset;
+
+		double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor) * squareHeight;
+		double upperRadius = getRadius() - ((double) (toneIndex + 8) + yFactor) * squareHeight;
+		
+    	
+		int x = (int) (upperRadius * Math.cos(beginAngle) + getWidth() / 2);
+		int y = (int) translateY(upperRadius * Math.sin(beginAngle) + getHeight() / 2);
+		int width = (int) (lowerRadius * Math.cos(endAngle) + getWidth() / 2) - x;
+		int height = (int) translateY(lowerRadius * Math.sin(endAngle) + getHeight() / 2) - y;
+    	
+		g.setPaint(Color.WHITE);
+		g.fillRect(x, y, width, height);
+				
+		g.setPaint(Color.BLACK);
+		g.drawRect(x, y, width, height);
+		g.setPaint(Color.BLACK);
+		Font font = new Font("Times New Roman", Font.PLAIN, 20);
+		g.setFont(font);
+
+		upperRadius = getRadius() - ((double) (toneIndex + 7) + yFactor) * squareHeight;
+		y = (int) translateY(upperRadius * Math.sin(beginAngle) + getHeight() / 2);
+		
+		g.drawString(" Clear", x, y);
+		
     	
     }
     
@@ -617,9 +704,9 @@ public class GridPanel extends JPanel {
     * @returns the colorarray associated with a person.
     */
     
-//    private Color[] getColorsFor(int person) {
-//        return playerColors[person%4];
-//    }
+//  private Color[] getColorsFor(int person) {
+//  return playerColors[person%4];
+//}
     
     private Color getColorFor(int personIndex, int colIndex, int toneIndex) {
     	Color result;
@@ -776,6 +863,8 @@ public class GridPanel extends JPanel {
         	activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU2;
         if (pressedNote.getNote()>=1&&pressedNote.getNote()<=2&&pressedNote.getColumn()>=0&&pressedNote.getColumn()<=2&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2)
         	activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU;
+        
+        
         
         }
         	
