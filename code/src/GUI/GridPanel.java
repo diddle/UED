@@ -33,6 +33,19 @@ public class GridPanel extends JPanel {
 	
 	private static final int DEFAULTWIDTH = 1024;
 	private static final int DEFAULTHEIGHT = 768;
+	
+	private static final Color[][] playerColors = {{new Color(255, 0, 0),
+														new Color(255, 191, 0),
+														new Color(127, 255, 0)},
+													{new Color(0, 255, 255),
+														new Color(0, 63, 255),
+														new Color(127, 0, 255)},
+													{new Color(127, 255, 0),
+														new Color(0, 255, 63),
+														new Color(0, 255, 255)},
+													{new Color(127, 0 ,255),
+														new Color(255, 0, 191),
+														new Color(255, 0, 0)}};
     
     private MouseHandler mouseHandler = new MouseHandler();
     private HashMap<Integer, Pointer> pressedNotes;
@@ -431,7 +444,7 @@ public class GridPanel extends JPanel {
     	
     	gp.closePath();
 
-    	Color squareColour = getColorFor(personIndex);
+    	Color squareColour = getColorFor(personIndex, colIndex, toneIndex);
     	
     	for(int i = 0; i < player.getHeight()-toneIndex; i++)
     		squareColour = new Color(Math.max(squareColour.getRed()-8, 0),
@@ -597,17 +610,27 @@ public class GridPanel extends JPanel {
     }
     
     /* 
-    * @returns the color associated with a person.
+    * @returns the colorarray associated with a person.
     */
     
-    private Color getColorFor(int person) {
-        switch(person) {
-            case 0: return Color.RED;
-            case 1: return Color.BLUE;
-            case 2: return Color.GREEN;
-            case 3: return Color.ORANGE;
-            default: return Color.MAGENTA;
-        }
+//    private Color[] getColorsFor(int person) {
+//        return playerColors[person%4];
+//    }
+    
+    private Color getColorFor(int personIndex, int colIndex, int toneIndex) {
+    	Color result;
+    	
+    	int alternate = (colIndex/4 + toneIndex) % 2;				//	Visually separating quarter time
+    	
+    	Color begin = playerColors[personIndex][alternate], end = playerColors[personIndex][alternate+1];
+    	
+    	int playerWidth = player.getWidth();
+    	
+    	result = new Color((begin.getRed()*(playerWidth - colIndex) + end.getRed()*colIndex) / playerWidth,
+    						(begin.getGreen()*(playerWidth - colIndex) + end.getGreen()*colIndex) / playerWidth,
+    						(begin.getBlue()*(playerWidth - colIndex) + end.getBlue()*colIndex) / playerWidth);
+    	
+    	return result;
     }
     
     private int getRadius(){
