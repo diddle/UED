@@ -36,16 +36,20 @@ public class GridPanel extends JPanel {
 	
 	private static final Color[][] playerColors = {{new Color(255, 0, 0),
 														new Color(255, 191, 0),
-														new Color(127, 255, 0)},
+														new Color(127, 95, 0),
+														new Color(63, 127, 0)},
 													{new Color(0, 255, 255),
 														new Color(0, 63, 255),
-														new Color(127, 0, 255)},
+														new Color(0, 31, 127),
+														new Color(63, 0, 127)},
 													{new Color(127, 255, 0),
 														new Color(0, 255, 63),
-														new Color(0, 255, 255)},
+														new Color(0, 127, 31),
+														new Color(0, 127, 127)},
 													{new Color(127, 0 ,255),
 														new Color(255, 0, 191),
-														new Color(255, 0, 0)}};
+														new Color(127, 0, 95),
+														new Color(127, 0, 0)}};
     
     private MouseHandler mouseHandler = new MouseHandler();
     private HashMap<Integer, Pointer> pressedNotes;
@@ -516,7 +520,7 @@ public class GridPanel extends JPanel {
     	
     	gp.closePath();
 
-    	Color squareColour = getColorFor(personIndex);
+    	Color squareColour = getColorFor(personIndex, colIndex+4, toneIndex);
     	if ((activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==INSTRUMENT_MENU2)&&id==2||activeMenu[personIndex]==MENU_MENU&&id==1){
     		squareColour=squareColour.darker().darker();
     	}
@@ -620,7 +624,7 @@ public class GridPanel extends JPanel {
     private Color getColorFor(int personIndex, int colIndex, int toneIndex) {
     	Color result;
     	
-    	int alternate = (colIndex/4 + toneIndex) % 2;				//	Visually separating quarter time
+    	int alternate = ((colIndex/4 + toneIndex) % 2) * 2;				//	Visually separating quarter time
     	
     	Color begin = playerColors[personIndex][alternate], end = playerColors[personIndex][alternate+1];
     	
