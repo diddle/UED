@@ -81,7 +81,7 @@ public class Main {
         InstrumentGridConfiguration bass = new InstrumentGridConfiguration(36, 16, InstrumentHolder.SearchInstrument("bass"), 60);
         InstrumentHolder.getInstance().addConfiguration(bass);
         // voeg gitaar toe
-        InstrumentGridConfiguration guitar = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("gt."), 60);
+        InstrumentGridConfiguration guitar = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("guitar"), 60);
         InstrumentHolder.getInstance().addConfiguration(guitar);
         
         

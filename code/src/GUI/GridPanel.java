@@ -504,7 +504,7 @@ public class GridPanel extends JPanel {
     	gp.closePath();
 
     	Color squareColour = getColorFor(personIndex);
-    	if (()activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==INSTRUMENT_MENU2)&&ID==2||activeMenu[personIndex]==MENU_MENU&&id==1){
+    	if ((activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==INSTRUMENT_MENU2)&&id==2||activeMenu[personIndex]==MENU_MENU&&id==1){
     		squareColour=squareColour.darker().darker();
     	}
 	  	g.setPaint(squareColour);

@@ -54,8 +54,10 @@ public class Player implements Runnable {
         
         try {
             this.synthesizer = MidiSystem.getSynthesizer();
-            Soundbank bank = this.synthesizer.getDefaultSoundbank();
-            this.synthesizer.loadAllInstruments(bank);
+            Instrument[] instrArr = this.synthesizer.getAvailableInstruments();
+            for (Instrument i : instrArr) {
+            	this.synthesizer.loadInstrument(i);
+            }
             this.synthesizer.open();
             this.instrumentList = synthesizer.getAvailableInstruments();
         } catch (MidiUnavailableException ex) {
