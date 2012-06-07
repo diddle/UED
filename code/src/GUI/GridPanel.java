@@ -27,7 +27,7 @@ import playback.ToneGrid;
 
 /**
  *
- * @authors Niels Visser, Kasper Vaessen, Alexander Drechsel, Niels Kamp
+ * @author Niels Visser
  */
 public class GridPanel extends JPanel {
 	
@@ -508,9 +508,6 @@ public class GridPanel extends JPanel {
 		double xFactor = 0.9;
 		double yFactor = 0.9;
 		int i = 0;
-		List<GridConfiguration> configs = InstrumentHolder.getInstance().getAvailableConfigurations();
-		
-
 		for (colIndex = 2; colIndex < 12; colIndex = colIndex + 3, i = i+1) {
 
 			double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
@@ -590,44 +587,61 @@ public class GridPanel extends JPanel {
 		g.setPaint(Color.WHITE);
 		g.fill(gp);
 		
-		
-		
     }
     
     private void drawMenuMenu(Graphics2D g, int personIndex){
-    	int colIndex = 3;
-    	int toneIndex = 0;
+    	int colIndex = 4;
+		int toneIndex = 8;
 		double xFactor = 0.9;
 		double yFactor = 0.9;
 		
-		double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
-				+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
-		double endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
-				+ (double) ((double) (colIndex + 7) + xFactor) * radPerColumn() + radOffset;
+		double beginAngle = (double) (personIndex * player.getWidth())
+				* radPerColumn() + (double) ((double) (colIndex + 1) - xFactor)
+				* radPerColumn() + radOffset;
+		double endAngle = (double) (personIndex * player.getWidth())
+				* radPerColumn() + (double) ((double) (colIndex + 7) + xFactor)
+				* radPerColumn() + radOffset;
 
-		double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor) * squareHeight;
-		double upperRadius = getRadius() - ((double) (toneIndex + 8) + yFactor) * squareHeight;
+		double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor)	* squareHeight;
+		double upperRadius = getRadius() - ((double) (toneIndex + 1) + yFactor)	* squareHeight;
 		
-    	
-		int x = (int) (upperRadius * Math.cos(beginAngle) + getWidth() / 2);
-		int y = (int) translateY(upperRadius * Math.sin(beginAngle) + getHeight() / 2);
-		int width = (int) (lowerRadius * Math.cos(endAngle) + getWidth() / 2) - x;
-		int height = (int) translateY(lowerRadius * Math.sin(endAngle) + getHeight() / 2) - y;
-    	
+		GeneralPath gp = drawPath(beginAngle, endAngle, lowerRadius, upperRadius);
+		gp.closePath();
+		
 		g.setPaint(Color.WHITE);
-		g.fillRect(x, y, width, height);
-				
-		g.setPaint(Color.BLACK);
-		g.drawRect(x, y, width, height);
-		g.setPaint(Color.BLACK);
-		Font font = new Font("Times New Roman", Font.PLAIN, 20);
-		g.setFont(font);
+		g.fill(gp);
 
-		upperRadius = getRadius() - ((double) (toneIndex + 7) + yFactor) * squareHeight;
-		y = (int) translateY(upperRadius * Math.sin(beginAngle) + getHeight() / 2);
-		
-		g.drawString(" Clear", x, y);
-		
+//    	int colIndex = 3;
+//    	int toneIndex = 0;
+//		double xFactor = 0.9;
+//		double yFactor = 0.9;
+//		
+//		double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+//				+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
+//		double endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+//				+ (double) ((double) (colIndex + 7) + xFactor) * radPerColumn() + radOffset;
+//
+//		double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor) * squareHeight;
+//		double upperRadius = getRadius() - ((double) (toneIndex + 8) + yFactor) * squareHeight;
+//		
+//		int x = (int) (upperRadius * Math.cos(beginAngle) + getWidth() / 2);
+//		int y = (int) translateY(upperRadius * Math.sin(beginAngle) + getHeight() / 2);
+//		int width = (int) (lowerRadius * Math.cos(endAngle) + getWidth() / 2) - x;
+//		int height = (int) translateY(lowerRadius * Math.sin(endAngle) + getHeight() / 2) - y;
+//		
+//		g.setPaint(Color.WHITE);
+//		g.fillRect(x, y, width, height);
+//				
+//		g.setPaint(Color.BLACK);
+//		g.drawRect(x, y, width, height);
+//		
+//		Font font = new Font("Times New Roman", Font.PLAIN, 20);
+//		g.setFont(font);
+//
+//		upperRadius = getRadius() - ((double) (toneIndex + 7) + yFactor) * squareHeight;
+//		y = (int) translateY(upperRadius * Math.sin(beginAngle) + getHeight() / 2);
+//		
+//		g.drawString(" Clear", x, y);
     	
     }
     
@@ -864,8 +878,13 @@ public class GridPanel extends JPanel {
         if (pressedNote.getNote()>=1&&pressedNote.getNote()<=2&&pressedNote.getColumn()>=0&&pressedNote.getColumn()<=2&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2)
         	activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU;
         
-        
-        
+        if (pressedNote.getColumn()>=4&&pressedNote.getColumn()<=12&&activeMenu[pressedNote.getPerson()]== MENU_MENU){
+        	if(pressedNote.getNote()>=8 && pressedNote.getNote()<=10){
+        		ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
+                tg.clear();
+        	}       	
+        	
+        }        
         }
         	
     	pressedNotes.put(id, new Pointer(point, drawing));
