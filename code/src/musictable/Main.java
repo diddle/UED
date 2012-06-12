@@ -72,13 +72,13 @@ public class Main {
         drumkit.add(DrumGridConfiguration.d49_Crash_Cymbal_1);
         drumkit.add(DrumGridConfiguration.d56_Cowbell);
         drumkit.add(DrumGridConfiguration.d54_Tambourine);
-        DrumGridConfiguration drums = new DrumGridConfiguration(drumkit, 60);
+        DrumGridConfiguration drums = new DrumGridConfiguration(drumkit, 120);
         InstrumentHolder.getInstance().addConfiguration(drums);
         // voeg piano toe
         InstrumentGridConfiguration piano = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("piano"), 60);
         InstrumentHolder.getInstance().addConfiguration(piano);
         // voeg bas toe
-        InstrumentGridConfiguration bass = new InstrumentGridConfiguration(36, 16, InstrumentHolder.SearchInstrument("bass"), 60);
+        InstrumentGridConfiguration bass = new InstrumentGridConfiguration(36, 16, InstrumentHolder.SearchInstrument("bass"), 180);
         InstrumentHolder.getInstance().addConfiguration(bass);
         // voeg gitaar toe
         InstrumentGridConfiguration guitar = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("guitar"), 60);
@@ -105,9 +105,9 @@ public class Main {
         new MainWindow(p, vp);
         
         p.start();
-        try {
-            Thread.sleep(5000);
-            p.changeInstrument(drumGrid, guitar);
+        //try {
+         //   Thread.sleep(5000);
+         //   p.changeInstrument(drumGrid, guitar);
             
             
             //Main m = new Main();
@@ -165,9 +165,9 @@ public class Main {
     //        } catch (MidiUnavailableException ex) {
     //            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
     //        }
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    //    } catch (InterruptedException ex) {
+    //        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+    //    }
     }
 
 }
