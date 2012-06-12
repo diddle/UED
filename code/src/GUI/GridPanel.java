@@ -467,7 +467,7 @@ public class GridPanel extends JPanel {
 	  	g.fill(gp);
     }
     
-    public int[] getButtonCoordinate(int personIndex, int id){
+     public int[] getButtonCoordinate(int personIndex, int id){
     	int[] coord = new int[2];
     	int toneIndex = player.getHeight()+1;
     	double xFactor = 0.9;
@@ -484,8 +484,16 @@ public class GridPanel extends JPanel {
     	double lowerRadius = getRadius() - ((double)(toneIndex+1) - yFactor)*squareHeight;
     	double upperRadius = getRadius() - ((double)(toneIndex+2) + yFactor)*squareHeight;
     	
-    	coord[0] = (int) (lowerRadius*Math.cos(beginAngle) + getWidth()/2);
-    	coord[1] = (int) translateY(upperRadius*Math.sin(beginAngle) + getHeight()/2);
+    	coord[0] = (int) Math.min(Math.min(lowerRadius*Math.cos(beginAngle) + getWidth()/2,
+    			upperRadius*Math.cos(beginAngle) + getWidth()/2),
+    			Math.min(upperRadius*Math.cos(endAngle) + getWidth()/2,
+    			lowerRadius*Math.cos(endAngle) + getWidth()/2));
+    	coord[1] = (int) Math.min(Math.min(translateY(lowerRadius*Math.sin(beginAngle) + getHeight()/2),
+    			translateY(upperRadius*Math.sin(beginAngle) + getHeight()/2)),
+    			Math.min(translateY((int)(upperRadius*Math.sin(endAngle) + getHeight()/2)),
+    			translateY(lowerRadius*Math.sin(endAngle) + getHeight()/2)));
+    	
+    	translateY(upperRadius*Math.sin(beginAngle) + getHeight()/2);
     	return coord;
     }
 
@@ -832,7 +840,6 @@ public class GridPanel extends JPanel {
     private void processPress(int id, Point point) {
     	
     	boolean drawing;
-    	
     	
         NoteIndex pressedNote = translatePointToIndex(point);
     	int[] colrow = {pressedNote.getColumn(),pressedNote.getNote(),pressedNote.getPerson()};
