@@ -466,6 +466,28 @@ public class GridPanel extends JPanel {
     	
 	  	g.fill(gp);
     }
+    
+    public int[] getButtonCoordinate(int personIndex, int id){
+    	int[] coord = new int[2];
+    	int toneIndex = player.getHeight()+1;
+    	double xFactor = 0.9;
+    	double yFactor = 0.9;
+    	int colIndex = 0;
+    	if(id==1) colIndex= 2;
+    	else if(id==2) colIndex = 10;
+    	
+    	double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
+    			(double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
+    	double endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
+    			(double)((double)(colIndex+3) + xFactor)*radPerColumn() + radOffset;
+    	
+    	double lowerRadius = getRadius() - ((double)(toneIndex+1) - yFactor)*squareHeight;
+    	double upperRadius = getRadius() - ((double)(toneIndex+2) + yFactor)*squareHeight;
+    	
+    	coord[0] = (int) (lowerRadius*Math.cos(beginAngle) + getWidth()/2);
+    	coord[1] = (int) translateY(upperRadius*Math.sin(beginAngle) + getHeight()/2);
+    	return coord;
+    }
 
 	private GeneralPath drawPath(double beginAngle, double endAngle, double lowerRadius, double upperRadius) {
 		GeneralPath gp = new GeneralPath();
