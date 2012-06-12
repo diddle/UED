@@ -823,7 +823,7 @@ public class GridPanel extends JPanel {
         colIndex = (colIndex % w + w) % w;
         int toneIndex = player.getHeight() - (int)Math.floor(((double)(rr - (getRadius() - squareHeight * player.getHeight())) / (double)squareHeight)) - 1;
         
-        System.out.println("Col: "+colIndex+" Row: "+toneIndex);
+        //System.out.println("Col: "+colIndex+" Row: "+toneIndex);
         return new NoteIndex(personIndex, colIndex, toneIndex);
         
     }
@@ -833,83 +833,88 @@ public class GridPanel extends JPanel {
     	
     	boolean drawing;
     	
-        NoteIndex pressedNote = translatePointToIndex(point);
     	
-        if(pressedNote.getNote() >= 0 && pressedNote.getNote() < player.getHeight()&&activeMenu[pressedNote.getPerson()]==NO_MENU) {
-            ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
-            tg.toggleTone(pressedNote.getColumn(), pressedNote.getNote());
-            drawing = tg.getTone(pressedNote.getColumn(), pressedNote.getNote());
+        NoteIndex pressedNote = translatePointToIndex(point);
+    	int[] colrow = {pressedNote.getColumn(),pressedNote.getNote(),pressedNote.getPerson()};
+    	
+        if(colrow[1] >= 0 && colrow[1] < player.getHeight()&&activeMenu[colrow[2]]==NO_MENU) {
+            ToneGrid tg = this.player.getActiveGrids().get(colrow[2]);
+            tg.toggleTone(colrow[0], colrow[1]);
+            drawing = tg.getTone(colrow[0], colrow[1]);
         }
         else {
         	drawing = true;
-        if (pressedNote.getNote() >= player.getHeight()+1 && pressedNote.getNote() < player.getHeight()+4){
+        if (colrow[1] >= player.getHeight()+1 && colrow[1] < player.getHeight()+4){
         	//Menu's may have been pressed
         	//col 3-6 11-14
-        	if (pressedNote.getColumn()>=2&&pressedNote.getColumn()<=5){
-        		if (activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU||activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2)
-        			activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	if (colrow[0]>=2&&colrow[0]<=5){
+        		if (activeMenu[colrow[2]]==INSTRUMENT_MENU||activeMenu[colrow[2]]==INSTRUMENT_MENU2)
+        			activeMenu[colrow[2]]=NO_MENU;
         		else
-        		activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU;        		
+        		activeMenu[colrow[2]]=INSTRUMENT_MENU;        		
         	}
-        	if (pressedNote.getColumn()>=10&&pressedNote.getColumn()<=13){
-        		if (activeMenu[pressedNote.getPerson()]==MENU_MENU)
-        			activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	else if (pressedNote.getColumn()>=10&&colrow[0]<=13){
+        		if (activeMenu[colrow[2]]==MENU_MENU)
+        			activeMenu[colrow[2]]=NO_MENU;
         		else
-        		activeMenu[pressedNote.getPerson()]=MENU_MENU;
+        		activeMenu[colrow[2]]=MENU_MENU;
         	}
         }
         List<GridConfiguration> configs = InstrumentHolder.getInstance().getAvailableConfigurations();
-        if (pressedNote.getNote()>=3&&pressedNote.getNote()<=6&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU){
+        if (colrow[1]>=3&&colrow[1]<=6&&activeMenu[colrow[2]]==INSTRUMENT_MENU){
         	//Instrument Button has Been Pressed in INSTRUMENT_MENU
-        	if (pressedNote.getColumn()>=2&&pressedNote.getColumn()<=4){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(0));
-        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	if (colrow[0]>=2&&colrow[0]<=4){
+        		player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(0));
+        		activeMenu[colrow[2]]=NO_MENU;
         	}
-        	if (pressedNote.getColumn()>=5&&pressedNote.getColumn()<=7){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(1));
-        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	else if (colrow[0]>=5&&colrow[0]<=7){
+        		player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(1));
+        		activeMenu[colrow[2]]=NO_MENU;
 			}
-        	if (pressedNote.getColumn()>=8&&pressedNote.getColumn()<=10){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(2));
-        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	else if (colrow[0]>=8&&colrow[0]<=10){
+        		player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(2));
+        		activeMenu[colrow[2]]=NO_MENU;
 			}
-        	if (pressedNote.getColumn()>=11&&pressedNote.getColumn()<=13){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(3));
-        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	else if (colrow[0]>=11&&colrow[0]<=13){
+        		player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(3));
+        		activeMenu[colrow[2]]=NO_MENU;
     		}}
-        if (pressedNote.getNote()>=3&&pressedNote.getNote()<=6&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2){
+        else if (colrow[1]>=3&&colrow[1]<=6&&activeMenu[colrow[2]]==INSTRUMENT_MENU2){
         	//Instrument Button has Been Pressed in INSTRUMENT_MENU2
-        	if (pressedNote.getColumn()>=2&&pressedNote.getColumn()<=4){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(1));
-        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	if (colrow[0]>=2&&colrow[0]<=4){
+        		player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(1));
+        		activeMenu[colrow[2]]=NO_MENU;
         	}
-        	if (pressedNote.getColumn()>=5&&pressedNote.getColumn()<=7){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(2));
-        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	else if (colrow[0]>=5&&colrow[0]<=7){
+        		player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(2));
+        		activeMenu[colrow[2]]=NO_MENU;
 			}
-        	if (pressedNote.getColumn()>=8&&pressedNote.getColumn()<=10){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(3));
-        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	else if (colrow[0]>=8&&colrow[0]<=10){
+        		player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(3));
+        		activeMenu[colrow[2]]=NO_MENU;
 			}
-        	if (pressedNote.getColumn()>=11&&pressedNote.getColumn()<=13){
-        		player.changeInstrument(player.getActiveGrids().get(pressedNote.getPerson()), configs.get(0));
-        		activeMenu[pressedNote.getPerson()]=NO_MENU;
+        	else if (colrow[0]>=11&&colrow[0]<=13){
+        		player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(0));
+        		activeMenu[colrow[2]]=NO_MENU;
     		}}
-        if (pressedNote.getNote()>=1&&pressedNote.getNote()<=2&&pressedNote.getColumn()>=14&&pressedNote.getColumn()<=15&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU)
-        	activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU2;
-        if (pressedNote.getNote()>=1&&pressedNote.getNote()<=2&&pressedNote.getColumn()>=0&&pressedNote.getColumn()<=2&&activeMenu[pressedNote.getPerson()]==INSTRUMENT_MENU2)
-        	activeMenu[pressedNote.getPerson()]=INSTRUMENT_MENU;
+        else if (colrow[1]>=1&&colrow[1]<=2&&colrow[0]>=14&&colrow[0]<=15&&activeMenu[colrow[2]]==INSTRUMENT_MENU)
+        	activeMenu[colrow[2]]=INSTRUMENT_MENU2;
+        else if (colrow[1]>=1&&colrow[1]<=2&&colrow[0]>=0&&colrow[0]<=2&&activeMenu[colrow[2]]==INSTRUMENT_MENU2)
+        	activeMenu[colrow[2]]=INSTRUMENT_MENU;
         
-        if (pressedNote.getColumn()>=4&&pressedNote.getColumn()<=12&&activeMenu[pressedNote.getPerson()]== MENU_MENU){
-        	if(pressedNote.getNote()>=8 && pressedNote.getNote()<=10){
-        		ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
+        else if (colrow[0]>=4&&colrow[0]<=12&&activeMenu[colrow[2]]== MENU_MENU){
+        	if(colrow[1]>=8 && colrow[1]<=10){
+        		ToneGrid tg = this.player.getActiveGrids().get(colrow[2]);
                 tg.clear();
+                activeMenu[colrow[2]]=NO_MENU;
         	}       	
         	
-        }        
+        } 
+        
         }
         	
     	pressedNotes.put(id, new Pointer(point, drawing));
+    	
     }
     
     //	Process drag events
@@ -921,14 +926,15 @@ public class GridPanel extends JPanel {
     	
     	NoteIndex pressedNote = translatePointToNoteIndex(point);
     	
-
-    	if(pressedNote != null&&activeMenu[pressedNote.getPerson()]==NO_MENU) {
+    	
+    	if(pressedNote != null&&activeMenu[pressedNote.getNote()]==NO_MENU) {
             ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
         	if(drawing)
         		tg.activateTone(pressedNote.getColumn(), pressedNote.getNote());
         	else
         		tg.deactivateTone(pressedNote.getColumn(), pressedNote.getNote());
     	}
+    	
     }
     
     private void processRelease(int id) {
