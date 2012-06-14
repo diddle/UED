@@ -23,7 +23,7 @@ public class MainWindow extends JFrame {
         //this.setBounds ( 10 , 10 , 200 , 200 );
         //this.setVisible(true);
         GridPanel gf = new GridPanel(p);
-        ButtonPanel bp = new ButtonPanel(gf);
+        ButtonPanel bp = new ButtonPanel(p, gf);
 //        JLayeredPane layers = getLayeredPane();
         JLayeredPane layers = new JLayeredPane();
 //        layers.setPreferredSize(new Dimension(300, 310));
