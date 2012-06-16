@@ -80,25 +80,9 @@ public class ParticlePanel extends JPanel implements Runnable {
 	}
 
 	public ParticlePanel() {
-		//                this.setBackground(Color.black);
 		this.setVisible(true);
-		//		try {
-		//			ObjectInputStream ois = new ObjectInputStream(getClass().getResourceAsStream("/gradients.xml"));
-		//			gradients = (Object[])ois.readObject();
-		//			ois.close();
-		//		}
-		//		catch (Exception e) {
-		//			e.printStackTrace();
-		//		}
 		
 		this.init();
-		
-		//		String actions = getParameter("actions");
-		//		if (actions != null) {
-		//			String s = "duchvtwc";
-		//			for (int i = 0; i < s.length(); i++)
-		//				filters[i].setEnabled(actions.indexOf(s.charAt(i)) != -1);
-		//		}
 
 		new Thread(this).start();
 	}
@@ -132,50 +116,35 @@ public class ParticlePanel extends JPanel implements Runnable {
 		filters[11] = new ZoomFilter(0.95,0.95);
 		filters[12] = new FadeFilter(4);
 		filters[13] = new BlurHVFilter();
-		//		filters[3].setEnabled(true);
-		//		filters[4].setEnabled(true);
 		filters[10].setEnabled(true);
-		//4filters[11].setEnabled(true);
 		filters[12].setEnabled(true);
 		filters[13].setEnabled(true);
-		//                filters[9].setEnabled(true);
 
 		int numActions = 1;
 		actions = new Action[numActions];
-		int numParticles = getIntParameter("numParticles", 100);
+		int numParticles = 100;
 		particles = new Particles(numParticles, getWidth()/2, getHeight()/2, getWidth(), getHeight());
 		actions[0] = particles;
 		actions[0].setEnabled(true);
-		particles.rate = getIntParameter("rate", 999);
-		particles.speed = (getIntParameter("speed", 100) << 8) / 10;
-		particles.angle = getIntParameter("angle", 0);
-		particles.spread = getIntParameter("spread", 360);
-		particles.gravity = getIntParameter("gravity", 0);
-		particles.color = getIntParameter("color", 255);
-		particles.scatter = getIntParameter("scatter", 50);
-		particles.hscatter = getIntParameter("hscatter", 50);
-		particles.vscatter = getIntParameter("vscatter", 50);
-		particles.randomness = getIntParameter("randomness", 50);
-		particles.size = getIntParameter("size", 2);
-		particles.x = getIntParameter("x", getWidth()/2);
-		particles.y = getIntParameter("y", getHeight()/2);
-		particles.lifetime = getIntParameter("lifetime", 100);
-		particles.speedVariation = (getIntParameter("speedVariation", 50) << 8) / 10;
-		particles.decay = getIntParameter("decay", 0);
-		startAnimation = getIntParameter("startAnimation", 1) != 0;
-		int colormap = getIntParameter("colormap", 10);
+		particles.rate = 999;
+		particles.speed = (100 << 8) / 10;
+		particles.angle = 0;
+		particles.spread = 360;
+		particles.gravity = 0;
+		particles.color = 255;
+		particles.scatter = 50;
+		particles.hscatter = 50;
+		particles.vscatter = 50;
+		particles.randomness = 50;
+		particles.size = 2;
+		particles.x = getWidth()/2;
+		particles.y = getHeight()/2;
+		particles.lifetime = 100;
+		particles.speedVariation = (50 << 8) / 10;
+		particles.decay = 0;
+		startAnimation = 1 != 0;
+		int colormap = 10;
 		setGradient(colormap);
-	}
-
-	private int getIntParameter(String name, int defaultValue) {
-		//		if (name != null) {
-		//			try {
-		//				return Integer.parseInt(getParameter(name));
-		//			}
-		//			catch (NumberFormatException e) {
-		//			}
-		//		}
-		return defaultValue;
 	}
 
 	public void setGradient(int n) {
@@ -362,26 +331,6 @@ class Filter extends Action {
 	public void apply(byte[] in, byte[] out, int width, int height) {
 	}
 }
-
-/*
-class TextAction extends Action {
-	private Font font = new Font("sansserif", Font.PLAIN, 72);
-
-	public void apply(byte[] pixels, int width, int height) {
-	}
-}
-
-class ImageAction extends Action {
-	private Image image;
-
-	public ImageAction(Image image) {
-		this.image = image;
-	}
-
-	public void apply(byte[] pixels, int width, int height) {
-	}
-}
- */
 
 /**
  * A particle system. We use fixed point integer maths with 8 fractional bits everywhere
