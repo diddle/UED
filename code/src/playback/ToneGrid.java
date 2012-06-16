@@ -5,7 +5,7 @@
 package playback;
 
 import GUI.ParticlePanel;
-import GUI.VisualizationPanel;
+//import GUI.VisualizationPanel;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sound.midi.Instrument;

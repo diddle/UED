@@ -6,7 +6,7 @@ package musictable;
 
 import GUI.MainWindow;
 import GUI.ParticlePanel;
-import GUI.VisualizationPanel;
+//import GUI.VisualizationPanel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,9 +56,9 @@ public class Main {
 //        c.allNotesOff();
 //        System.exit(0);
         
-        ParticlePanel vp = new ParticlePanel();
+        ParticlePanel pp = new ParticlePanel();
         Player p = Player.getInstance();
-        p.init(120, 16, vp);
+        p.init(120, 16, pp);
         
         // voeg drums toe
         List<Integer> drumkit = new ArrayList<Integer>();
@@ -102,7 +102,9 @@ public class Main {
         drumGrid.setIsActive(true);
         
         
-        new MainWindow(p, vp);
+        MainWindow mw = new MainWindow(p);
+        
+        mw.setParticlePanel(pp);
         
         p.start();
         //try {

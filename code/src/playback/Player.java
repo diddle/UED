@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import javax.sound.midi.*;
 import GUI.GridPanel;
 import GUI.ParticlePanel;
-import GUI.VisualizationPanel;
+//import GUI.VisualizationPanel;
 import java.util.*;
 
 /**

@@ -17,25 +17,21 @@ import playback.Player;
  * @author Niels Visser
  */
 public class MainWindow extends JFrame {
-    public MainWindow(Player p, ParticlePanel vp) {
+    public MainWindow(Player p) {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //this.fullScreen();
         //this.setBounds ( 10 , 10 , 200 , 200 );
         //this.setVisible(true);
         GridPanel gf = new GridPanel(p);
         ButtonPanel bp = new ButtonPanel(p, gf);
+        this.fullScreen();
 //        JLayeredPane layers = getLayeredPane();
         JLayeredPane layers = new JLayeredPane();
 //        layers.setPreferredSize(new Dimension(300, 310));
-        layers.add(vp, new Integer(1));
-        vp.setBounds(0, -128, 1024, 1024);
-        layers.add(gf, new Integer(2));
-        gf.setBounds(0, 0, 1024, 768);
-        layers.add(bp, new Integer(3));
-        bp.setBounds(0, 0, 1024, 768);
-        this.add(layers);
-        
-        this.fullScreen();
+        gf.setBounds(0, 0, this.getWidth(), this.getHeight());
+        bp.setBounds(0, 0, this.getWidth(), this.getHeight());
+        this.getLayeredPane().add(gf, new Integer(5));
+        this.getLayeredPane().add(bp, new Integer(10));
     }
     
     private void fullScreen() {
@@ -60,5 +56,12 @@ public class MainWindow extends JFrame {
             //gd.setFullScreenWindow(null);
         }
         
+    }
+    
+    public void setParticlePanel(ParticlePanel pp) {
+    	pp.setBounds(0, 0, getWidth(), getHeight());
+    	pp.setPreferredSize(this.getSize());
+    	pp.init();
+    	this.getLayeredPane().add(pp, new Integer(0));
     }
 }

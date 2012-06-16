@@ -15,14 +15,10 @@ import javax.swing.JPanel;
  */
 public class VisualizationPanel extends JPanel {
     
-    private int width;
-    private int height;
     private List<Circle> circles;
 
     public VisualizationPanel(int width, int height) {
         this.circles = new ArrayList<Circle>();
-        this.width = width;
-        this.height = height;
         this.setPreferredSize(new Dimension(width, height));
         this.setBackground(Color.black);
         this.setVisible(true);
@@ -35,8 +31,8 @@ public class VisualizationPanel extends JPanel {
         g.setColorAt(255, Color.red);
         System.out.println(pitch);
         Color c = g.getColorAt((int)Math.round(((double)pitch/255d)*255d));
-        int rangeX = this.width - 2*r;
-        int rangeY = this.height - 2*r;
+        int rangeX = this.getWidth() - 2*r;
+        int rangeY = this.getHeight() - 2*r;
         int x = (int)Math.round(Math.random() * (double)rangeX);
         int y = (int)Math.round(Math.random() * (double)rangeY);
         // draw circle
