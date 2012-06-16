@@ -21,8 +21,8 @@ import playback.Player;
 
 public class ButtonPanel extends JPanel {
 	private GridPanel gp;
-	private BufferedImage settings,instrumenu = null;
-	private BufferedImage pianoi,pianob,bassi,bassb,drumsi,drumsb,guitari,guitarb = null;
+	private BufferedImage settings,instrumenu;
+	private BufferedImage pianob,bassb,drumsb,guitarb;
 	private Player player;
 	private BufferedImage[] instruments = new BufferedImage[4];
 
@@ -33,17 +33,16 @@ public class ButtonPanel extends JPanel {
 		this.setVisible(true);
 		this.setOpaque(false);
 		try {
-			instrumenu = ImageIO.read(new File("bin\\resources\\piano_icon.png"));
 			settings = ImageIO.read(new File("bin\\resources\\settings.png"));
 			pianob = ImageIO.read(new File("bin\\resources\\piano_button.png"));
 			bassb = ImageIO.read(new File("bin\\resources\\bass_button.png"));
 			guitarb = ImageIO.read(new File("bin\\resources\\guitar_button.png"));
 			drumsb = ImageIO.read(new File("bin\\resources\\drums_button.png"));
 
-			instruments[0] = drumsi = ImageIO.read(new File("bin\\resources\\drums_icon.png"));
-			instruments[1] = pianoi = ImageIO.read(new File("bin\\resources\\piano_icon.png"));
-			instruments[2] = bassi = ImageIO.read(new File("bin\\resources\\bass_icon.png"));
-			instruments[3] = guitari = ImageIO.read(new File("bin\\resources\\guitar_icon.png"));
+			instruments[0] = ImageIO.read(new File("bin\\resources\\drums_icon.png"));
+			instruments[1] = ImageIO.read(new File("bin\\resources\\piano_icon.png"));
+			instruments[2] = ImageIO.read(new File("bin\\resources\\bass_icon.png"));
+			instruments[3] = ImageIO.read(new File("bin\\resources\\guitar_icon.png"));
 
 			System.out.println(settings.toString());
 
@@ -72,11 +71,13 @@ public class ButtonPanel extends JPanel {
 
 	}
 
-	public BufferedImage resize(BufferedImage original, int width, int height){
-		BufferedImage resized = new BufferedImage(width, height, original.getType());
+	public BufferedImage scale(BufferedImage original, double scale){
+		int newWidth = (int)(((double)original.getWidth())*scale);
+		int newHeight = (int)(((double)original.getHeight())*scale);
+		BufferedImage resized = new BufferedImage(newWidth, newHeight, original.getType());
 		Graphics2D g = resized.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		g.drawImage(original, 0, 0, width, height, 0, 0, original.getWidth(), original.getHeight(), null);
+		g.drawImage(original, 0, 0, newWidth, newHeight, 0, 0, original.getWidth(), original.getHeight(), null);
 		g.dispose();
 		return resized;
 	}
@@ -95,32 +96,48 @@ public class ButtonPanel extends JPanel {
 
 	private void drawMenuButtons(Graphics g){
 		int[] temp = new int[4];
-		for(int i=0; i<4; i++){
-			temp = gp.getButtonCoordinate(i, 0);
-			g.drawImage(resize(rotate(instrumenu, (temp[2]+temp[0])/2, (temp[3]+temp[1])/2), temp[2]-temp[0],temp[3]-temp[1]), temp[0], temp[1], this);
-			temp = gp.getButtonCoordinate(i, 1);
-			g.drawImage(resize(rotate(settings, (temp[2]+temp[0])/2, (temp[3]+temp[1])/2), temp[2]-temp[0],temp[3]-temp[1]), temp[0], temp[1], this);
+		double tempScale;
+		BufferedImage tempImage;
+		for(int i=0; i<player.getActiveGrids().size(); i++){
+			temp = gp.getButtonCoordinates(i, 0);
+			List<GridConfiguration> gridConfigs = InstrumentHolder.getInstance().getAvailableConfigurations();
+			for(int j = 0; j < gridConfigs.size(); j++) {
+				if(player.getActiveGrids().get(i).getGridConfiguration().equals(gridConfigs.get(j))) {
+					instrumenu = instruments[j];
+				}
+			}
+			tempScale = (temp[2]<temp[3])?(double)(temp[2])/(double)instrumenu.getWidth():(double)(temp[3])/(double)instrumenu.getHeight();
+			tempImage = scale(rotate(instrumenu, temp[0], temp[1]), tempScale);
+			g.drawImage(tempImage, temp[0]-tempImage.getWidth()/2, temp[1]-tempImage.getHeight()/2, this);
+			temp = gp.getButtonCoordinates(i, 1);
+			tempScale = (temp[2]<temp[3])?(double)(temp[2])/(double)settings.getWidth():(double)(temp[3])/(double)settings.getHeight();
+			tempImage = scale(rotate(settings, temp[0], temp[1]), tempScale);
+			g.drawImage(tempImage, temp[0]-tempImage.getWidth()/2, temp[1]-tempImage.getHeight()/2, this);
 		}
 	}
 
 	private void drawInstrumentButtons(Graphics g, int personIndex){
 		int[] temp = new int[4];
+		double tempScale;
+		BufferedImage tempImage;
 		for(int i=0; i<4;i++){
-			temp = gp.getButtonCoordinate(personIndex, i+2);
-			g.drawImage(resize(rotate(instruments[i], (temp[2]+temp[0])/2, (temp[3]+temp[1])/2), temp[2]-temp[0], temp[3]-temp[1]), temp[0], temp[1], this);
+			temp = gp.getButtonCoordinates(personIndex, i+2);
+			tempScale = (temp[2]<temp[3])?(double)(temp[2])/(double)instruments[i].getWidth():(double)(temp[3])/(double)instruments[i].getHeight();
+			tempImage = scale(rotate(instruments[i], temp[0], temp[1]), tempScale);
+			g.drawImage(tempImage, temp[0]-tempImage.getWidth()/2, temp[1]-tempImage.getHeight()/2, this);
 		}
-		temp= gp.getButtonCoordinate(personIndex, 6);
 	}
 
 	private void drawInstrument2Buttons(Graphics g, int personIndex) {
 		int[] temp = new int[4];
+		double tempScale;
+		BufferedImage tempImage;
 		for (int i = 0; i < 4; i++) {
-			temp = gp.getButtonCoordinate(personIndex, i + 2);
-			g.drawImage(resize(rotate(instruments[(i+1)%4],
-					(temp[2]+temp[0])/2, (temp[3]+temp[1])/2),
-					temp[2] - temp[0], temp[3] - temp[1]), temp[0], temp[1], this);
+			temp = gp.getButtonCoordinates(personIndex, i + 2);
+			tempScale = (temp[2]<temp[3])?(double)(temp[2])/(double)instruments[(i+1)%4].getWidth():(double)(temp[3])/(double)instruments[(i+1)%4].getHeight();
+			tempImage = scale(rotate(instruments[(i+1)%4], temp[0], temp[1]), tempScale);
+			g.drawImage(tempImage, temp[0]-tempImage.getWidth()/2, temp[1]-tempImage.getHeight()/2, this);
 		}
-		temp = gp.getButtonCoordinate(personIndex, 6);
 	}
 
 }

@@ -31,7 +31,7 @@ public class Player implements Runnable {
     private boolean stopped = false;
     private GridPanel gridPanel;
     private HashMap<Integer, List<ToneGrid>> channelUses;
-    private ParticlePanel vp;
+    private ParticlePanel pp;
     private static Player instance = null;
     
     private Player() {}
@@ -43,14 +43,14 @@ public class Player implements Runnable {
         return instance;
     }
     
-    public void init(int bpm, int width, ParticlePanel vp) {
+    public void init(int bpm, int width, ParticlePanel pp) {
         this.grids = new ArrayList<ToneGrid>();
         this.channelUses = new HashMap<Integer, List<ToneGrid>>();
         this.bpm = bpm;
         this.lastBeat = this.now();
         this.width = width;
         this.pos = 0;
-        this.vp = vp;
+        this.pp = pp;
         
         try {
             this.synthesizer = MidiSystem.getSynthesizer();
@@ -94,7 +94,7 @@ public class Player implements Runnable {
                     }
                     for(ToneGrid g : this.grids) {
                         if(g.isIsActive())
-                            g.playColumnTones(pos, this.vp);
+                            g.playColumnTones(pos, this.pp);
                     }
                 }
             }

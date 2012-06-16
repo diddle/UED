@@ -169,6 +169,10 @@ public abstract class GridConfiguration {
         channels[channel].programChange(instrPatch.getBank(), instrPatch.getProgram());
     }
     
+    public Instrument getInstrument() {
+    	return instrument;
+    }
+    
     /**
      * Geeft de naam van het instrument dat tot deze configuratie behoort
      * @return 

@@ -90,13 +90,6 @@ public class GridPanel extends JPanel {
 		this.setOpaque(false);
 		this.addMouseListener(mouseHandler);
 		this.addMouseMotionListener(mouseHandler);
-		// fullscreen...
-		//        GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		//        GraphicsDevice[] devices = graphicsEnvironment.getScreenDevices();
-		//        devices[0].setFullScreenWindow(this);
-		//        //setUndecorated(true);
-		//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		//        setBounds(0,0,screenSize.width, screenSize.height);
 
 		// touch table connect...
 		TouchHandler th = new TouchHandler();
@@ -146,9 +139,6 @@ public class GridPanel extends JPanel {
 				drawMenuMenu(g2d, i);
 			}
 		}
-		// drawActiveTones((Graphics2D)g);
-		// drawCircles(g);
-		// drawLines(g);
 	}
 
 	public int[] getActiveMenus(){
@@ -235,13 +225,10 @@ public class GridPanel extends JPanel {
 				// send release
 				this.touchReleased((int)packet.id);
 			}
-			//System.out.println("Touches: " + this.pressed.toString());
 		}
 	}
 
 	private void drawInterfaceBackground(Graphics2D g){
-		//    	int outerRadius = getRadius();
-		//    	int innerRadius = getRadius() - player.getHeight()*squareHeight;
 
 		int outerRadius = getRadius() + (int)(0.2*squareHeight);
 		int innerRadius = getRadius() - (int)(0.1*squareHeight + player.getHeight()*squareHeight);
@@ -258,43 +245,6 @@ public class GridPanel extends JPanel {
 		innerUpperRight = generateBezierPoints(innerRadius, 0.5*Math.PI, 0.0);
 		innerLowerRight = generateBezierPoints(innerRadius, 0.0, -0.5*Math.PI);
 		innerLowerLeft  = generateBezierPoints(innerRadius, 1.5*Math.PI, Math.PI);
-		//    	
-		//    	System.out.println("Upper Left:\n" + outerUpperLeft[0].getX() + ", " +
-		//    			outerUpperLeft[0].getY() + "\n" + 
-		//    			outerUpperLeft[1].getX() + ", " +
-		//    			outerUpperLeft[1].getY() + "\n" + 
-		//    			outerUpperLeft[2].getX() + ", " +
-		//    			outerUpperLeft[2].getY() + "\n" + 
-		//    			outerUpperLeft[3].getX() + ", " +
-		//    			outerUpperLeft[3].getY());
-		//    	
-		//    	System.out.println("Upper Right:\n" + outerUpperRight[0].getX() + ", " +
-		//    			outerUpperRight[0].getY() + "\n" + 
-		//    			outerUpperRight[1].getX() + ", " +
-		//    			outerUpperRight[1].getY() + "\n" + 
-		//    			outerUpperRight[2].getX() + ", " +
-		//    			outerUpperRight[2].getY() + "\n" + 
-		//    			outerUpperRight[3].getX() + ", " +
-		//    			outerUpperRight[3].getY());
-		//    	
-		//    	System.out.println("Lower Right:\n" + outerLowerRight[0].getX() + ", " +
-		//    			outerLowerRight[0].getY() + "\n" + 
-		//    			outerLowerRight[1].getX() + ", " +
-		//    			outerLowerRight[1].getY() + "\n" + 
-		//    			outerLowerRight[2].getX() + ", " +
-		//    			outerLowerRight[2].getY() + "\n" + 
-		//    			outerLowerRight[3].getX() + ", " +
-		//    			outerLowerRight[3].getY());
-		//    	
-		//    	System.out.println("Lower Left: \n" + outerLowerLeft[0].getX() + ", " +
-		//    			outerLowerLeft[0].getY() + "\n" + 
-		//    			outerLowerLeft[1].getX() + ", " +
-		//    			outerLowerLeft[1].getY() + "\n" + 
-		//    			outerLowerLeft[2].getX() + ", " +
-		//    			outerLowerLeft[2].getY() + "\n" + 
-		//    			outerLowerLeft[3].getX() + ", " +
-		//    			outerLowerLeft[3].getY());
-		//    	
 
 		GeneralPath outerCircle = new GeneralPath(), innerCircle = new GeneralPath();
 
@@ -449,7 +399,7 @@ public class GridPanel extends JPanel {
 
 	/* Draws the Button.
 	 */
-	private void drawButton(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor,int id){
+	private void drawButton(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor, int id){
 
 		double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
 				(double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
@@ -470,44 +420,62 @@ public class GridPanel extends JPanel {
 
 		g.fill(gp);
 	}
-
-	public int[] getButtonCoordinate(int personIndex, int id){
-		int[] coord = new int[4];
+	
+	
+//	id 0	=>	instrumentbutton
+//	id 1	=>	settingsbutton
+//	id 2-5	=>	instrumentmenu buttons
+//	id 6	=>	settingsmenu button
+	public int[] getButtonCoordinates(int personIndex, int id){
+		int[] result = new int[4];
 		int toneIndex = player.getHeight()+1;
 		double xFactor = 0.9;
 		double yFactor = 0.9;
 		int colIndex = 0;
 		int i = 3;
 		int j = 2;
-		if(id==0) colIndex= 2;
-		else if(id==1) colIndex = 10;
-		else if(id>=2 && id<=5) {i=2; j=3; colIndex = 2+(id-2)*3; toneIndex = 3;}
-		else if(id==6){i=1;j=1;colIndex=14; toneIndex = 1;}
+		switch(id) {
+		case 0:	colIndex = 2;	break;
+		case 1:	colIndex = 10;	break;
+		case 2: 
+		case 3:	
+		case 4:	
+		case 5:	i = 2;
+				j = 5;
+				colIndex = 2+(id-2)*3;
+				toneIndex = 2;
+				break;
+		case 6:	i = 1;
+				j = 1;
+				colIndex=14;
+				toneIndex = 1;
+				break;
+		}
 
-		double beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
-				(double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
-		double endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
-				(double)((double)(colIndex+i) + xFactor)*radPerColumn() + radOffset;
+		double beginAngle = (double)((double)(-1-i)*.5 - xFactor)*radPerColumn() + radOffset;
+		double endAngle = (double)((double)(1+i)*.5 + xFactor)*radPerColumn() + radOffset;
 
 		double lowerRadius = getRadius() - ((double)(toneIndex+1) - yFactor)*squareHeight;
 		double upperRadius = getRadius() - ((double)(toneIndex+j) + yFactor)*squareHeight;
-
-		double x1 = lowerRadius*Math.cos(beginAngle) + getWidth()/2;
-		double x2 = upperRadius*Math.cos(beginAngle) + getWidth()/2;
-		double x3 = upperRadius*Math.cos(endAngle) + getWidth()/2;
-		double x4 = lowerRadius*Math.cos(endAngle) + getWidth()/2;
-		double y1 = translateY(lowerRadius*Math.sin(beginAngle) + getHeight()/2);
-		double y2 = translateY(upperRadius*Math.sin(beginAngle) + getHeight()/2);
-		double y3 = translateY(upperRadius*Math.sin(endAngle) + getHeight()/2);
-		double y4 = translateY(lowerRadius*Math.sin(endAngle) + getHeight()/2);
-
-		coord[0] = (int) Math.min(Math.min(x1,x2),Math.min(x3,x4));
-		coord[1] = (int) Math.min(Math.min(y1,y2),Math.min(y3,y4));
-		coord[2] = (int) Math.max(Math.max(x1,x2),Math.max(x3,x4));
-		coord[3] = (int) Math.max(Math.max(y1,y2),Math.max(y3,y4));
-
-		translateY(upperRadius*Math.sin(beginAngle) + getHeight()/2);
-		return coord;
+		double midRadius = (lowerRadius+upperRadius)*.5;
+		
+		double width = Math.abs(midRadius*Math.cos(beginAngle) - midRadius*Math.cos(endAngle));
+		double height = Math.abs(upperRadius - lowerRadius);
+		
+		beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
+				(double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
+		endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
+				(double)((double)(colIndex+i) + xFactor)*radPerColumn() + radOffset;
+		double midAngle = (beginAngle+endAngle)*.5;
+		
+		double x = midRadius*Math.cos(midAngle) + getWidth()/2;
+		double y = translateY(midRadius*Math.sin(midAngle) + getHeight()/2);
+		
+		result[0] = (int)x;
+		result[1] = (int)y;
+		result[2] = (int)width;
+		result[3] = (int)height;
+		return result;
 	}
 
 	private GeneralPath drawPath(double beginAngle, double endAngle, double lowerRadius, double upperRadius) {
@@ -776,7 +744,7 @@ public class GridPanel extends JPanel {
 
 		int alternate = ((colIndex/4 + toneIndex) % 2) * 2;				//	Visually separating quarter time
 
-		Color begin = playerColors[personIndex][alternate], end = playerColors[personIndex][alternate+1];
+		Color begin = playerColors[personIndex%4][alternate], end = playerColors[personIndex%4][alternate+1];
 
 		int playerWidth = player.getWidth();
 
@@ -849,8 +817,7 @@ public class GridPanel extends JPanel {
 		int w = player.getWidth();
 		colIndex = (colIndex % w + w) % w;
 		int toneIndex = player.getHeight() - (int)Math.floor(((double)(rr - (getRadius() - squareHeight * player.getHeight())) / (double)squareHeight)) - 1;
-
-		//System.out.println("Col: "+colIndex+" Row: "+toneIndex);
+		
 		return new NoteIndex(personIndex, colIndex, toneIndex);
 
 	}
@@ -964,57 +931,10 @@ public class GridPanel extends JPanel {
 		return getHeight() - y;
 	}
 
-	//
-	//    private class ControlPanel extends JPanel {
-	//
-	//        private static final int DELTA = 10;
-	//
-	//        public ControlPanel() {
-	//            this.add(new MoveButton("\u2190", KeyEvent.VK_LEFT, -DELTA, 0));
-	//            this.add(new MoveButton("\u2191", KeyEvent.VK_UP, 0, -DELTA));
-	//            this.add(new MoveButton("\u2192", KeyEvent.VK_RIGHT, DELTA, 0));
-	//            this.add(new MoveButton("\u2193", KeyEvent.VK_DOWN, 0, DELTA));
-	//        }
-	//
-	//        private class MoveButton extends JButton {
-	//
-	//            KeyStroke k;
-	//            int dx, dy;
-	//
-	//            public MoveButton(String name, int code,
-	//                    final int dx, final int dy) {
-	//                super(name);
-	//                this.k = KeyStroke.getKeyStroke(code, 0);
-	//                this.dx = dx;
-	//                this.dy = dy;
-	//                this.setAction(new AbstractAction(this.getText()) {
-	//
-	//                    @Override
-	//                    public void actionPerformed(ActionEvent e) {
-	//                        GridPanel.this.p1.translate(dx, dy);
-	//                        GridPanel.this.p2.translate(dx, dy);
-	//                        GridPanel.this.repaint();
-	//                    }
-	//                });
-	//                ControlPanel.this.getInputMap(WHEN_IN_FOCUSED_WINDOW)
-	//                    .put(k, k.toString());
-	//                ControlPanel.this.getActionMap()
-	//                    .put(k.toString(), new AbstractAction() {
-	//
-	//                    @Override
-	//                    public void actionPerformed(ActionEvent e) {
-	//                        MoveButton.this.doClick();
-	//                    }
-	//                });
-	//            }
-	//        }
-	//    }
-
 	public void display() {
 		JFrame f = new JFrame("LinePanel");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.add(this);
-		//f.add(new ControlPanel(), BorderLayout.SOUTH);
 		f.pack();
 		f.setLocationRelativeTo(null);
 		f.setVisible(true);

@@ -91,6 +91,10 @@ public class ToneGrid {
     public void setConfiguration(GridConfiguration gc) {
         this.gc = gc;
     }
+    
+    public GridConfiguration getGridConfiguration() {
+    	return gc;
+    }
 
     public boolean isIsActive() {
         return isActive;
