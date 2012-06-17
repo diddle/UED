@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -57,6 +58,13 @@ public class GridPanel extends JPanel {
 	public final static int NO_MENU = 0;
 	public final static int INSTRUMENT_MENU = 1;
 	public final static int MENU_MENU = 2;
+	
+	/*
+	 * Variables Relating to drawing
+	 */
+	public final static int FALSE = 0;
+	public final static int TRUE = 1;
+	public final static int INACTIVE = -1;
 	
 	/*constructor
     Player p: Player whose panels will be drawn
@@ -104,8 +112,9 @@ public class GridPanel extends JPanel {
 		if(!pressedNotes.isEmpty()) {
 			Iterator<Map.Entry<Integer, Pointer>> it = pressedNotes.entrySet().iterator();
 			while (it.hasNext()) {
-				NoteIndex noteIndex = translatePointToNoteIndex(it.next().getValue().getLocation());
-				if(noteIndex != null) {
+				Entry<Integer, Pointer> temp = it.next();
+				NoteIndex noteIndex = translatePointToNoteIndex(temp.getValue().getLocation());
+				if(noteIndex != null&&!(temp.getValue().drawState()==INACTIVE)&&activeMenu[noteIndex.getPerson()]==NO_MENU) {
 					drawNote(g2d, noteIndex.getPerson(), noteIndex.getColumn(), noteIndex.getNote(), 1.125d, 1.125d);
 				}
 			}
@@ -317,6 +326,8 @@ public class GridPanel extends JPanel {
 			drawColumn(g, personIndex, i);
 		}
 		//Add Button Drawing
+		drawButton(g, personIndex, 2, player.getHeight()+1, 1.2, 1.2, 0);
+		drawButton(g, personIndex, 10, player.getHeight()+1, 1.2, 1.2, 0);
 		drawButton(g, personIndex, 2, player.getHeight()+1, 0.9, 0.9, 1);
 		drawButton(g, personIndex, 10, player.getHeight()+1, 0.9, 0.9, 2);
 	}
@@ -399,6 +410,9 @@ public class GridPanel extends JPanel {
 		Color squareColour = getColorFor(personIndex, colIndex+4, toneIndex);
 		if ((activeMenu[personIndex]==INSTRUMENT_MENU)&&id==2||activeMenu[personIndex]==MENU_MENU&&id==1){
 			squareColour=squareColour.darker().darker();
+		}
+		if (id==0){
+			squareColour=Color.black;
 		}
 		g.setPaint(squareColour);
 
@@ -780,8 +794,8 @@ public class GridPanel extends JPanel {
 	// Process press events
 	private void processPress(int id, Point point) {
 
-		boolean drawing;
-
+		int drawing=INACTIVE;
+		
 		NoteIndex pressedNote = translatePointToIndex(point);
 		int[] colrow = { pressedNote.getColumn(), pressedNote.getNote(),
 				pressedNote.getPerson() };
@@ -790,9 +804,9 @@ public class GridPanel extends JPanel {
 				&& activeMenu[colrow[2]] == NO_MENU) {
 			ToneGrid tg = this.player.getActiveGrids().get(colrow[2]);
 			tg.toggleTone(colrow[0], colrow[1]);
-			drawing = tg.getTone(colrow[0], colrow[1]);
+			boolean drawingBoolean = tg.getTone(colrow[0], colrow[1]);
+			drawing = drawingBoolean ? TRUE: FALSE;
 		} else {
-			drawing = true;
 			if (colrow[1] >= player.getHeight() + 1
 					&& colrow[1] < player.getHeight() + 4) {
 				// Menu's may have been pressed
@@ -846,7 +860,7 @@ public class GridPanel extends JPanel {
 	//	Process drag events
 	private void processDrag(int id, Point point) {
 
-		boolean drawing = pressedNotes.get(id).isDrawing();
+		int drawing = pressedNotes.get(id).drawState();
 
 		pressedNotes.put(id, new Pointer(point, drawing));
 
@@ -855,9 +869,9 @@ public class GridPanel extends JPanel {
 
 		if(pressedNote != null&&activeMenu[pressedNote.getPerson()]==NO_MENU) {
 			ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
-			if(drawing)
+			if(drawing==TRUE)
 				tg.activateTone(pressedNote.getColumn(), pressedNote.getNote());
-			else
+			else if (drawing==FALSE)
 				tg.deactivateTone(pressedNote.getColumn(), pressedNote.getNote());
 		}
 	}
@@ -882,9 +896,9 @@ public class GridPanel extends JPanel {
 
 	private class Pointer {
 		private Point point;
-		private boolean drawing;
+		private int drawing;
 
-		public Pointer(Point point, boolean drawing) {
+		public Pointer(Point point, int drawing) {
 			this.point = point;
 			this.drawing = drawing;
 		}
@@ -893,7 +907,7 @@ public class GridPanel extends JPanel {
 			return this.point.getLocation();
 		}
 
-		public boolean isDrawing() {
+		public int drawState() {
 			return drawing;
 		}
 	}
