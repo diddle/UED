@@ -31,9 +31,6 @@ import playback.ToneGrid;
  */
 public class GridPanel extends JPanel {
 
-	private static final int DEFAULTWIDTH = 1024;
-	private static final int DEFAULTHEIGHT = 768;
-
 	private static final Color[][] playerColors = {
 		{ new Color(255, 0, 0), new Color(255, 191, 0),
 			new Color(127, 95, 0), new Color(63, 127, 0) },
@@ -63,30 +60,14 @@ public class GridPanel extends JPanel {
 
 
 
-	/*constructor that uses default values for width and height.
+	/*constructor
     Player p: Player whose panels will be drawn
 	 */
 
 	public GridPanel(Player p) {
-		this(p, DEFAULTWIDTH, DEFAULTHEIGHT);
-		activeMenu = new int[10];
-		for(int i=0;i<10;i++){
-			activeMenu[i]=0;
-		}
-	}
-
-	/*constructor
-    Player p: Player whose panels will be drawn
-    int width: starting width of window 
-    int height: starting height of window
-	 */ 
-
-
-	public GridPanel(Player p, int width, int height) {
 		this.pressedNotes = new HashMap<Integer, Pointer>();
 		this.player = p;
 		this.player.setGridPanel(this);
-		this.setPreferredSize(new Dimension(width, height));
 		this.setOpaque(false);
 		this.addMouseListener(mouseHandler);
 		this.addMouseMotionListener(mouseHandler);
@@ -96,6 +77,10 @@ public class GridPanel extends JPanel {
 		TouchSocket ts = new TouchSocket();
 		ts.addObserver(th);
 		ts.startServer();
+		activeMenu = new int[10];
+		for(int i=0;i<10;i++){
+			activeMenu[i]=0;
+		}
 		activeMenu = new int[10];
 		for(int i=0;i<10;i++){
 			activeMenu[i]=0;
@@ -428,12 +413,12 @@ public class GridPanel extends JPanel {
 //	id 6	=>	settingsmenu button
 	public int[] getButtonCoordinates(int personIndex, int id){
 		int[] result = new int[4];
-		int toneIndex = player.getHeight()+1;
+		int toneIndex = player.getHeight();
 		double xFactor = 0.9;
 		double yFactor = 0.9;
 		int colIndex = 0;
 		int i = 3;
-		int j = 2;
+		int j = 4;
 		switch(id) {
 		case 0:	colIndex = 2;	break;
 		case 1:	colIndex = 10;	break;
