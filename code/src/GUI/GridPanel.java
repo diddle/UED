@@ -53,13 +53,11 @@ public class GridPanel extends JPanel {
 	 * Variables Relating to Menu's
 	 */
 	private int activeMenu[];
+	private int instrMenuIndex[];
 	public final static int NO_MENU = 0;
 	public final static int INSTRUMENT_MENU = 1;
 	public final static int MENU_MENU = 2;
-	public final static int INSTRUMENT_MENU2 = 3;
-
-
-
+	
 	/*constructor
     Player p: Player whose panels will be drawn
 	 */
@@ -77,13 +75,13 @@ public class GridPanel extends JPanel {
 		TouchSocket ts = new TouchSocket();
 		ts.addObserver(th);
 		ts.startServer();
-		activeMenu = new int[10];
-		for(int i=0;i<10;i++){
+		activeMenu = new int[p.getActiveGrids().size()];
+		for(int i=0;i<activeMenu.length;i++){
 			activeMenu[i]=0;
 		}
-		activeMenu = new int[10];
-		for(int i=0;i<10;i++){
-			activeMenu[i]=0;
+		instrMenuIndex = new int[p.getActiveGrids().size()];
+		for(int i=0;i<instrMenuIndex.length;i++){
+			instrMenuIndex[i]=0;
 		}
 	}
 
@@ -117,9 +115,6 @@ public class GridPanel extends JPanel {
 			if (activeMenu[i] == INSTRUMENT_MENU) {
 				drawInstrumentMenu(g2d, i);
 			}
-			if (activeMenu[i] == INSTRUMENT_MENU2) {
-				drawInstrumentMenu2(g2d, i);
-			}
 			if (activeMenu[i] == MENU_MENU) {
 				drawMenuMenu(g2d, i);
 			}
@@ -129,7 +124,11 @@ public class GridPanel extends JPanel {
 	public int[] getActiveMenus(){
 		return activeMenu;
 	}
-
+	
+	public int getInstrMenuIndex(int person) {
+		return instrMenuIndex[person];
+	}
+	
 	private class MouseHandler extends MouseAdapter {
 
 		@Override
@@ -374,7 +373,7 @@ public class GridPanel extends JPanel {
 		else if(tonePlayed) {
 			squareColour = Color.black;
 		}
-		if (activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==MENU_MENU||activeMenu[personIndex]==INSTRUMENT_MENU2){
+		if (activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==MENU_MENU){
 			squareColour=squareColour.darker().darker();
 		}
 		g.setPaint(squareColour);
@@ -398,7 +397,7 @@ public class GridPanel extends JPanel {
 		gp.closePath();
 
 		Color squareColour = getColorFor(personIndex, colIndex+4, toneIndex);
-		if ((activeMenu[personIndex]==INSTRUMENT_MENU||activeMenu[personIndex]==INSTRUMENT_MENU2)&&id==2||activeMenu[personIndex]==MENU_MENU&&id==1){
+		if ((activeMenu[personIndex]==INSTRUMENT_MENU)&&id==2||activeMenu[personIndex]==MENU_MENU&&id==1){
 			squareColour=squareColour.darker().darker();
 		}
 		g.setPaint(squareColour);
@@ -542,50 +541,6 @@ public class GridPanel extends JPanel {
 		g.setPaint(squareColour);
 		g.fill(gp);
 
-
-	}
-
-
-	private void drawInstrumentMenu2(Graphics2D g, int personIndex){
-		int colIndex = 2;
-		int toneIndex = 3;
-		double xFactor = 0.9;
-		double yFactor = 0.9;
-		Color squareColour = getColorFor(personIndex, 0, 1);
-
-		for (colIndex = 2; colIndex < 12; colIndex = colIndex + 3) {
-			double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
-					+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
-			double endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
-					+ (double) ((double) (colIndex + 2) + xFactor) * radPerColumn() + radOffset;
-
-			double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor) * squareHeight;
-			double upperRadius = getRadius() - ((double) (toneIndex + 3) + yFactor) * squareHeight;
-
-			GeneralPath gp = drawPath(beginAngle, endAngle, lowerRadius, upperRadius);
-			gp.closePath();
-
-			g.setPaint(squareColour);
-
-			g.fill(gp);
-		}
-
-
-		toneIndex = 1;
-		colIndex = 0;
-		double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
-				+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
-		double endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
-				+ (double) ((double) (colIndex + 1) + xFactor) * radPerColumn() + radOffset;
-
-		double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor) * squareHeight;
-		double upperRadius = getRadius() - ((double) (toneIndex + 1) + yFactor) * squareHeight;
-
-		GeneralPath gp = drawPath(beginAngle, endAngle, lowerRadius, upperRadius);
-		gp.closePath();
-
-		g.setPaint(squareColour);
-		g.fill(gp);
 
 	}
 
@@ -828,9 +783,10 @@ public class GridPanel extends JPanel {
 				// Menu's may have been pressed
 				// col 3-6 11-14
 				if (colrow[0] >= 2 && colrow[0] <= 5) {
-					if (activeMenu[colrow[2]] == INSTRUMENT_MENU
-							|| activeMenu[colrow[2]] == INSTRUMENT_MENU2)
+					if (activeMenu[colrow[2]] == INSTRUMENT_MENU) {
 						activeMenu[colrow[2]] = NO_MENU;
+						instrMenuIndex[colrow[2]] = 0;
+					}
 					else
 						activeMenu[colrow[2]] = INSTRUMENT_MENU;
 				} else if (pressedNote.getColumn() >= 10 && colrow[0] <= 13) {
@@ -845,38 +801,22 @@ public class GridPanel extends JPanel {
 					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) {
 				// Instrument Button has Been Pressed in INSTRUMENT_MENU
 				if (colrow[0] >= 2 && colrow[0] <= 4) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(0));
+					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(instrMenuIndex[colrow[2]]));
 					activeMenu[colrow[2]] = NO_MENU;
 				} else if (colrow[0] >= 5 && colrow[0] <= 7) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(1));
+					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(instrMenuIndex[(colrow[2]+1)%4]));
 					activeMenu[colrow[2]] = NO_MENU;
 				} else if (colrow[0] >= 8 && colrow[0] <= 10) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(2));
+					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(instrMenuIndex[(colrow[2]+2)%4]));
 					activeMenu[colrow[2]] = NO_MENU;
 				} else if (colrow[0] >= 11 && colrow[0] <= 13) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(3));
-					activeMenu[colrow[2]] = NO_MENU;
-				}
-			} else if (colrow[1] >= 3 && colrow[1] <= 6
-					&& activeMenu[colrow[2]] == INSTRUMENT_MENU2) {
-				// Instrument Button has Been Pressed in INSTRUMENT_MENU2
-				if (colrow[0] >= 2 && colrow[0] <= 4) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(1));
-					activeMenu[colrow[2]] = NO_MENU;
-				} else if (colrow[0] >= 5 && colrow[0] <= 7) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(2));
-					activeMenu[colrow[2]] = NO_MENU;
-				} else if (colrow[0] >= 8 && colrow[0] <= 10) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(3));
-					activeMenu[colrow[2]] = NO_MENU;
-				} else if (colrow[0] >= 11 && colrow[0] <= 13) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(0));
+					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(instrMenuIndex[(colrow[2]+3)%4]));
 					activeMenu[colrow[2]] = NO_MENU;
 				}
 			} else if (colrow[1] >= 1 && colrow[1] <= 2 && colrow[0] >= 14 && colrow[0] <= 15
-					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) activeMenu[colrow[2]] = INSTRUMENT_MENU2;
+					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) instrMenuIndex[colrow[2]] = (instrMenuIndex[colrow[2]]+1)%4;
 			else if (colrow[1] >= 1 && colrow[1] <= 2 && colrow[0] >= 0 && colrow[0] <= 2 
-					&& activeMenu[colrow[2]] == INSTRUMENT_MENU2) activeMenu[colrow[2]] = INSTRUMENT_MENU;
+					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) instrMenuIndex[colrow[2]] = (instrMenuIndex[colrow[2]]+3)%4;
 
 			else if (colrow[0] >= 4 && colrow[0] <= 12 && activeMenu[colrow[2]] == MENU_MENU) {
 				if (colrow[1] >= 8 && colrow[1] <= 10) {

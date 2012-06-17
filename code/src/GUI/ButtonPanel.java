@@ -64,9 +64,7 @@ public class ButtonPanel extends JPanel {
 		for (int i = 0; i < player.getActiveGrids().size(); i++) {
 			if (gp.getActiveMenus()[i] == GridPanel.INSTRUMENT_MENU) {
 				drawInstrumentButtons(g,i);
-			} else if (gp.getActiveMenus()[i] == GridPanel.INSTRUMENT_MENU2) {
-				drawInstrument2Buttons(g,i);
-			}
+			} 
 		}
 
 	}
@@ -123,19 +121,7 @@ public class ButtonPanel extends JPanel {
 		for(int i=0; i<4;i++){
 			temp = gp.getButtonCoordinates(personIndex, i+2);
 			tempScale = (temp[2]<temp[3])?(double)(temp[2])/(double)instruments[i].getWidth():(double)(temp[3])/(double)instruments[i].getHeight();
-			tempImage = scale(rotate(instruments[i], temp[0], temp[1]), tempScale);
-			g.drawImage(tempImage, temp[0]-tempImage.getWidth()/2, temp[1]-tempImage.getHeight()/2, this);
-		}
-	}
-
-	private void drawInstrument2Buttons(Graphics g, int personIndex) {
-		int[] temp = new int[4];
-		double tempScale;
-		BufferedImage tempImage;
-		for (int i = 0; i < 4; i++) {
-			temp = gp.getButtonCoordinates(personIndex, i + 2);
-			tempScale = (temp[2]<temp[3])?(double)(temp[2])/(double)instruments[(i+1)%4].getWidth():(double)(temp[3])/(double)instruments[(i+1)%4].getHeight();
-			tempImage = scale(rotate(instruments[(i+1)%4], temp[0], temp[1]), tempScale);
+			tempImage = scale(rotate(instruments[(i+gp.getInstrMenuIndex(personIndex))%4], temp[0], temp[1]), tempScale);
 			g.drawImage(tempImage, temp[0]-tempImage.getWidth()/2, temp[1]-tempImage.getHeight()/2, this);
 		}
 	}
