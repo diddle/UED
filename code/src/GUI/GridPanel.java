@@ -830,7 +830,7 @@ public class GridPanel extends JPanel {
 			} else if (colrow[1] >= 1 && colrow[1] <= 2 && colrow[0] >= 14 && colrow[0] <= 15
 					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) instrMenuIndex[colrow[2]] = (instrMenuIndex[colrow[2]]+1)%configs.size();
 			else if (colrow[1] >= 1 && colrow[1] <= 2 && colrow[0] >= 0 && colrow[0] <= 2 
-					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) instrMenuIndex[colrow[2]] = (instrMenuIndex[colrow[2]]+3)%configs.size();
+					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) instrMenuIndex[colrow[2]] = (instrMenuIndex[colrow[2]]+configs.size()-1)%configs.size();
 
 			else if (colrow[0] >= 4 && colrow[0] <= 12 && activeMenu[colrow[2]] == MENU_MENU) {
 				if (colrow[1] >= 8 && colrow[1] <= 10) {

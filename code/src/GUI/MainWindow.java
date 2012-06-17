@@ -24,8 +24,8 @@ public class MainWindow extends JFrame {
 		this.fullScreen();
 		gf.setBounds(0, 0, this.getWidth(), this.getHeight());
 		bp.setBounds(0, 0, this.getWidth(), this.getHeight());
-		this.getLayeredPane().add(gf, new Integer(5));
-		this.getLayeredPane().add(bp, new Integer(10));
+		this.getLayeredPane().add(gf, new Integer(2));
+		this.getLayeredPane().add(bp, new Integer(3));
 	}
 
 	private void fullScreen() {
@@ -52,8 +52,7 @@ public class MainWindow extends JFrame {
 
 	public void setParticlePanel(ParticlePanel pp) {
 		pp.setBounds(0, 0, getWidth(), getHeight());
-		pp.setPreferredSize(this.getSize());
 		pp.init();
-		this.getLayeredPane().add(pp, new Integer(0));
+		this.getLayeredPane().add(pp, new Integer(1));
 	}
 }
