@@ -144,6 +144,12 @@ public class GridPanel extends JPanel {
 		public void mousePressed(MouseEvent e) {
 			Point p = e.getPoint();
 			p.setLocation(p.getX(), translateY(p.getY()));
+                        CalibrationPanel cp = CalibrationPanel.getInstance();
+                        if(!cp.isDone()) {
+                            cp.processTouch(p);
+                            return;
+                        }
+
 
 			processPress(0, p);
 			repaint();
@@ -152,11 +158,19 @@ public class GridPanel extends JPanel {
 		public void mouseDragged(MouseEvent e) {
 			Point p = e.getPoint();
 			p.setLocation(p.getX(), translateY(p.getY()));
+                        CalibrationPanel cp = CalibrationPanel.getInstance();
+                        if(!cp.isDone()) {
+                            return;
+                        }
 			processDrag(0, p);
 			repaint();
 		}
 
 		public void mouseReleased(MouseEvent e) {
+                    CalibrationPanel cp = CalibrationPanel.getInstance();
+                        if(!cp.isDone()) {
+                            return;
+                        }
 			processRelease(0);
 			repaint();
 		}
@@ -199,6 +213,12 @@ public class GridPanel extends JPanel {
 			int x = (int)(((double)packet.x / 32768d) * (double)getWidth());
 			int y = (int)(((double)packet.y / 32768d) * (double)getHeight());
 			Point p = new Point(x,y);
+                        
+                        CalibrationPanel cp = CalibrationPanel.getInstance();
+                        if(!cp.isDone()) {
+                            cp.processTouch(p);
+                            return;
+                        }
 
 			if(packet.touch == 1 && this.pressed.containsKey((int)packet.id)) {
 				// send drag

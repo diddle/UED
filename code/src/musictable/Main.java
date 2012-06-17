@@ -10,8 +10,6 @@ import GUI.ParticlePanel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.sound.midi.*;
 import playback.*;
 
@@ -51,7 +49,7 @@ public class Main {
 		InstrumentGridConfiguration bass = new InstrumentGridConfiguration(36, 16, InstrumentHolder.SearchInstrument("bass"), 180);
 		InstrumentHolder.getInstance().addConfiguration(bass);
 		// voeg gitaar toe
-		InstrumentGridConfiguration guitar = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("guitar"), 60);
+		InstrumentGridConfiguration guitar = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("gt."), 60);
 		InstrumentHolder.getInstance().addConfiguration(guitar);
 		// voeg misc instrument toe
 		InstrumentGridConfiguration misc = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("bell"), 60);

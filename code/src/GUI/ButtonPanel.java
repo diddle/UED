@@ -3,10 +3,8 @@ package GUI;
 import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -34,17 +32,18 @@ public class ButtonPanel extends JPanel {
 		this.setOpaque(false);
 		instruments = new BufferedImage[5];
 		try {
-			settings = ImageIO.read(new File("bin\\resources\\settings.png"));
-			pianob = ImageIO.read(new File("bin\\resources\\piano_button.png"));
-			bassb = ImageIO.read(new File("bin\\resources\\bass_button.png"));
-			guitarb = ImageIO.read(new File("bin\\resources\\guitar_button.png"));
-			drumsb = ImageIO.read(new File("bin\\resources\\drums_button.png"));
+                    ClassLoader cl = this.getClass().getClassLoader();
+			settings = ImageIO.read(cl.getResource("resources/settings.png"));
+			pianob = ImageIO.read(cl.getResource("resources/piano_button.png"));
+			bassb = ImageIO.read(cl.getResource("resources/bass_button.png"));
+			guitarb = ImageIO.read(cl.getResource("resources/guitar_button.png"));
+			drumsb = ImageIO.read(cl.getResource("resources/drums_button.png"));
 
-			instruments[0] = ImageIO.read(new File("bin\\resources\\drums_icon.png"));
-			instruments[1] = ImageIO.read(new File("bin\\resources\\piano_icon.png"));
-			instruments[2] = ImageIO.read(new File("bin\\resources\\bass_icon.png"));
-			instruments[3] = ImageIO.read(new File("bin\\resources\\guitar_icon.png"));
-			instruments[4] = ImageIO.read(new File("bin\\resources\\misc_icon.png"));
+			instruments[0] = ImageIO.read(cl.getResource("resources/drums_icon.png"));
+			instruments[1] = ImageIO.read(cl.getResource("resources/piano_icon.png"));
+			instruments[2] = ImageIO.read(cl.getResource("resources/bass_icon.png"));
+			instruments[3] = ImageIO.read(cl.getResource("resources/guitar_icon.png"));
+			instruments[4] = ImageIO.read(cl.getResource("resources/misc_icon.png"));
 
 			System.out.println(settings.toString());
 
