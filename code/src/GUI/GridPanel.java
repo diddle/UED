@@ -523,10 +523,9 @@ public class GridPanel extends JPanel {
 
 
 		}
-		// g.drawRect(x, y, width, height);
 
 		toneIndex = 1;
-		colIndex = 14;
+		colIndex = 0;
 		double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
 				+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
 		double endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
@@ -536,6 +535,22 @@ public class GridPanel extends JPanel {
 		double upperRadius = getRadius() - ((double) (toneIndex + 1) + yFactor) * squareHeight;
 
 		GeneralPath gp = drawPath(beginAngle, endAngle, lowerRadius, upperRadius);
+		gp.closePath();
+
+		g.setPaint(squareColour);
+		g.fill(gp);
+
+		toneIndex = 1;
+		colIndex = 14;
+		beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+				+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
+		endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
+				+ (double) ((double) (colIndex + 1) + xFactor) * radPerColumn() + radOffset;
+
+		lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor) * squareHeight;
+		upperRadius = getRadius() - ((double) (toneIndex + 1) + yFactor) * squareHeight;
+
+		gp = drawPath(beginAngle, endAngle, lowerRadius, upperRadius);
 		gp.closePath();
 
 		g.setPaint(squareColour);
@@ -800,17 +815,18 @@ public class GridPanel extends JPanel {
 			if (colrow[1] >= 3 && colrow[1] <= 6
 					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) {
 				// Instrument Button has Been Pressed in INSTRUMENT_MENU
+				System.out.println(configs.toString());
 				if (colrow[0] >= 2 && colrow[0] <= 4) {
 					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(instrMenuIndex[colrow[2]]));
 					activeMenu[colrow[2]] = NO_MENU;
 				} else if (colrow[0] >= 5 && colrow[0] <= 7) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(instrMenuIndex[(colrow[2]+1)%4]));
+					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get((instrMenuIndex[colrow[2]]+1)%4));
 					activeMenu[colrow[2]] = NO_MENU;
 				} else if (colrow[0] >= 8 && colrow[0] <= 10) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(instrMenuIndex[(colrow[2]+2)%4]));
+					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get((instrMenuIndex[colrow[2]]+2)%4));
 					activeMenu[colrow[2]] = NO_MENU;
 				} else if (colrow[0] >= 11 && colrow[0] <= 13) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(instrMenuIndex[(colrow[2]+3)%4]));
+					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get((instrMenuIndex[colrow[2]]+3)%4));
 					activeMenu[colrow[2]] = NO_MENU;
 				}
 			} else if (colrow[1] >= 1 && colrow[1] <= 2 && colrow[0] >= 14 && colrow[0] <= 15
@@ -839,7 +855,7 @@ public class GridPanel extends JPanel {
 		NoteIndex pressedNote = translatePointToNoteIndex(point);
 
 
-		if(pressedNote != null&&activeMenu[pressedNote.getNote()]==NO_MENU) {
+		if(pressedNote != null&&activeMenu[pressedNote.getPerson()]==NO_MENU) {
 			ToneGrid tg = this.player.getActiveGrids().get(pressedNote.getPerson());
 			if(drawing)
 				tg.activateTone(pressedNote.getColumn(), pressedNote.getNote());
