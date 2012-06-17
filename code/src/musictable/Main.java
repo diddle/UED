@@ -53,25 +53,26 @@ public class Main {
 		// voeg gitaar toe
 		InstrumentGridConfiguration guitar = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("guitar"), 60);
 		InstrumentHolder.getInstance().addConfiguration(guitar);
-
+		// voeg misc instrument toe
+		InstrumentGridConfiguration misc = new InstrumentGridConfiguration(60, 16, InstrumentHolder.SearchInstrument("bell"), 60);
+		InstrumentHolder.getInstance().addConfiguration(misc);
 
 		ToneGrid bassGrid = new ToneGrid(bass);
 		p.registerToneGrid(bassGrid);
 		bassGrid.setIsActive(true);
 
-		ToneGrid highthingy = new ToneGrid(piano);
-		p.registerToneGrid(highthingy);
-		highthingy.setIsActive(true);
+		ToneGrid pianoGrid = new ToneGrid(piano);
+		p.registerToneGrid(pianoGrid);
+		pianoGrid.setIsActive(true);
 
-		ToneGrid strangesound1 = new ToneGrid(guitar);
-		p.registerToneGrid(strangesound1);
-		strangesound1.setIsActive(true);
+		ToneGrid guitarGrid = new ToneGrid(guitar);
+		p.registerToneGrid(guitarGrid);
+		guitarGrid.setIsActive(true);
 
 		ToneGrid drumGrid = new ToneGrid(drums);
 		p.registerToneGrid(drumGrid);
 		drumGrid.setIsActive(true);
-
-
+		
 		MainWindow mw = new MainWindow(p);
 
 		mw.setParticlePanel(pp);

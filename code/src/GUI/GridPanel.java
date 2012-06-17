@@ -408,8 +408,8 @@ public class GridPanel extends JPanel {
 	
 //	id 0	=>	instrumentbutton
 //	id 1	=>	settingsbutton
-//	id 2-5	=>	instrumentmenu buttons
-//	id 6	=>	settingsmenu button
+//	id 2-5	=>	instrumentmenu instrumentbuttons
+//	id 6	=>	instrumentmenu nextbutton
 	public int[] getButtonCoordinates(int personIndex, int id){
 		int[] result = new int[4];
 		int toneIndex = player.getHeight();
@@ -800,7 +800,6 @@ public class GridPanel extends JPanel {
 				if (colrow[0] >= 2 && colrow[0] <= 5) {
 					if (activeMenu[colrow[2]] == INSTRUMENT_MENU) {
 						activeMenu[colrow[2]] = NO_MENU;
-						instrMenuIndex[colrow[2]] = 0;
 					}
 					else
 						activeMenu[colrow[2]] = INSTRUMENT_MENU;
@@ -815,24 +814,23 @@ public class GridPanel extends JPanel {
 			if (colrow[1] >= 3 && colrow[1] <= 6
 					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) {
 				// Instrument Button has Been Pressed in INSTRUMENT_MENU
-				System.out.println(configs.toString());
 				if (colrow[0] >= 2 && colrow[0] <= 4) {
 					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get(instrMenuIndex[colrow[2]]));
 					activeMenu[colrow[2]] = NO_MENU;
 				} else if (colrow[0] >= 5 && colrow[0] <= 7) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get((instrMenuIndex[colrow[2]]+1)%4));
+					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get((instrMenuIndex[colrow[2]]+1)%configs.size()));
 					activeMenu[colrow[2]] = NO_MENU;
 				} else if (colrow[0] >= 8 && colrow[0] <= 10) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get((instrMenuIndex[colrow[2]]+2)%4));
+					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get((instrMenuIndex[colrow[2]]+2)%configs.size()));
 					activeMenu[colrow[2]] = NO_MENU;
 				} else if (colrow[0] >= 11 && colrow[0] <= 13) {
-					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get((instrMenuIndex[colrow[2]]+3)%4));
+					player.changeInstrument(player.getActiveGrids().get(colrow[2]), configs.get((instrMenuIndex[colrow[2]]+3)%configs.size()));
 					activeMenu[colrow[2]] = NO_MENU;
 				}
 			} else if (colrow[1] >= 1 && colrow[1] <= 2 && colrow[0] >= 14 && colrow[0] <= 15
-					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) instrMenuIndex[colrow[2]] = (instrMenuIndex[colrow[2]]+1)%4;
+					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) instrMenuIndex[colrow[2]] = (instrMenuIndex[colrow[2]]+1)%configs.size();
 			else if (colrow[1] >= 1 && colrow[1] <= 2 && colrow[0] >= 0 && colrow[0] <= 2 
-					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) instrMenuIndex[colrow[2]] = (instrMenuIndex[colrow[2]]+3)%4;
+					&& activeMenu[colrow[2]] == INSTRUMENT_MENU) instrMenuIndex[colrow[2]] = (instrMenuIndex[colrow[2]]+3)%configs.size();
 
 			else if (colrow[0] >= 4 && colrow[0] <= 12 && activeMenu[colrow[2]] == MENU_MENU) {
 				if (colrow[1] >= 8 && colrow[1] <= 10) {

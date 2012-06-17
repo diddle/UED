@@ -54,7 +54,7 @@ public class InstrumentHolder {
         this.configurations.add(gc);
     }
     
-    public GridConfiguration GetGridConfigurationByInstrument(Instrument i) {
+    public GridConfiguration getGridConfigurationByInstrument(Instrument i) {
         for(GridConfiguration gc : this.configurations) {
             if(gc.instrument == i) {
                 return gc;
