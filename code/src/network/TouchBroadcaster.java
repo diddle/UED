@@ -63,7 +63,7 @@ public class TouchBroadcaster implements Runnable {
             try {
                 if(this.broadcasting) {
                     this.broadcast();
-                    System.out.println("Broadcasting...");
+                    //System.out.println("Broadcasting...");
                 }
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {

@@ -149,7 +149,8 @@ public class GridPanel extends JPanel {
                             cp.processTouch(p);
                             return;
                         }
-
+                        CalibrationTranslator ct = cp.getTranslator();
+                        p = ct.translate(p);
 
 			processPress(0, p);
 			repaint();
@@ -162,6 +163,8 @@ public class GridPanel extends JPanel {
                         if(!cp.isDone()) {
                             return;
                         }
+                        CalibrationTranslator ct = cp.getTranslator();
+                        p = ct.translate(p);
 			processDrag(0, p);
 			repaint();
 		}
@@ -219,6 +222,8 @@ public class GridPanel extends JPanel {
                             cp.processTouch(p);
                             return;
                         }
+                        CalibrationTranslator ct = cp.getTranslator();
+                        p = ct.translate(p);
 
 			if(packet.touch == 1 && this.pressed.containsKey((int)packet.id)) {
 				// send drag
