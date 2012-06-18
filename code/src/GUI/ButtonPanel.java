@@ -70,7 +70,10 @@ public class ButtonPanel extends JPanel {
 		for (int i = 0; i < player.getActiveGrids().size(); i++) {
 			if (gp.getActiveMenus()[i] == GridPanel.INSTRUMENT_MENU) {
 				drawInstrumentMenuButtons(g,i);
-			} 
+			}
+			if (gp.getActiveMenus()[i] == GridPanel.MENU_MENU){
+				drawSettingsMenuButtons(g,i);
+			}
 		}
 
 	}
@@ -118,6 +121,16 @@ public class ButtonPanel extends JPanel {
 			tempImage = scale(rotate(settings, temp[0], temp[1]), tempScale);
 			g.drawImage(tempImage, temp[0]-tempImage.getWidth()/2, temp[1]-tempImage.getHeight()/2, this);
 		}
+	}
+	
+	private void drawSettingsMenuButtons(Graphics g, int personIndex){
+		int[] tempCoords = new int[4];
+		double tempScale;
+		BufferedImage tempImage;
+		tempCoords = gp.getButtonCoordinates(personIndex, 8);
+		tempScale = (tempCoords[2]<tempCoords[3])?(double)(tempCoords[2])/(double)clearb.getWidth():(double)(tempCoords[3])/(double)clearb.getHeight();
+		tempImage = scale(rotate(clearb, tempCoords[0], tempCoords[1]), tempScale);
+		g.drawImage(tempImage, tempCoords[0]-tempImage.getWidth()/2, tempCoords[1]-tempImage.getHeight()/2, this);
 	}
 
 	private void drawInstrumentMenuButtons(Graphics g, int personIndex){
