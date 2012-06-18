@@ -511,31 +511,6 @@ public class GridPanel extends JPanel {
 		result[3] = (int)height;
 		return result;
 	}
-		double beginAngle = (double)((double)(-1-i)*.5 - xFactor)*radPerColumn() + radOffset;
-		double endAngle = (double)((double)(1+i)*.5 + xFactor)*radPerColumn() + radOffset;
-
-		double lowerRadius = getRadius() - ((double)(toneIndex+1) - yFactor)*squareHeight;
-		double upperRadius = getRadius() - ((double)(toneIndex+j) + yFactor)*squareHeight;
-		double midRadius = (lowerRadius+upperRadius)*.5;
-		
-		double width = Math.abs(midRadius*Math.cos(beginAngle) - midRadius*Math.cos(endAngle));
-		double height = Math.abs(upperRadius - lowerRadius);
-		
-		beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
-				(double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
-		endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
-				(double)((double)(colIndex+i) + xFactor)*radPerColumn() + radOffset;
-		double midAngle = (beginAngle+endAngle)*.5;
-		
-		double x = midRadius*Math.cos(midAngle) + getWidth()/2;
-		double y = translateY(midRadius*Math.sin(midAngle) + getHeight()/2);
-		
-		result[0] = (int)x;
-		result[1] = (int)y;
-		result[2] = (int)width;
-		result[3] = (int)height;
-		return result;
-	}
 
 	private GeneralPath drawPath(double beginAngle, double endAngle, double lowerRadius, double upperRadius) {
 		GeneralPath gp = new GeneralPath();
