@@ -21,6 +21,7 @@ public class ButtonPanel extends JPanel {
 	private GridPanel gp;
 	private BufferedImage settings,instrumenu;
 	private BufferedImage pianob,bassb,drumsb,guitarb;
+	private BufferedImage prevb, nextb, clearb;
 	private Player player;
 	private BufferedImage[] instruments;
 
@@ -32,7 +33,7 @@ public class ButtonPanel extends JPanel {
 		this.setOpaque(false);
 		instruments = new BufferedImage[5];
 		try {
-                    ClassLoader cl = this.getClass().getClassLoader();
+			ClassLoader cl = this.getClass().getClassLoader();
 			settings = ImageIO.read(cl.getResource("resources/settings.png"));
 			pianob = ImageIO.read(cl.getResource("resources/piano_button.png"));
 			bassb = ImageIO.read(cl.getResource("resources/bass_button.png"));
@@ -44,7 +45,11 @@ public class ButtonPanel extends JPanel {
 			instruments[2] = ImageIO.read(cl.getResource("resources/bass_icon.png"));
 			instruments[3] = ImageIO.read(cl.getResource("resources/guitar_icon.png"));
 			instruments[4] = ImageIO.read(cl.getResource("resources/misc_icon.png"));
-
+			
+			prevb = ImageIO.read(cl.getResource("resources/parrow.png"));
+			nextb = ImageIO.read(cl.getResource("resources/narrow.png"));
+			clearb = ImageIO.read(cl.getResource("resources/clear.png"));
+			
 			System.out.println(settings.toString());
 
 		} catch (IOException e) {
@@ -64,7 +69,7 @@ public class ButtonPanel extends JPanel {
 		drawMenuButtons(g);
 		for (int i = 0; i < player.getActiveGrids().size(); i++) {
 			if (gp.getActiveMenus()[i] == GridPanel.INSTRUMENT_MENU) {
-				drawInstrumentButtons(g,i);
+				drawInstrumentMenuButtons(g,i);
 			} 
 		}
 
@@ -115,7 +120,7 @@ public class ButtonPanel extends JPanel {
 		}
 	}
 
-	private void drawInstrumentButtons(Graphics g, int personIndex){
+	private void drawInstrumentMenuButtons(Graphics g, int personIndex){
 		int[] tempCoords = new int[4];
 		double tempScale;
 		BufferedImage tempImage;
@@ -126,6 +131,15 @@ public class ButtonPanel extends JPanel {
 			tempImage = scale(rotate(instruments[(i+gp.getInstrMenuIndex(personIndex))%gridConfigs.size()], tempCoords[0], tempCoords[1]), tempScale);
 			g.drawImage(tempImage, tempCoords[0]-tempImage.getWidth()/2, tempCoords[1]-tempImage.getHeight()/2, this);
 		}
+		tempCoords = gp.getButtonCoordinates(personIndex, 6);
+		tempScale = (tempCoords[2]<tempCoords[3])?(double)(tempCoords[2])/(double)prevb.getWidth():(double)(tempCoords[3])/(double)prevb.getHeight();
+		tempImage = scale(rotate(prevb, tempCoords[0], tempCoords[1]), tempScale);
+		g.drawImage(tempImage, tempCoords[0]-tempImage.getWidth()/2, tempCoords[1]-tempImage.getHeight()/2, this);
+
+		tempCoords = gp.getButtonCoordinates(personIndex, 7);
+		tempScale = (tempCoords[2]<tempCoords[3])?(double)(tempCoords[2])/(double)nextb.getWidth():(double)(tempCoords[3])/(double)nextb.getHeight();
+		tempImage = scale(rotate(nextb, tempCoords[0], tempCoords[1]), tempScale);
+		g.drawImage(tempImage, tempCoords[0]-tempImage.getWidth()/2, tempCoords[1]-tempImage.getHeight()/2, this);
 	}
 
 }

@@ -21,14 +21,14 @@ public class MainWindow extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		GridPanel gf = new GridPanel(p);
 		ButtonPanel bp = new ButtonPanel(p, gf);
-                CalibrationPanel cp = CalibrationPanel.getInstance();
+		CalibrationPanel cp = CalibrationPanel.getInstance();
 		this.fullScreen();
 		gf.setBounds(0, 0, this.getWidth(), this.getHeight());
 		bp.setBounds(0, 0, this.getWidth(), this.getHeight());
-                cp.setBounds(0, 0, this.getWidth(), this.getHeight());
+		cp.setBounds(0, 0, this.getWidth(), this.getHeight());
 		this.getLayeredPane().add(gf, new Integer(2));
 		this.getLayeredPane().add(bp, new Integer(3));
-                this.getLayeredPane().add(cp, new Integer(4));
+		this.getLayeredPane().add(cp, new Integer(4));
 	}
 
 	private void fullScreen() {
