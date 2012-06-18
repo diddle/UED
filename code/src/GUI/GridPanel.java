@@ -848,8 +848,8 @@ public class GridPanel extends JPanel {
 					instrMenuIndex[colrow[2]] = (instrMenuIndex[colrow[2]]+configs.size()-1)%configs.size();
 				}
 			} 
-			else if (colrow[0] >= 4 && colrow[0] <= 12 && activeMenu[colrow[2]] == MENU_MENU) {
-				if (colrow[1] >= 8 && colrow[1] <= 10) {
+			else if (colrow[0] >= 6 && colrow[0] <= 9 && activeMenu[colrow[2]] == MENU_MENU) {
+				if (colrow[1] >= 3 && colrow[1] <= 6) {
 					ToneGrid tg = this.player.getActiveGrids().get(colrow[2]);
 					tg.clear();
 					activeMenu[colrow[2]] = NO_MENU;
