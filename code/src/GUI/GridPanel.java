@@ -450,6 +450,7 @@ public class GridPanel extends JPanel {
 //	id 2-5	=>	instrumentmenu instrumentbuttons
 //	id 6	=>	instrumentmenu prevbutton
 //	id 7	=>	instrumentmenu nextbutton
+//	id 8	=>	settingsmenu clearbutton
 	public int[] getButtonCoordinates(int personIndex, int id){
 		int[] result = new int[4];
 		int toneIndex = player.getHeight();
@@ -479,8 +480,37 @@ public class GridPanel extends JPanel {
 				colIndex = 14;
 				toneIndex = 2;
 				break;
+		case 8: i= 3;
+				j= 3;
+				colIndex = 6;
+				toneIndex = 3;
 		}
 
+		double beginAngle = (double)((double)(-1-i)*.5 - xFactor)*radPerColumn() + radOffset;
+		double endAngle = (double)((double)(1+i)*.5 + xFactor)*radPerColumn() + radOffset;
+
+		double lowerRadius = getRadius() - ((double)(toneIndex+1) - yFactor)*squareHeight;
+		double upperRadius = getRadius() - ((double)(toneIndex+j) + yFactor)*squareHeight;
+		double midRadius = (lowerRadius+upperRadius)*.5;
+		
+		double width = Math.abs(midRadius*Math.cos(beginAngle) - midRadius*Math.cos(endAngle));
+		double height = Math.abs(upperRadius - lowerRadius);
+		
+		beginAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
+				(double)((double)(colIndex+1) - xFactor)*radPerColumn() + radOffset;
+		endAngle = (double)(personIndex*player.getWidth())*radPerColumn() + 
+				(double)((double)(colIndex+i) + xFactor)*radPerColumn() + radOffset;
+		double midAngle = (beginAngle+endAngle)*.5;
+		
+		double x = midRadius*Math.cos(midAngle) + getWidth()/2;
+		double y = translateY(midRadius*Math.sin(midAngle) + getHeight()/2);
+		
+		result[0] = (int)x;
+		result[1] = (int)y;
+		result[2] = (int)width;
+		result[3] = (int)height;
+		return result;
+	}
 		double beginAngle = (double)((double)(-1-i)*.5 - xFactor)*radPerColumn() + radOffset;
 		double endAngle = (double)((double)(1+i)*.5 + xFactor)*radPerColumn() + radOffset;
 
@@ -603,8 +633,8 @@ public class GridPanel extends JPanel {
 	}
 
 	private void drawMenuMenu(Graphics2D g, int personIndex){
-		int colIndex = 4;
-		int toneIndex = 8;
+		int colIndex = 6;
+		int toneIndex = 3;
 		double xFactor = 0.9;
 		double yFactor = 0.9;
 
@@ -614,49 +644,17 @@ public class GridPanel extends JPanel {
 				* radPerColumn() + (double) ((double) (colIndex + 1) - xFactor)
 				* radPerColumn() + radOffset;
 		double endAngle = (double) (personIndex * player.getWidth())
-				* radPerColumn() + (double) ((double) (colIndex + 7) + xFactor)
+				* radPerColumn() + (double) ((double) (colIndex + 3) + xFactor)
 				* radPerColumn() + radOffset;
 
 		double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor)	* squareHeight;
-		double upperRadius = getRadius() - ((double) (toneIndex + 1) + yFactor)	* squareHeight;
+		double upperRadius = getRadius() - ((double) (toneIndex + 3) + yFactor)	* squareHeight;
 
 		GeneralPath gp = drawPath(beginAngle, endAngle, lowerRadius, upperRadius);
 		gp.closePath();
 
 		g.setPaint(squareColour);
 		g.fill(gp);
-
-		//    	int colIndex = 3;
-		//    	int toneIndex = 0;
-		//		double xFactor = 0.9;
-		//		double yFactor = 0.9;
-		//		
-		//		double beginAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
-		//				+ (double) ((double) (colIndex + 1) - xFactor) * radPerColumn() + radOffset;
-		//		double endAngle = (double) (personIndex * player.getWidth()) * radPerColumn()
-		//				+ (double) ((double) (colIndex + 7) + xFactor) * radPerColumn() + radOffset;
-		//
-		//		double lowerRadius = getRadius() - ((double) (toneIndex + 1) - yFactor) * squareHeight;
-		//		double upperRadius = getRadius() - ((double) (toneIndex + 8) + yFactor) * squareHeight;
-		//		
-		//		int x = (int) (upperRadius * Math.cos(beginAngle) + getWidth() / 2);
-		//		int y = (int) translateY(upperRadius * Math.sin(beginAngle) + getHeight() / 2);
-		//		int width = (int) (lowerRadius * Math.cos(endAngle) + getWidth() / 2) - x;
-		//		int height = (int) translateY(lowerRadius * Math.sin(endAngle) + getHeight() / 2) - y;
-		//		
-		//		g.setPaint(Color.WHITE);
-		//		g.fillRect(x, y, width, height);
-		//				
-		//		g.setPaint(Color.BLACK);
-		//		g.drawRect(x, y, width, height);
-		//		
-		//		Font font = new Font("Times New Roman", Font.PLAIN, 20);
-		//		g.setFont(font);
-		//
-		//		upperRadius = getRadius() - ((double) (toneIndex + 7) + yFactor) * squareHeight;
-		//		y = (int) translateY(upperRadius * Math.sin(beginAngle) + getHeight() / 2);
-		//		
-		//		g.drawString(" Clear", x, y);
 
 	}
 
