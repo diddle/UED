@@ -56,7 +56,7 @@ public class Player implements Runnable {
             this.synthesizer = MidiSystem.getSynthesizer();
             Instrument[] instrArr = this.synthesizer.getAvailableInstruments();
             for (Instrument i : instrArr) {
-            	this.synthesizer.loadInstrument(i);
+                this.synthesizer.loadInstrument(i);
             }
             this.synthesizer.open();
             this.instrumentList = synthesizer.getAvailableInstruments();
@@ -69,6 +69,10 @@ public class Player implements Runnable {
         return this.synthesizer;
     }
     
+    /**
+     * Geeft de huidige tijd
+     * @return 
+     */
     private long now() {
         return new Date().getTime();
     }
@@ -107,6 +111,10 @@ public class Player implements Runnable {
         this.synthesizer.close();
     }
     
+    /**
+     * Registreer een ToneGrid in deze Player.
+     * @param grid
+     */
     public void registerToneGrid(ToneGrid grid) {
         grid.registerCallBack(this.width);
         synchronized (this.grids) {
@@ -146,6 +154,11 @@ public class Player implements Runnable {
         return result;
     }
     
+    /**
+     * Wissel een ToneGrid van GridConfiguration en dus van instrument.
+     * @param grid welk grid van instrument moet veranderen
+     * @param config de configuratie van het instrument
+     */
     public void changeInstrument(ToneGrid grid, GridConfiguration config) {
         grid.setConfiguration(config);
     }
