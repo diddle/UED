@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import javax.sound.midi.*;
 
 /**
- *
+ * 
  * @author Niels Visser
  */
 public abstract class GridConfiguration {
@@ -170,7 +170,7 @@ public abstract class GridConfiguration {
     }
     
     public Instrument getInstrument() {
-    	return instrument;
+        return instrument;
     }
     
     /**
@@ -181,6 +181,9 @@ public abstract class GridConfiguration {
         return this.instrument.getName();
     }
 
+    /**
+     * schakeld alle noten uit van deze configuratie
+     */
     void muteActiveTones() {
         this.channel.allNotesOff();
     }
