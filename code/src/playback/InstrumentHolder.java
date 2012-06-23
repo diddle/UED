@@ -39,7 +39,11 @@ public class InstrumentHolder {
     public static Instrument GetDrums() {
         return SearchInstrument("drum");
     }
-    
+    /**
+     * Doorzoekt de Synthesizer voor een instrument op basis van naam.
+     * @param partialName
+     * @return het gevonden Instrument of null
+     */
     public static Instrument SearchInstrument(String partialName) {
         Instrument[] il = InstrumentList();
         for(Instrument i : il) {
@@ -54,6 +58,11 @@ public class InstrumentHolder {
         this.configurations.add(gc);
     }
     
+    /**
+     * Doorzoekt de InstrumentHolder voor een GridConfiguration op basis van Instrument.
+     * @param i het instrument
+     * @return de GridConfiguration van het instrument of null als deze niet bestaat.
+     */
     public GridConfiguration getGridConfigurationByInstrument(Instrument i) {
         for(GridConfiguration gc : this.configurations) {
             if(gc.instrument == i) {
