@@ -8,7 +8,8 @@ import javax.sound.midi.Instrument;
 
 
 /**
- *
+ * Redundant Class.
+ * Unused
  * @author Niels Visser
  */
 public class Tone {

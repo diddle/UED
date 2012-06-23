@@ -29,6 +29,11 @@ public class ToneGrid {
         this.gc = gc;
     }
     
+    /**
+     * Wisselt de status van een gegeven noot van actief naar inactief or van inactief naar actief.
+     * @param column welke kolom de noot aan behoord
+     * @param note welke rij de noot aan behoord
+     */
     public void toggleTone(int column, int note) {
         List<Boolean> col = this.grid.get(column);
         synchronized (col) {
@@ -36,20 +41,33 @@ public class ToneGrid {
         }
     }
     
+    /**
+     * Wisselt de status van een gegeven noot naar actief of doet niets als de noot al actief is.
+     * @param column welke kolom de noot aan behoord
+     * @param note welke rij de noot aan behoord
+     */
     public void activateTone(int column, int note) {
         List<Boolean> col = this.grid.get(column);
         synchronized (col) {
             col.set(note, true);
         }
     }
-    
+    /**
+     * Wisselt de status van een gegeven noot naar inactief of doet niets als de noot al inactief is.
+     * @param column welke kolom de noot aan behoord
+     * @param note welke rij de noot aan behoord
+     */
     public void deactivateTone(int column, int note) {
-    	List<Boolean> col = this.grid.get(column);
+        List<Boolean> col = this.grid.get(column);
         synchronized (col) {
             col.set(note, false);
         }
     }
 
+    /**
+     * Geeft de lijst van alle noten in de vorm van een lijst van kolomen met daarin de rijen.
+     * @return
+     */
     public synchronized List<List<Boolean>> getAllTones() {
         List<List<Boolean>> result = new ArrayList<List<Boolean>>();
         for (int i = 0; i < this.width; i++) {
@@ -62,6 +80,12 @@ public class ToneGrid {
         return result;
     }
     
+    /**
+     * Geeft de status van een gegeven noot.
+     * @param column welke kolom de noot aan behoord
+     * @param note welke rij de noot aan behoord
+     * @return true==actief;inactief==false
+     */
     public boolean getTone(int column, int note) {
         synchronized (this.grid) {
             return this.grid.get(column).get(note);
@@ -104,6 +128,12 @@ public class ToneGrid {
         this.isActive = isActive;
     }
     
+    /**
+     * Tweede gedeelte van de registratie methode.
+     * Registreerd het aantal kolomen en initaliseerd de dubbele lijst van noten die allemaal inactief zijn.
+     * Het grid is na deze methode inactief.
+     * @param w aantal kolomen de ToneGrid heeft
+     */
     public void registerCallBack(int w) {
         this.width = w;
         this.grid = new ArrayList<List<Boolean>>();
@@ -117,6 +147,9 @@ public class ToneGrid {
         this.isActive = false;
     }
     
+    /**
+     * Zet alle noten op inactief.
+     */
     public void clear() {
         for(List<Boolean> l1 : this.grid) {
             for(int i = 0; i < l1.size(); i++) {
