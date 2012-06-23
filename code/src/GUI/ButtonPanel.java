@@ -78,6 +78,12 @@ public class ButtonPanel extends JPanel {
 
 	}
 
+	/**
+	 * Vergroot of verkeind een Image met een bepaalde factor.
+	 * @param original het Image
+	 * @param scale de factor
+	 * @return
+	 */
 	public BufferedImage scale(BufferedImage original, double scale){
 		int newWidth = (int)(((double)original.getWidth())*scale);
 		int newHeight = (int)(((double)original.getHeight())*scale);
@@ -90,6 +96,13 @@ public class ButtonPanel extends JPanel {
 	}
 
 
+	/**
+	 * Draait een Image, waarbij de draaihoek op basis van een x en y wordt berekend.
+	 * @param img
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public BufferedImage rotate(BufferedImage img, int x, int y) {
 		double angle = Math.atan2(y-gp.getHeight()/2, x-gp.getWidth()/2)-.5*Math.PI;
 		int w = img.getWidth();
@@ -101,6 +114,10 @@ public class ButtonPanel extends JPanel {
 		return dimg;  
 	}  
 
+	/**
+	 * Tekend de menu knoppen.
+	 * @param g
+	 */
 	private void drawMenuButtons(Graphics g){
 		int[] temp = new int[4];
 		double tempScale;
@@ -122,7 +139,10 @@ public class ButtonPanel extends JPanel {
 			g.drawImage(tempImage, temp[0]-tempImage.getWidth()/2, temp[1]-tempImage.getHeight()/2, this);
 		}
 	}
-	
+	/**
+	 * Tekend de clear knop.
+	 * @param g
+	 */
 	private void drawSettingsMenuButtons(Graphics g, int personIndex){
 		int[] tempCoords = new int[4];
 		double tempScale;
@@ -133,6 +153,11 @@ public class ButtonPanel extends JPanel {
 		g.drawImage(tempImage, tempCoords[0]-tempImage.getWidth()/2, tempCoords[1]-tempImage.getHeight()/2, this);
 	}
 
+	/**
+	 * Tekend de knoppen van het instrument menu.
+	 * @param g
+	 * @param personIndex
+	 */
 	private void drawInstrumentMenuButtons(Graphics g, int personIndex){
 		int[] tempCoords = new int[4];
 		double tempScale;

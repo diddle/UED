@@ -138,6 +138,10 @@ public class GridPanel extends JPanel {
 		return instrMenuIndex[person];
 	}
 	
+	/**
+	 * Klasse die muis input afvangt en deze als een gecalibreerde x en y doorgeeft.
+	 *
+	 */
 	private class MouseHandler extends MouseAdapter {
 
 		@Override
@@ -179,7 +183,10 @@ public class GridPanel extends JPanel {
 		}
 
 	}
-
+	
+	/**
+	 * Klasse die touch input afvangt en deze als een gecalibreerde x en y doorgeeft samen met een id.
+	 */
 	private class TouchHandler implements Observer {
 
 		private HashMap<Integer, Point> pressed;
@@ -372,7 +379,14 @@ public class GridPanel extends JPanel {
 		drawNote(g, personIndex, colIndex, toneIndex, 0.9, 0.9);
 	}
 
-	/* Draws the note.
+	/**
+	 * Draws the Note.
+	 * @param g
+	 * @param personIndex The grid to which the button belongs
+	 * @param colIndex distance from the center
+	 * @param toneIndex rotation around the center
+	 * @param xFactor x scale of the button
+	 * @param yFactor y scale of the button
 	 */
 	private void drawNote(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor){
 
@@ -417,7 +431,15 @@ public class GridPanel extends JPanel {
 		g.fill(gp);
 	}
 
-	/* Draws the Button.
+	/**
+	 * Draws the button.
+	 * @param g
+	 * @param personIndex The grid to which the button belongs
+	 * @param colIndex distance from the center
+	 * @param toneIndex rotation around the center
+	 * @param xFactor x scale of the button
+	 * @param yFactor y scale of the button
+	 * @param id is used to identify if the button is background (id==0), InstrumentButton (id==1) or a MenuButton (id==2)
 	 */
 	private void drawButton(Graphics2D g, int personIndex, int colIndex, int toneIndex, double xFactor, double yFactor, int id){
 
@@ -547,6 +569,11 @@ public class GridPanel extends JPanel {
 				return gp;
 	}
 
+	/**
+	 * Tekend het instrument menu voor een gegeven grid.
+	 * @param g
+	 * @param personIndex het gegeven grid
+	 */
 	private void drawInstrumentMenu(Graphics2D g, int personIndex) {
 		int colIndex = 2;
 		int toneIndex = 3;
@@ -606,7 +633,11 @@ public class GridPanel extends JPanel {
 
 
 	}
-
+	/**
+	 * Tekend het menu voor een gegeven grid.
+	 * @param g
+	 * @param personIndex het gegeven grid
+	 */
 	private void drawMenuMenu(Graphics2D g, int personIndex){
 		int colIndex = 6;
 		int toneIndex = 3;
@@ -730,6 +761,11 @@ public class GridPanel extends JPanel {
 		return Math.min(getWidth()/2, getHeight()/2);
 	}
 
+	/**
+	 * Translates a point to a note index.
+	 * @param point
+	 * @return a NoteIndex or null if it is not on the grid
+	 */
 	private NoteIndex translatePointToNoteIndex(Point point) {
 		// centreer de punten
 		int rx = point.x - this.getWidth()/2;
@@ -761,7 +797,11 @@ public class GridPanel extends JPanel {
 			return new NoteIndex(personIndex, colIndex, toneIndex);
 		return null;
 	}
-
+	/**
+	 * Translates a point to a note index.
+	 * @param point
+	 * @return a NoteIndex even if it is off the grid (used for pressing menu buttons)
+	 */
 	private NoteIndex translatePointToIndex(Point point) {
 		// centreer de punten
 		int rx = point.x - this.getWidth()/2;
@@ -895,7 +935,13 @@ public class GridPanel extends JPanel {
 		f.setVisible(true);
 	}
 
-
+/**
+ * Data class to contain a point and a draw state.
+ * The draw state indicates if it should activate/deactivate notes or should do nothing at all.
+ * if drawing == INACTIVE then it should do nothing.
+ * if drawing == FALSE then it should deactivate notes when dragging.
+ *  * if drawing == TRUE then it should activate notes when dragging.
+ */
 	private class Pointer {
 		private Point point;
 		private int drawing;
