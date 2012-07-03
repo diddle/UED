@@ -1,5 +1,6 @@
 \documentclass{acm}
 \usepackage[dutch]{babel}
+\usepackage{tabto}
 
 \begin{document}
 
@@ -42,6 +43,10 @@ Zo ook bij opdrachtgever KITT Engineering, waar men tracht een brug te slaan tus
 De opdracht bestaat uit het ontwikkelen van een applicatie die de mogelijkheden van multi-touch ten volle benut en mensen op een intu\"itieve manier kennis laat maken met het fenomeen multi-touch ter grootte van een tafel. De applicatie moet mensen zowel uitnodigen om zelfstandig uit te proberen wat een multi-touch tafel kan als de mogelijkheid bieden om gezamenlijk te werken aan het cre\"eren van iets moois.
 
 Hoe aan deze opdracht invulling gegeven moet worden, is niet gespecificeerd. Het is aan de projectgroep om deze invulling te bedenken en de opdrachtgever ten behoeve van sturing bij het ontwerpproces te betrekken.
+
+De opdracht is als volgt in een onderzoeksvraag vervat:
+
+\textit{Hoe kunnen personen van verschillende leeftijdsgroepen op een plezierige wijze kennismaken met de mogelijkheden van een multi-touch tafel door middel van het constructief gezamelijk werken aan een melodie?}
 
 \subsection{Inhoud}
 In dit paper wordt in hoofdstuk~\ref{sec_domein} ingegaan op het domein van de te realiseren applicatie: door wie zal het eindresultaat gebruikt worden en met welk doel. Ook wordt beschreven aan welke functionele eisen de gerealiseerde applicatie moet voldoen om de doelgroep succesvol dit doel te laten bereiken. In hoofdstuk~\ref{sec_concept} staat beschreven hoe deze functionele eisen verwerkt zijn in meerdere conceptuele ontwerpen, welke inspiratiebronnen zijn gebruikt voor de bedachte concepten en welk van deze ontwerpen vervolgens in samenspraak met de opdrachtgever is uitgekozen om verder uit te werken. Dit verder uitwerken wordt gedaan in hoofdstuk~\ref{sec_detail}. In dit hoofdstuk staat een functionele specificatie van het gekozen ontwerp en een beschrijving van de technische realisatie: een technisch ontwerp.
@@ -196,7 +201,7 @@ Uit de LoFi-evaluatie bleek ook dat gebruikers niet begrepen hoe een geopend men
 
 \subsection{Technisch Ontwerp}
 \subsubsection{Datamodel}
-De applicatie houdt een lijst met voor elke speler een tweedimensionale lijst van booleans bij van bepaalde lengte en hoogte. De lengte drukt tijd uit; booleans op dezelfde x-positie representeren tonen die simultaan afgespeeld worden, de hoogte bepaalt de toonhoogte. 
+De applicatie houdt voor elke speler een tweedimensionale lijst van booleans bij. De lengte van deze matrix drukt de verschillende drukt de 16e maten uit, de hoogte de toonhoogte. Booleans op dezelfde x-positie worden simultaan afgespeeld.
 
 \begin{figure}
   \includegraphics[width=84mm]{img/muziektafel_layers}
@@ -205,17 +210,19 @@ De applicatie houdt een lijst met voor elke speler een tweedimensionale lijst va
 \end{figure}
 
 \subsubsection{Datarepresentatie}
-Deze spelergrids worden achter geplakt, en vervolgens omhoog gekromd tot de laatste weer aansluit bij de eerste, wat een donut-vorm oplevert. De waarde van elke boolean wordt vervolgens uitgedrukt in kleur; wit voor \textit{true} en een speler-specifieke kleur voor \textit{false}. De de kolommen die op een bepaald moment gespeeld worden, krijgen op dat moment andere kleuren; de spelerkleur voor \textit{true} en zwart voor \textit{false}. Hierdoor kunnen de spelers de tijdspositie van de muziek uitlezen.
+Deze genoemde spelermatrices worden achter elkaar geplakt, en vervolgens omhoog gekromd tot de laatste weer aansluit bij de eerste, wat een donut-vorm oplevert. In het geval van 4 spelers levert dit per speler een kwartcirkel op, zoals te zien in Figuur 3. De waarde van elke boolean wordt vervolgens uitgedrukt in kleur; wit voor \textit{true} en de speler-specifieke kleur voor \textit{false}. Wanneer een kolom afgespeeld wordt, krijgt deze op dat moment andere kleuren: de spelerkleur voor \textit{true} en zwart voor \textit{false}. Hierdoor hebben de spelers een visuele terugkoppeling van de huidige tijdspositie van de afgespeelde muziek.
 
 \subsubsection{Interface}
-De interface wordt gelaagd opgebouwd. Op de onderste laag wordt een visualisatie getekend op basis van de muziek die elk moment gespeeld wordt. Op de laag hierboven worden vlakjes getekend die de “muziekdonut” alsmede een aantal losse vlakjes die knoppen voorstellen. Op de derde laag worden iconen getekend, zoals een tandwiel voor het instellingmenu en het huidige gekozen instrument voor het instrumentmenu. Zie figuur~\ref{fig:muziektafel_layers} voor een visualisatie.
+De interface wordt gelaagd opgebouwd. Op de onderste, eerste, laag wordt een visualisatie getekend op basis van de muziek die op dat moment gespeeld wordt. Op de tweede laag worden vlakjes getekend die de "muziekdonut" vormen alsmede een aantal losse vlakjes die knoppen voorstellen. Op de bovenste, derde, laag worden iconen getekend, zoals een tandwiel voor het instellingmenu en het huidige gekozen instrument voor het instrumentmenu. Zie figuur~\ref{fig:muziektafel_layers} voor een visualisatie.
+
+\subsubsection{Input}
+De inputdata van de touchtafel komt over een netwerksocket de applicatie binnen, waarna deze door een calibratiemechanisme gecorrigeerd wordt. Aan de hand van de gecorrigeerde inputdata wordt vervolgens bepaald welke knoppen ingedrukt zijn, en of dit een nieuwe aanraking is, of het vervolg van een sleepgebaar.
 
 \subsubsection{Audio}
-Voor de rendering van audio wordt de synthesizer uit \textit{javax.sound.midi} gebruikt.
+Voor de rendering van audio wordt de synthesizer uit \textit{javax.sound.midi} gebruikt. Per speler wordt bijgehouden welk instrument hij of zij bespeelt, en spelers kunnen verschillende instrumenten selecteren. Het is mogelijk dat de applicatie herschreven moet worden voordat het met een nieuw audio-systeem kan werken, aangezien de standaard MIDI-soundbank, en de bijhorende naamgeving van de instrumenten, per computer verschilt.
 
 \subsubsection{Visualisatie}
-Wij maken gebruik van een externe library om de visualisatie te tekenen. De visualisatie genereert een particle voor elke noot die afgespeeld wordt. Vervolgens worden deze particles door een aantal filters getrokken om de visuele effecten te cre\"eren.
-
+Er wordt gebruik gemaakt van een externe library\footnote{http://www.jhlabs.com/ip/filters/download.html} om de visualisatie te tekenen. De visualisatie genereert een particle voor elke noot die afgespeeld wordt. Vervolgens worden er een aantal filters op de gegenereerde particles toegepast om de visualisatie te creeëren.
 
 \section{Evaluatie Hi-Fi-prototype}
 \label{sec_evaluatie}
@@ -223,26 +230,26 @@ Wij maken gebruik van een externe library om de visualisatie te tekenen. De visu
 \subsection{Opzet}
 Voor de evaluatie van het HiFi-prototype is voor een eenvoudige aanpak gekozen. De proefpersonen is verteld dat ze met een multitouch-tafel gingen werken en dat ze net zo lang mochten spelen totdat ze geen zin meer hadden. Eventuele vragen zouden niet beantwoord worden, maar als geconstateerd werd dat een proefpersoon echt niet wist wat te doen, zouden ze op weg geholpen worden. Op deze manier kon de evaluatie alsnog uitgevoerd worden, zelfs als bleek dat het prototype niet zo intu\"itief bleek als gehoopt. Nadat een proefpersoon op deze wijze op weg geholpen is, kunnen aan de hand van de overige observaties alsnog resultaten behaald worden.
 
-De evaluaties zijn tweeledig opgezet: proefpersonen zijn geobserveerd terwijl ze met de muziektafel speelden en zijn achteraf verzocht een vragenlijst in te vullen. Om het intu\"itieve karakter van de muziektafel te evalueren, is bij de observaties gelet op de snelheid waarmee proefpersonen gebruik maakten van de beschikbare functionaliteiten. Gemeten zijn de tijd die het duurde voordat een proefpersoon een speelveld gekozen had, muzieknoten invoerde, van instrument wisselde en de leegmaakknop gebruikte. Ook werd gekeken wanneer een gebruik klaar was met het ontdekken van de functionaliteiten van de applicatie en overging op het doelgericht componeren van een melodie en waaraan deze gedragsovergang te herkennen was. Naast deze kwantitatieve observaties, is ook bekeken hoe de proefpersoon zich gedroeg tijdens het werken met de muziektafel: had de proefpersoon plezier, was hij ge\"intrigeerd, communiceerde hij met de andere proefpersonen, hielp hij anderen of, wanneer er minder dan vier personen meededen, kwam hij op het idee om meer dan \'e\'en speelveld te gebruiken?
+De evaluaties zijn tweeledig opgezet: proefpersonen zijn geobserveerd terwijl ze met de muziektafel speelden en zijn achteraf verzocht een vragenlijst in te vullen. Om het intu\"itieve karakter van de muziektafel te evalueren, is bij de observaties gelet op de snelheid waarmee proefpersonen gebruik maakten van de beschikbare functionaliteiten. Gemeten zijn de tijd die het duurde voordat een proefpersoon een speelveld gekozen had, muzieknoten invoerde, van instrument wisselde en de leegmaakknop gebruikte. Ook werd gekeken wanneer een gebruiker klaar was met het ontdekken van de functionaliteiten van de applicatie en overging op het doelgericht componeren van een melodie en waaraan deze gedragsovergang te herkennen was. Naast deze kwantitatieve observaties, is ook bekeken hoe de proefpersoon zich gedroeg tijdens het werken met de muziektafel: had de proefpersoon plezier, was hij ge\"intrigeerd, communiceerde hij met de andere proefpersonen, hielp hij anderen of, wanneer er minder dan vier personen meededen, kwam hij op het idee om meer dan \'e\'en speelveld te gebruiken?
 
-De enqu\^ete achteraf bevatte zowel kwalitatieve beoordelingen van specifieke aspecten van de tafel en applicatie als open vragen over hoe de proefpersoon het spelen met de muziektafel had ervaren en hoe het samenwerken met anderen was bevallen.
+De enqu\^ete achteraf bevatte zowel kwalitatieve beoordelingen van specifieke aspecten van de tafel en applicatie als open vragen over hoe de proefpersoon het spelen met de muziektafel had ervaren en hoe het samenwerken met anderen was bevallen. De volledige vragenlijst is opgenomen in bijlage~\ref{sec_bijlage}.
 
 De proefpersonen zijn ingedeeld in groepen van verschillende groottes, om te evalueren of de ontworpen muziektafel voor groepen van alle groottes een leuke ervaring is.
 
 \subsection{Resultaten}
 In totaal hebben 12 proefpersonen meegewerkt aan de eindevaluatie. Ze kwamen allemaal uit dezelfde leeftijdscategorie: tussen de 18 en 30 jaar. Drie van de proefpersonen waren vrouwen, de overige negen waren mannen. Van de proefpersonen hebben twee individueel met de muziektafel gewerkt en zes hebben in groepen van twee gewerkt. Daarnaast was er een groep van vier spelers.
 
-Het kiezen van een speelveld werd door de proefpersonen instinctief en zonder oponthoud gedaan. Alleen de proefpersonen uit de groep van vier twijfelden kortstondig over welke speler welk speelveld toebedeeld kreeg, maar na kort onderling overleg had iedereen een speelveld. Bij alle groepen van minder dan vier gebruikten de proefpersonen in eerste instantie alleen hun gekozen speelveld, maar wanneer ze tevreden waren over een gecomponeerde melodie op hun speelveld, weken ze al snel uit naar een aangrenzend speelveld om ook daar een melodie te maken. Toen bij een groep van twee spelers, een speler zich drie speelvelden had toege\"eigend, werd hij hierop gewezen door de andere speler. Hij stond meteen een speelveld af, zodat beiden twee speelvelden hadden. Bij de groep van vier werd door de spelers ad hoc een competitief element toegevoegd aan het spel: twee spelers probeerden zo snel mogelijk hun notenbalk ccompleet te vullen. Hierbij werd niet geschroomd om desnoods de leegmaakknop van de andere speler te misbruiken om zo een voorsprong te cre\"eren.
+Het kiezen van een speelveld werd door de proefpersonen instinctief en zonder oponthoud gedaan. Alleen de proefpersonen uit de groep van vier twijfelden kortstondig over welke speler welk speelveld toebedeeld kreeg, maar na kort onderling overleg had iedereen een speelveld. Bij alle groepen van minder dan vier gebruikten de proefpersonen in eerste instantie alleen hun gekozen speelveld, maar wanneer ze tevreden waren over een gecomponeerde melodie op hun speelveld, weken ze al snel uit naar een aangrenzend speelveld om ook daar een melodie te maken. Toen bij een groep van twee spelers, een speler zich drie speelvelden had toege\"eigend, werd hij hierop gewezen door de andere speler. Hij stond meteen een speelveld af, zodat beiden twee speelvelden hadden. Bij de groep van vier werd door de spelers ad hoc een competitief element toegevoegd aan het spel: twee spelers probeerden zo snel mogelijk hun notenbalk compleet te vullen. Hierbij werd niet geschroomd om desnoods de leegmaakknop van de andere speler te misbruiken om zo een voorsprong te cre\"eren.
 
 Geen van de proefpersonen had na het kiezen van een speelveld moeite met het bedenken wat hij of zij moest doen: er werd meteen geklikt op de notenbalk of de instrumentkeuzeknop. Wel duurde het bij de meesten van hen even voordat ze doorhadden hoe hard ze moesten drukken om hun klik te laten registreren. Bij het bedenken wat er gedaan moest worden, maakte de groepsgrootte geen verschil, proefpersonen begonnen of meteen met het maken van een melodie of met het kiezen van een instrument. Het instellingenmenu met de leegmaakknop werd gemiddeld pas na twee minuten speeltijd ontdekt en gebruikt. Voor velen leek de ontdekking van die knop dat ook het moment te zijn waarop ze stopten met het willekeurig aanklikken van noten en begonnen met het doelgericht maken van een melodie.
 
-Van de proefpersonen bracht het overgrote deel - 8 van de 12 - de tijd met de tafel vrolijk of lachend door, terwijl 2 van de 12 juist erg geconcentreerd bezig waren met het componeren van een melodie. Wanneer de bediening van de tafel het liet afweten, was bij alle proefpersonen enige frustratie waarneembaar, maar dat weerhield hen niet van doorspelen en en gedurende de overige momenten blijk te geven van vrolijkheid. Bij een groep van twee proefpersonen leken beide proefpersonen niet erg ge\"interesseerd te zijn gedurende het spel, maar zij gingen wel lang door met het spelen. Uit hun enquêtes achteraf bleek dat ook zij plezier beleefd hadden aan de tafel, maar dat was niet zichtbaar in hun gedrag of gezichtsuitdrukking.
+Van de proefpersonen bracht het overgrote deel - 8 van de 12 - de tijd met de tafel vrolijk of lachend door, terwijl 2 van de 12 juist erg geconcentreerd bezig waren met het componeren van een melodie. Twee anderen, die een groep van twee vormden, leken niet erg ge\"interesseerd te zijn gedurende het spel, maar gingen wel lang door met het spelen. Uit hun enquêtes achteraf bleek dat ook zij plezier beleefd hadden aan de tafel, maar dat was niet zichtbaar in hun gedrag of gezichtsuitdrukking. Wanneer de bediening van de tafel het liet afweten, was bij alle proefpersonen enige frustratie waarneembaar, maar dat weerhield hen niet van doorspelen en gedurende de overige momenten blijk te geven van vrolijkheid. 
 
 Alle proefpersonen bleven langer dan vijf minuten geboeid door de muziektafel. Vanwege de locatie van de muziektafel bij een bedrijf in productie, is gekozen om deelnemers na ongeveer acht minuten te laten stoppen -- waarna de meeste spelers ook aangaven dat het een mooi moment was om te stoppen. Vier van de 12 spelers vonden het oprecht jammer dat ze al moesten stoppen.
 
-In de enquête gaf 11 van de 12 proefpersonen aan dat ze het spelen met de muziektafel leuk tot zeer leuk vonden, de overgebleven persoon vond het interessant. Wel werd bij de beschrijving door 6 van de 12 proefpersonen meteen de kanttekening geplaatst dat een slechte calibratie en lage gevoeligheid van de muziektafel frustrerend was.
+In de enquête gaf 11 van de 12 proefpersonen aan dat ze het spelen met de muziektafel leuk vonden, de overgebleven persoon gaf aan het interessant te vinden. Wel werd bij de beschrijving door 6 van de 12 proefpersonen meteen de kanttekening geplaatst dat een slechte nauwkeurigheid en lage gevoeligheid van de muziektafel frustrerend was.
 
-De vraag wat ze het leukst vonden aan hun tijd met de speeltafel werd door 5 van de 12 beantwoord met het feit dat er muziek uit de tafel kwam en dat dat goed klonk. Vier spelers vond het leukst dat de tafel simpel te bedienen en simpel te begrijpen was. Dit laatste werd bevestigd door de resultaten van de vraag of spelers vonden dat ze de muziektafel eenvoudig te doorgronden was: 11 van de 12 spelers gaf aan dat dit het geval was. Als grootste gemiste features aan het programma werden een temporegeling, een betere nauwkeurigheid en de kleine selectie instrumenten genoemd.
+De vraag wat ze het leukst vonden aan hun tijd met de speeltafel werd door 5 van de 12 beantwoord met het feit dat er muziek uit de tafel kwam en dat dat goed klonk. Vier spelers vond het leukst dat de tafel simpel te bedienen en simpel te begrijpen was. Dit laatste werd bevestigd door de resultaten van de vraag of spelers vonden dat ze de muziektafel eenvoudig te doorgronden was: 11 van de 12 spelers gaf aan dat dit het geval was. Als grootste gemiste features aan het programma werden een temporegeling, een betere nauwkeurigheid en de grotere selectie instrumenten genoemd.
 
 Op een schaal van 1 tot 5 werd de vindbaarheid van de notenbalk gemiddeld beoordeeld met een 4, de vindbaarheid van de instrumentkeuze met een 5 en de vindbaarheid van de leegmaakknop met een 3. De gebruikte instrumentengeluiden werden met een 3 beoordeeld, de animaties met een 4 en de gebruikte kleuren in het programma ook met een 4. Hardware-technisch kreeg de reactiesnelheid van de tafel een 4, terwijl de nauwkeurigheid een 2 kreeg. De zichtbaarheid van het scherm kreeg een 4, net als de grootte van de tafel. Het slepen werd met een 3 beoordeeld, maar sommigen ontdekten pas naar aanleiding van deze vraag dat het slepen mogelijk was.
 
@@ -250,29 +257,31 @@ Bij de groepen van meer dan \'e\'en proefpersoon werd de samenwerking wisselvall
 
 \section{Discussie}
 \label{sec_discussie}
-De muziektafel is ontwikkeld om door meerdere mensen gebruikt te worden. Uit de evaluatie van individuele spelers bleek echter dat deze ook geschikt is voor enkele personen; zij kunnen genoeg uitdaging vinden in het componeren van een mooie melodie en het uitproberen van de verschillende instrumenten. Tegen de verwachting in beviel de tafel voor de groep van vier spelers minder dan voor de groepen van twee spelers. Waarschijnlijk is de reden hiervoor de drukte die ontstaat als vier drukke melodie\"en gemaakt worden, die elkaar gaan overheersen. Door deze overheersing ging er snel anarchie heersen en werd een competitief element ge\"introduceerd om de muziektafel alsnog leuk te krijgen. Van het oospronkelijke doel -- muziek maken -- was echter nog maar weinig over. Een enkele speler probeerde dit af en toe wel, maar zijn melodie werd overstemd door de andere, waardoor deze poging snel werd gestaakt. Een oplossing voor dit probleem is mogelijk het verminderen van het volume van een speelveld naarmate er meer noten aangeklikt zijn in dat speelveld. Op deze wijze kan worden voorkomen dat een speelveld de symfonie overheerst, waardoor de rest zijn speelplezier verliest.
+De muziektafel is ontwikkeld om door meerdere mensen gebruikt te worden. Uit de evaluatie van individuele spelers bleek echter dat deze ook geschikt is voor enkele personen; zij kunnen genoeg uitdaging vinden in het componeren van een mooie melodie en het uitproberen van de verschillende instrumenten. Tegen de verwachting in beviel de tafel voor de groep van vier spelers minder dan voor de groepen van twee spelers. Waarschijnlijk is de reden hiervoor de drukte die ontstaat als vier drukke melodie\"en gemaakt worden, die elkaar gaan overheersen. Door deze overheersing ging er snel anarchie heersen en werd een competitief element ge\"introduceerd om de muziektafel alsnog leuk te krijgen. De nieuw bedachte spelvorm bestond uit het zo snel mogelijk vullen van het speelveld en hoewel dit ten tijde van de evaluatie als leuk werd ervaren, is de verwachting dat dit het speelplezier op de lange termijn wel zal doen afnemen. Van het oospronkelijke doel -- muziek maken -- was echter nog maar weinig over. Een enkele speler probeerde dit af en toe wel, maar zijn melodie werd overstemd door de andere, waardoor deze poging snel werd gestaakt. Een oplossing voor dit probleem is mogelijk het verminderen van het volume van een speelveld naarmate er meer noten aangeklikt zijn in dat speelveld. Op deze wijze kan worden voorkomen dat een speelveld de symfonie overheerst, waardoor de rest zijn speelplezier verliest.
 
-Ondanks de wat mindere ervaring bij de groep met vier spelers werd de evaluatie ook door hen grotendeels lachend en vrolijk doorgebracht. Maar het lachen werd af en toe onderbroken door een frons wanneer de tafel het op technisch vlak liet afweten: de calibratie van de tafel kon als matig getypeerd worden. Naast de calibratie werd ook de tafel gevoeligheid van de tafel als negatief aspect opgemerkt. Veel proefpersonen verwachtten dat een klik sneller geregistreerd zou worden en hadden pas na enige tijd door dat ze redelijk hard moesten drukken. Vermoedelijk is om die reden het slepen ook niet populair gebleken. Sommige proefpersonen ontdekten het slepen wel na een tijdje, maar maakten er alsnog niet heel veel gebruik van. De applicatie kan pas volledig tot zijn recht komen, wanneer de genoemde hardware-technische beperkingen opgelost zijn.
+Ondanks de wat mindere ervaring bij de groep met vier spelers werd de evaluatie ook door hen grotendeels lachend en vrolijk doorgebracht. Maar het lachen werd af en toe onderbroken door een frons wanneer de tafel het op technisch vlak liet afweten: de nauwkeurigheid van de tafel kon als matig getypeerd worden. Naast de nauwkeurigheid werd ook de gevoeligheid van de tafel als negatief aspect opgemerkt. Veel proefpersonen verwachtten dat een klik sneller geregistreerd zou worden en hadden pas na enige tijd door dat ze redelijk hard moesten drukken. Vermoedelijk is om die reden het slepen ook niet populair gebleken. Sommige proefpersonen ontdekten het slepen wel na een tijdje, maar maakten er alsnog niet heel veel gebruik van.
 
 Wat positief verraste was de hoeveelheid tijd die proefpersonen wensten te spenderen aan het spelen met de tafel. De verwachting was dat spelers na vijf minuten wel genoeg zouden hebben van de tafel, maar alle proefpersonen speelden langer door en bleven experimenteren met nieuwe melodie\"en en andere instrumenten.
 
-
 \section{Conclusie}
 \label{sec_conclusie}
-Er lag een generieke opdracht om een demo-applicatie te maken voor een multitouch-tafel; een applicatie die mensen moet uitnodigen tot het gebruik van de tafel en de mogelijkheden ervan moet demonstreren. Na het doen van een aantal voorstellen aan de opdrachtgever is uiteindelijk de keuze gevallen op een muziektafel: een tafel waaraan meerdere personen tegelijk kunnen werken aan het componeren van een melodie op verschillende instrumenten. Toen er een initi\"eel ontwerp voor de interface lag, werd door de projectgroep en de opdrachtgever geoordeeld dat deze niet intu\"itief was. Na een herontwerp, waarbij bepaalde functionaliteit geschrapt is, is het tweede ontwerp uiteindelijk als LoFi-prototype voorgelegd aan een groep proefpersonen.
+Door een simpele interface te ontwerpen met intu\"itiviteit als uitgangspunt, is het mogelijk gebleken om gebruikers de applicatie te laten doorgronden, zonder dat zij vooraf instructie hebben ontvangen. De muziektafel was intu\"itief in het gebruik.
 
-De feedback hierop heeft geleid tot een aantal verdere verfijningen en verduidelijkingen in de interface. Een paar van de resultaten zijn echter toegeschreven aan het feit dat het LoFi-prototype niet interactief was en daarmee ook verminderd intu\"itief. In het uiteindelijke ontwerp is opnieuw geschrapt in de beschikbare functionaliteit teneinde de intu\"itiviteit te vergroten. Ook zijn de in het LoFi-prototype gevonden gebreken grotendeels verholpen.
+Het is voor gebruikers van de muziektafel een erg leuke ervaring om het programma te ontdekken en met anderen samen te werken aan een symfonie. Gebruikers vonden het erg leuk om hun gecre\"eerde melodie meteen te horen en te proberen deze te verbeteren.
 
-Nadat een HiFi-prototype gecre\"eerd was, is deze met een grotere groep proefpersonen ge\"evalueerd. Hieruit bleek dat het juist was om te verwachten dat een interactief prototype intu\"itiever zou zijn dan het LoFi-prototype; de onduidelijkheden die bij de evaluatie van het LoFi-prototype genoemd zijn, zijn bij de evaluatie van het HiFi-prototype niet opnieuw genoemd. De muziektafel was intu\"itief in het gebruik en het was voor de gebruikers een leuke ervaring om deze te gebruiken.
+Het spelen met meer dan twee gebruikers resulteerde niet per se een leukere ervaring op, eerder een mindere door de chaos die volgde. Hoewel deze chaos niet altijd als negatief werd ervaren -- het leidde zelfs tot een nieuwe, competitieve manier om de muziektafel te gebruiken -- deed dit wel af aan de bedoelde, cre\"atieve gebruikservaring.
 
-De groepsgrootte maakte wel uit voor de hoeveelheid lol die aan de muziektafel beleefd kon worden. Wanneer de groep groter dan twee personen werd, was er de neiging tot chaos. Hoewel deze chaos niet door iedere proefpersoon als negatief werd ervaren -- het leidde zelfs tot een nieuwe manier om de muziektafel te gebruiken -- ging hierdoor wel het doel van de applicatie en het daadwerkelijke gebruik ervan uit elkaar lopen: er werd door sommige spelers niet langer muziek gemaakt, maar juist gewerkt aan het zo snel mogelijk vullen van het speelveld.
+De mindere nauwkeurigheid en gevoeligheid van de multi-touch tafel hinderen een soepel gebruik van de applicatie wanneer interface-elementen de grootte van een vinger hebben of dicht aan elkaar grenzen. De hardware-technische beperkingen aan het correct registreren van klikken hadden een negatieve impact op het uiteindelijk speelplezier van de gebruikers. Applicaties kunnen pas volledig tot hun recht komen, wanneer de genoemde hardware-technische beperkingen verholpen worden.
 
-Wat ook bleek uit de HiFi-evaluatie, was dat de applicatie dient als echte demo-applicatie voor de tafel: het laat gebruikers kennismaken met zowel de positieve als de negatieve eigenschappen ervan. De hardware-technische beperkingen aan het registreren van kliks had een negatieve impact op het uiteindelijk speelplezier en de intu\"itiviteit van de applicatie.
+Concluderend kan gezegd worden dat het mogelijk is om personen te laten werken aan een melodie. Het onderzoek heeft uitgewezen dat aan het huidige prototype plezier beleefd wordt. Uit de gebruikersonderzoeken zijn een aantal verbeterpunten naar voren gekomen, het is logisch te concluderen dat indien deze punten doorgevoerd worden, de frustraties van de gebruikers afnemen en de spelervaring toeneemt. Ondanks deze verbeterpunten kan gesteld worden dat een belangrijke eerste stap gezet is naar een nieuwe manier van co\"operatief muziekmaken. De multi-touch tafel kan gezien worden als waardevolle uitbreiding op het technische arsenaal waarover de samenleving beschikt.
 
-Desondanks was de respons tijdens de evaluatie overweldigend positief en werd de evaluatie gekenmerkt door het vele lachen en het maken van muziek op een nieuwe manier. Hoewel er dus een aantal verbeterpunten zijn, kan gezegd worden dat een belangrijke eerste stap gezet is naar een nieuwe manier van co\"operatief muziekmaken. De multi-touch tafel is dan ook een waardevolle uitbreiding op het technische arsenaal waarover de samenleving beschikt.
 
 \subsection{Future Works}
-Zoals gezegd, waren er ook verbeterpunten voor de muziektafel. Zo moet er onder andere gekeken worden naar het beter bruikbaar maken van de applicatie wanneer er vier spelers zijn. Nu hebben de melodie\"en van de verschillende spelers de neiging elkaar te overheersen in plaats van elkaar aan te vullen. Wat hierbij zou helpen zijn realistischer geluiden voor de verschillende instrumenten. Momenteel wordt een MIDI-soundbank gebruikt, maar de uiteindelijke sympfonie is waarschijnlijk gebaat bij realistischere samples van de verschillende instrumenten. Ook zou het gebruik van samples in plaats van een MIDI-soundbank het technische probleem verhelpen dat verschillende machines momenteel verschillende MIDI-soundbanks bevatten en dat de instrumenten in deze verschillende soundbanks anders klinken, niet dezelfde naam hebben en een ander onderling volume.
+Zoals gezegd, waren er ook verbeterpunten voor de muziektafel. Zo moet er onder andere gekeken worden naar het beter bruikbaar maken van de applicatie wanneer er vier spelers zijn. Nu hebben de melodie\"en van de verschillende spelers de neiging elkaar te overheersen in plaats van elkaar aan te vullen.
+
+Wat dit mogelijk kan verhelpen, zijn realistischer geluiden voor de verschillende instrumenten. Momenteel wordt een MIDI-soundbank gebruikt, maar de uiteindelijke sympfonie is waarschijnlijk gebaat bij realistischere samples van de verschillende instrumenten. Ook zou het gebruik van samples in plaats van een MIDI-soundbank het technische probleem verhelpen dat verschillende machines momenteel verschillende MIDI-soundbanks bevatten en dat de instrumenten in deze verschillende soundbanks anders klinken, niet dezelfde naam hebben en een ander onderling volume.
+
+Een andere oplossing is wellicht het limiteren van het maximale aantal noten dat per 16e maat geselecteerd kan worden. Wanneer er bijvoorbeeld maximaal drie noten geselecteerd kunnen worden per kolom, komt de nadruk meer te liggen op het maken van een mooie symfonie met de beschikbare middelen in plaats van het aanklikken van noten.
 
 Een leuke toepassing voor deze muziektafel zou zijn om deze te laten fungeren als MIDI-device waarmee de gecomponeerde melodie doorgestuurd kan worden naar professionele audio-software. Muziekproducers zouden op deze wijze de tafel kunnen gebruiken om net makkelijk, zo lang te tweaken aan hun melodie tot ze die melodie gevonden hebben die ze zoeken.
 
@@ -281,7 +290,48 @@ Tijdens dit project is door ons uitstekend samengewerkt met de medewerkers van K
 
 Ook willen wij Betsy van Dijk bedanken voor haar begeleidende en sturende rol in het project.
 
+Tot slot willen we de mensen bedanken die hebben meegewerkt aan de evaluaties en ons daarbij voorzien hebben van waardevolle feedback.
+
 \bibliographystyle{acm}
 \bibliography{ued_verslag}
+
+\appendix
+
+\section{Enqu\^ete Evaluatie}
+\label{sec_bijlage}
+\begin{enumerate}
+ \item Hoe zeer heb je je tijdens de evaluatie plezier gehad in het gebruik van het programma?
+ \item Wat vond je het leukst aan het programma?
+ \item Had je het idee het programma eenvoudig te doorgronden?
+ \item Wat heb je gemist aan het programma?
+ \item Hoe beoordeel je de volgende aspecten van het programma op een schaaf van 1 (zeer slecht) tot 5 (zeer goed):
+ \begin{enumerate}
+   \item Vindbaarheid van muzieknoten invoeren: \\ 1 / 2 / 3 / 4 / 5
+   \item Vindbaarheid van de instrumentkeuze: \\ 1 / 2 / 3 / 4 / 5
+   \item Vindbaarheid van de clear-functie: \\ 1 / 2 / 3 / 4 / 5
+   \item Gebruikte instrumentengeluid: \\ 1 / 2 / 3 / 4 / 5
+   \item Gebruikte animaties: \\ 1 / 2 / 3 / 4 / 5
+   \item Gebruikte kleuren: \\ 1 / 2 / 3 / 4 / 5
+\end{enumerate}
+ \item Hoe beviel de samenwerking met de andere spelers op een schaal van 1 (zeer slecht) tot 5 (zeer goed):  \\ 1 / 2 / 3 / 4 / 5
+ \item (Indien meerdere spelers:) Hoe waardevol vond je het om de andere spelers face-to-face te zien?
+
+ \item (Indien enkele speler:) Hoe erg heb je de samenwerking met andere gebruikers gemist?
+
+ \item Hoe beoordeel je elk van de volgende aspecten van de tafel op een schaal van 1 (zeer slecht) tot 5 (zeer goed)? 
+
+  \begin{enumerate}
+   \item Reactiesnelheid van de tafel: \tabto{4.5cm}1 / 2 / 3 / 4 / 5
+   \item Precisie van de tafel:        \tabto{4.5cm}1 / 2 / 3 / 4 / 5
+   \item Slepen over de tafel:         \tabto{4.5cm}1 / 2 / 3 / 4 / 5
+   \item Grootte van de tafel:         \tabto{4.5cm}1 / 2 / 3 / 4 / 5
+   \item Zichtbaarheid van het scherm: \tabto{4.5cm}1 / 2 / 3 / 4 / 5
+  \end{enumerate}
+
+  \item Was het programma net zo leuk geweest als je ieder je eigen computer had gekregen?
+
+  \item Heb je nog andere opmerkingen?
+\end{enumerate}
+
 
 \end{document}
