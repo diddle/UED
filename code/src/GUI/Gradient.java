@@ -1,4 +1,4 @@
-/*	Copyright Niels Kamp 2012
+/*	Copyright Niels Visser 2012
  *	
  *	This file is part of MusicTable.
  *	
