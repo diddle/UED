@@ -1,6 +1,22 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/*	Copyright Alexander Drechsel 2012
+ *	Copyright Niels Kamp 2012
+ *	Copyright Kasper Vaessen 2012
+ *	Copyright Niels Visser 2012
+ *	
+ *	This file is part of MusicTable.
+ *	
+ *	MusicTable is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *	
+ *	MusicTable is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *	
+ *	You should have received a copy of the GNU General Public License
+ *	along with MusicTable.  If not, see <http://www.gnu.org/licenses/>.
  */
 package playback;
 
@@ -15,10 +31,6 @@ import GUI.ParticlePanel;
 //import GUI.VisualizationPanel;
 import java.util.*;
 
-/**
- *
- * @author Niels Visser
- */
 public class Player implements Runnable {
     
     private List<ToneGrid> grids;
